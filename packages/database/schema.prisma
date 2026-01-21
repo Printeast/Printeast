@@ -1,0 +1,263 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+enum Role {
+  USER
+  ADMIN
+  CREATOR
+  SELLER
+}
+
+enum OrderStatus {
+  CREATED
+  AWAITING_FUNDS
+  PAYMENT_CAPTURED
+  ROUTED_TO_VENDOR
+  IN_PRODUCTION
+  READY_TO_SHIP
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+// Identity and Access Control
+model User {
+  id            String    @id @default(uuid()) @db.Uuid
+  email         String    @unique
+  passwordHash  String
+  role          Role      @default(USER)
+  businessName  String?   @map("business_name")
+  phone         String?
+  walletBalance Decimal   @default(0) @map("wallet_balance") @db.Decimal(10, 2)
+  isVerified    Boolean   @default(false) @map("is_verified")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  sessions      Session[]
+  walletTransactions WalletTransaction[]
+  designs       Design[]
+  orders        Order[]
+  notifications Notification[]
+  reviews       Review[]
+  creatorProfile Creator?
+
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @db.Uuid
+  token        String   @unique
+  expiresAt    DateTime @map("expires_at")
+  userAgent    String?  @map("user_agent")
+  ipAddress    String?  @map("ip_address")
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// Commerce Engine
+model Product {
+  id                String   @id @default(uuid()) @db.Uuid
+  name              String
+  basePrice         Decimal  @map("base_price") @db.Decimal(10, 2)
+  sku               String   @unique
+  supplierId        String   @db.Uuid
+  printArea         Json?    @map("print_area") // {x, y, width, height}
+  mockupTemplateUrl String?  @map("mockup_template_url")
+  colorOptions      Json?    @map("color_options")
+  sizeOptions       Json?    @map("size_options")
+  metadata          Json?    // For generic JSONB as per RFC
+
+  vendorProducts    VendorProduct[]
+  orderItems        OrderItem[]
+  reviews           Review[]
+
+  @@map("products")
+}
+
+model Order {
+  id              String      @id @default(uuid()) @db.Uuid
+  orderNumber     String      @unique @map("order_number")
+  userId          String      @db.Uuid
+  status          OrderStatus @default(CREATED)
+  subtotal        Decimal     @db.Decimal(10, 2)
+  platformFee     Decimal     @map("platform_fee") @db.Decimal(10, 2)
+  totalAmount     Decimal     @map("total_amount") @db.Decimal(10, 2)
+  shippingAddress Json        @map("shipping_address")
+  selectedVendorId String?    @db.Uuid @map("selected_vendor_id")
+  trackingNumber  String?     @map("tracking_number")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  user            User        @relation(fields: [userId], references: [id])
+  items           OrderItem[]
+  payment         Payment?
+  vendor          Vendor?     @relation(fields: [selectedVendorId], references: [id])
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String   @id @default(uuid()) @db.Uuid
+  orderId     String   @db.Uuid
+  productId   String   @db.Uuid
+  designId    String   @db.Uuid
+  quantity    Int
+  priceAtTime Decimal  @map("price_at_time") @db.Decimal(10, 2)
+
+  order       Order    @relation(fields: [orderId], references: [id])
+  product     Product  @relation(fields: [productId], references: [id])
+  design      Design   @relation(fields: [designId], references: [id])
+
+  @@map("order_items")
+}
+
+model Category {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  slug      String   @unique
+  parentId  String?  @db.Uuid @map("parent_id")
+  
+  parent    Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryToCategory")
+
+  @@map("categories")
+}
+
+// Creator and Designer Assets
+model Design {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @db.Uuid
+  productId       String?  @db.Uuid
+  imageUrl        String   @map("image_url")
+  promptText      String?  @map("prompt_text")
+  designData      Json?    @map("design_data") // Fabric.js JSON
+  previewUrl      String?  @map("preview_url")
+  printFileUrl    String?  @map("print_file_url")
+  status          String   @default("DRAFT") // Enum or String as per RFC
+  // vectorEmbedding Unsupported("vector(1536)")? @map("vector_embedding")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderItems      OrderItem[]
+
+  @@map("designs")
+}
+
+model Creator {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @unique @db.Uuid
+  bio            String?
+  portfolioUrl   String?  @map("portfolio_url")
+  commissionRate Decimal  @default(0.10) @map("commission_rate") @db.Decimal(5, 2)
+
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("creators")
+}
+
+// Operations and Finance
+model Vendor {
+  id               String   @id @default(uuid()) @db.Uuid
+  name             String
+  apiEndpoint      String?  @map("api_endpoint")
+  apiKeyEncrypted  String?  @map("api_key_encrypted")
+  location         String?
+  country          String?
+  reliabilityScore Decimal  @default(1.0) @map("reliability_score") @db.Decimal(3, 2)
+  avgProductionDays Int?    @map("avg_production_days")
+
+  vendorProducts   VendorProduct[]
+  orders           Order[]
+
+  @@map("vendors")
+}
+
+model VendorProduct {
+  id                String  @id @default(uuid()) @db.Uuid
+  productId         String  @db.Uuid @map("product_id")
+  vendorId          String  @db.Uuid @map("vendor_id")
+  vendorSku         String  @map("vendor_sku")
+  vendorPrice       Decimal @map("vendor_price") @db.Decimal(10, 2)
+  productionTimeDays Int?    @map("production_time_days")
+  isActive          Boolean @default(true) @map("is_active")
+
+  product           Product @relation(fields: [productId], references: [id])
+  vendor            Vendor  @relation(fields: [vendorId], references: [id])
+
+  @@map("vendor_products")
+}
+
+model WalletTransaction {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @db.Uuid @map("user_id")
+  amount          Decimal  @db.Decimal(10, 2)
+  transactionType String   @map("transaction_type") // 'CREDIT', 'DEBIT', 'REFUND'
+  paymentMethod   String?  @map("payment_method") // 'UPI', 'CARD'
+  status          String   @default("PENDING")
+  orderId         String?  @db.Uuid @map("order_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@map("wallet_transactions")
+}
+
+model Inventory {
+  id                String @id @default(uuid()) @db.Uuid
+  productId         String @db.Uuid @map("product_id")
+  warehouseLocation String @map("warehouse_location")
+  quantity          Int    @default(0)
+
+  @@map("inventory")
+}
+
+model Review {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid @map("user_id")
+  productId String   @db.Uuid @map("product_id")
+  rating    Int      @default(5)
+  comment   String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@map("reviews")
+}
+
+model Notification {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid @map("user_id")
+  type      String   // Using String for flexibility as per flow
+  content   String
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model Payment {
+  id         String   @id @default(uuid()) @db.Uuid
+  orderId    String   @unique @db.Uuid @map("order_id")
+  amount     Decimal  @db.Decimal(10, 2)
+  status     String   @default("PENDING")
+  gatewayRef String?  @map("gateway_ref")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  order      Order    @relation(fields: [orderId], references: [id])
+
+  @@map("payments")
+}

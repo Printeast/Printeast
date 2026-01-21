@@ -1,0 +1,22 @@
+{
+    "name": "@repo/eslint-config",
+    "version": "0.0.0",
+    "private": true,
+    "license": "MIT",
+    "files": [
+        "library.js",
+        "next.js",
+        "react-internal.js"
+    ],
+    "dependencies": {
+        "@typescript-eslint/eslint-plugin": "^8.53.1",
+        "@typescript-eslint/parser": "^8.53.1",
+        "@vercel/style-guide": "^6.0.0",
+        "eslint-config-next": "^16.1.4",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-config-turbo": "^1.11.3",
+        "eslint-plugin-only-warn": "^1.1.0",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-react-hooks": "^7.0.1"
+    }
+}
