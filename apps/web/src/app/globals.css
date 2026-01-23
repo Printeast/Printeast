@@ -1,8 +1,8 @@
+@import '@repo/ui/styles.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import '@repo/ui/styles.css';
 
 :root {
   --printeast-bg: #F8F9FC;
