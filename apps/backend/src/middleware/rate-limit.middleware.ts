@@ -13,11 +13,13 @@ export const loginLimiter = rateLimit({
   skip: () => isTest,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: false,
   store: new RedisStore({
     // @ts-expect-error - ioredis type mismatch
     sendCommand: (...args: string[]) => redis.call(...args),
   }),
 });
+
 
 export const apiLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -25,6 +27,7 @@ export const apiLimiter = rateLimit({
   skip: () => isTest,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: false,
   store: new RedisStore({
     // @ts-expect-error - ioredis type mismatch
     sendCommand: (...args: string[]) => redis.call(...args),

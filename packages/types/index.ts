@@ -1,16 +1,32 @@
 import { z } from "zod";
 
 // 1. AUTH SCHEMAS
+export const RoleEnum = z.enum([
+  "SUPER_ADMIN",
+  "TENANT_ADMIN",
+  "CREATOR",
+  "SELLER",
+  "VENDOR",
+  "AFFILIATE",
+  "CUSTOMER",
+]);
+
 export const RegisterSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
-  role: z.enum(["USER", "CREATOR", "SELLER"]).default("USER"),
+  role: RoleEnum.default("CUSTOMER"),
+  businessName: z.string().optional(),
 });
 
-export const LoginSchema = z.object({
+export const MagicLinkRequestSchema = z.object({
   email: z.string().email(),
-  password: z.string(),
+  role: RoleEnum.optional(),
+  businessName: z.string().optional(),
 });
+
+export const MagicLinkVerifySchema = z.object({
+  token: z.string(),
+});
+
 
 // 2. STORAGE SCHEMAS
 export const UploadSignSchema = z.object({
@@ -32,6 +48,7 @@ export const ServerConfigSchema = z.object({
   ALLOWED_ORIGINS: z.string().default("*"),
   SUPABASE_URL: z.string().optional(),
   SUPABASE_ANON_KEY: z.string().optional(),
+  RESEND_API_KEY: z.string().optional(),
 });
 
 // 4. STANDARDIZED API INTERFACES (RFC 6.1 Alignment)
@@ -45,6 +62,8 @@ export interface ApiResponse<T = unknown> {
 
 // 5. INFERRED TYPES
 export type RegisterInput = z.infer<typeof RegisterSchema>;
-export type LoginInput = z.infer<typeof LoginSchema>;
+export type MagicLinkRequestInput = z.infer<typeof MagicLinkRequestSchema>;
+export type MagicLinkVerifyInput = z.infer<typeof MagicLinkVerifySchema>;
 export type UploadSignInput = z.infer<typeof UploadSignSchema>;
 export type ServerConfig = z.infer<typeof ServerConfigSchema>;
+export type Role = z.infer<typeof RoleEnum>;

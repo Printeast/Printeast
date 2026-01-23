@@ -3,8 +3,10 @@ import cors from "cors";
 import helmet from "helmet";
 import pino from "pino-http";
 import cookieParser from "cookie-parser";
+import compression from "compression";
 import { env } from "./config/env";
 import { apiLimiter } from "./middleware/rate-limit.middleware";
+import { isolationMiddleware } from "./middleware/isolation.middleware";
 import { globalErrorHandler } from "./middleware/error.middleware";
 import { AppError } from "./utils/app-error";
 import authRoutes from "./routes/auth.routes";
@@ -12,11 +14,14 @@ import storageRoutes from "./routes/storage.routes";
 
 const app: Application = express();
 
+app.use(compression());
 app.use(helmet());
 app.use(cors({ origin: env.ALLOWED_ORIGINS.split(","), credentials: true }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(pino());
+
+app.use(isolationMiddleware); // Inject Tenant Context "The Brain"
 
 app.use("/api", apiLimiter);
 

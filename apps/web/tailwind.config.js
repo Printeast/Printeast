@@ -11,7 +11,7 @@ module.exports = {
                     orange: "#FF7A39", // "Coral Orange"
                 },
                 base: {
-                    bg: "#F8F9FC", // Primary Background
+                    bg: "#F9F8F6", // Primary Background
                     card: "#FFFFFF", // Card Background
                     border: "#E5E7EB", // Borders
                 },

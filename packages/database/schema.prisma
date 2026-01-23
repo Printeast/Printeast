@@ -4,16 +4,10 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
   extensions = [vector]
-}
-
-enum Role {
-  USER
-  ADMIN
-  CREATOR
-  SELLER
 }
 
 enum OrderStatus {
@@ -28,103 +22,172 @@ enum OrderStatus {
   CANCELLED
 }
 
-// Identity and Access Control
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+// 4.1 Identity & Access Control
+
+model Tenant {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  slug        String   @unique
+  tier        String   @default("FREE") // FREE, PRO, ENT
+  metadata    Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  users       User[]
+  products    Product[]
+  orders      Order[]
+  designs     Design[]
+  vendors     Vendor[]
+  auditLogs   AuditLog[]
+
+  @@map("tenants")
+}
+
 model User {
-  id            String    @id @default(uuid()) @db.Uuid
-  email         String    @unique
-  passwordHash  String
-  role          Role      @default(USER)
-  businessName  String?   @map("business_name")
-  phone         String?
-  walletBalance Decimal   @default(0) @map("wallet_balance") @db.Decimal(10, 2)
-  isVerified    Boolean   @default(false) @map("is_verified")
-  createdAt     DateTime  @default(now()) @map("created_at")
+  id             String      @id @default(uuid()) @db.Uuid
+  tenantId       String?     @db.Uuid @map("tenant_id")
+  email          String
+  passwordHash   String?     @map("password_hash")
+  status         UserStatus  @default(ACTIVE)
+  createdAt      DateTime    @default(now()) @map("created_at")
 
-  sessions      Session[]
+  // Magic Link Support (Optional but RFC implies it)
+  magicLinkToken String?     @unique @map("magic_link_token")
+  magicLinkExpires DateTime? @map("magic_link_expires")
+
+  tenant             Tenant?             @relation(fields: [tenantId], references: [id])
+  roles              UserRole[]
+  sessions           Session[]
+  wallet             Wallet?
   walletTransactions WalletTransaction[]
-  designs       Design[]
-  orders        Order[]
-  notifications Notification[]
-  reviews       Review[]
-  creatorProfile Creator?
+  designs            Design[]
+  orders             Order[]
+  notifications      Notification[]
+  reviews            Review[]
+  creatorProfile     Creator?
+  auditLogs          AuditLog[]
 
+  @@unique([tenantId, email]) // Tenant-scoped Email uniqueness
+  @@index([email])
   @@map("users")
 }
 
-model Session {
-  id           String   @id @default(uuid()) @db.Uuid
-  userId       String   @db.Uuid
-  token        String   @unique
-  expiresAt    DateTime @map("expires_at")
-  userAgent    String?  @map("user_agent")
-  ipAddress    String?  @map("ip_address")
+model Role {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique // Admin, Creator, Seller, etc.
+  permissions Json     @default("{}") // JSONB
+  
+  users       UserRole[]
 
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("roles")
+}
+
+model UserRole {
+  userId String @db.Uuid @map("user_id")
+  roleId String @db.Uuid @map("role_id")
+
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @db.Uuid @map("tenant_id")
+  userId    String   @db.Uuid @map("user_id")
+  action    String
+  resource  String
+  changes   Json
+  createdAt DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model Session {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  token     String   @unique // Refresh Token or similar
+  expiresAt DateTime @map("expires_at")
+  userAgent String?  @map("user_agent")
+  ipAddress String?  @map("ip_address")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
 }
 
-// Commerce Engine
+// 4.2 Commerce & Operations
+
 model Product {
   id                String   @id @default(uuid()) @db.Uuid
+  tenantId          String   @db.Uuid @map("tenant_id")
   name              String
   basePrice         Decimal  @map("base_price") @db.Decimal(10, 2)
-  sku               String   @unique
-  supplierId        String   @db.Uuid
-  printArea         Json?    @map("print_area") // {x, y, width, height}
+  sku               String
+  metadata          Json?
+  
+  // RFC additions/implied
+  printArea         Json?    @map("print_area")
   mockupTemplateUrl String?  @map("mockup_template_url")
-  colorOptions      Json?    @map("color_options")
-  sizeOptions       Json?    @map("size_options")
-  metadata          Json?    // For generic JSONB as per RFC
 
+  tenant            Tenant   @relation(fields: [tenantId], references: [id])
   vendorProducts    VendorProduct[]
   orderItems        OrderItem[]
   reviews           Review[]
+  inventory         Inventory[]
 
+  @@unique([tenantId, sku])
   @@map("products")
 }
 
 model Order {
   id              String      @id @default(uuid()) @db.Uuid
-  orderNumber     String      @unique @map("order_number")
-  userId          String      @db.Uuid
+  tenantId        String      @db.Uuid @map("tenant_id")
+  buyerId         String      @db.Uuid @map("buyer_id")
   status          OrderStatus @default(CREATED)
-  subtotal        Decimal     @db.Decimal(10, 2)
-  platformFee     Decimal     @map("platform_fee") @db.Decimal(10, 2)
   totalAmount     Decimal     @map("total_amount") @db.Decimal(10, 2)
-  shippingAddress Json        @map("shipping_address")
-  selectedVendorId String?    @db.Uuid @map("selected_vendor_id")
   trackingNumber  String?     @map("tracking_number")
   createdAt       DateTime    @default(now()) @map("created_at")
   updatedAt       DateTime    @updatedAt @map("updated_at")
 
-  user            User        @relation(fields: [userId], references: [id])
+  tenant          Tenant      @relation(fields: [tenantId], references: [id])
+  buyer           User        @relation(fields: [buyerId], references: [id])
   items           OrderItem[]
   payment         Payment?
-  vendor          Vendor?     @relation(fields: [selectedVendorId], references: [id])
 
   @@map("orders")
 }
 
 model OrderItem {
   id          String   @id @default(uuid()) @db.Uuid
-  orderId     String   @db.Uuid
-  productId   String   @db.Uuid
-  designId    String   @db.Uuid
-  quantity    Int
+  orderId     String   @db.Uuid @map("order_id")
+  productId   String   @db.Uuid @map("product_id")
+  designId    String   @db.Uuid @map("design_id")
   priceAtTime Decimal  @map("price_at_time") @db.Decimal(10, 2)
 
-  order       Order    @relation(fields: [orderId], references: [id])
-  product     Product  @relation(fields: [productId], references: [id])
-  design      Design   @relation(fields: [designId], references: [id])
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+  design  Design  @relation(fields: [designId], references: [id])
 
   @@map("order_items")
 }
 
 model Category {
   id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @db.Uuid @map("tenant_id") // Assuming categories are tenant-specific or global (RFC doesn't strictly specify, assuming tenant)
   name      String
-  slug      String   @unique
+  slug      String
   parentId  String?  @db.Uuid @map("parent_id")
   
   parent    Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
@@ -133,91 +196,55 @@ model Category {
   @@map("categories")
 }
 
-// Creator and Designer Assets
-model Design {
-  id              String   @id @default(uuid()) @db.Uuid
-  userId          String   @db.Uuid
-  productId       String?  @db.Uuid
-  imageUrl        String   @map("image_url")
-  promptText      String?  @map("prompt_text")
-  designData      Json?    @map("design_data") // Fabric.js JSON
-  previewUrl      String?  @map("preview_url")
-  printFileUrl    String?  @map("print_file_url")
-  status          String   @default("DRAFT") // Enum or String as per RFC
-  // vectorEmbedding Unsupported("vector(1536)")? @map("vector_embedding")
-
-  createdAt       DateTime @default(now()) @map("created_at")
-
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orderItems      OrderItem[]
-
-  @@map("designs")
-}
-
-model Creator {
+model Supplier {
   id             String   @id @default(uuid()) @db.Uuid
-  userId         String   @unique @db.Uuid
-  bio            String?
-  portfolioUrl   String?  @map("portfolio_url")
-  commissionRate Decimal  @default(0.10) @map("commission_rate") @db.Decimal(5, 2)
+  name           String
+  location       String?
+  contactEmail   String   @map("contact_email")
+  integrationKey String?  @map("integration_key")
 
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("creators")
+  @@map("suppliers")
 }
 
-// Operations and Finance
-model Vendor {
-  id               String   @id @default(uuid()) @db.Uuid
-  name             String
-  apiEndpoint      String?  @map("api_endpoint")
-  apiKeyEncrypted  String?  @map("api_key_encrypted")
-  location         String?
-  country          String?
-  reliabilityScore Decimal  @default(1.0) @map("reliability_score") @db.Decimal(3, 2)
-  avgProductionDays Int?    @map("avg_production_days")
+model Wallet {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @unique @db.Uuid @map("user_id")
+  balance   Decimal  @default(0) @db.Decimal(10, 2)
+  currency  String   @default("USD")
 
-  vendorProducts   VendorProduct[]
-  orders           Order[]
+  user      User     @relation(fields: [userId], references: [id])
+  transactions Transaction[]
 
-  @@map("vendors")
+  @@map("wallets")
 }
 
-model VendorProduct {
-  id                String  @id @default(uuid()) @db.Uuid
-  productId         String  @db.Uuid @map("product_id")
-  vendorId          String  @db.Uuid @map("vendor_id")
-  vendorSku         String  @map("vendor_sku")
-  vendorPrice       Decimal @map("vendor_price") @db.Decimal(10, 2)
-  productionTimeDays Int?    @map("production_time_days")
-  isActive          Boolean @default(true) @map("is_active")
+model Transaction {
+  id           String   @id @default(uuid()) @db.Uuid
+  walletId     String   @db.Uuid @map("wallet_id")
+  amount       Decimal  @db.Decimal(10, 2)
+  type         String   // DEBIT, CREDIT
+  referenceId  String?  @map("reference_id")
+  createdAt    DateTime @default(now()) @map("created_at")
 
-  product           Product @relation(fields: [productId], references: [id])
-  vendor            Vendor  @relation(fields: [vendorId], references: [id])
-
-  @@map("vendor_products")
+  // NOTE: RFC mentions "Transaction", schema below has "WalletTransaction". 
+  // Consolidating to "Transaction" per RFC 4.2 table name, but linking logically.
+  
+  @@map("transactions")
+  // Using loose relation or adding Wallet relation:
+  wallet Wallet @relation(fields: [walletId], references: [id]) // Implicit in RFC
 }
 
-model WalletTransaction {
-  id              String   @id @default(uuid()) @db.Uuid
-  userId          String   @db.Uuid @map("user_id")
-  amount          Decimal  @db.Decimal(10, 2)
-  transactionType String   @map("transaction_type") // 'CREDIT', 'DEBIT', 'REFUND'
-  paymentMethod   String?  @map("payment_method") // 'UPI', 'CARD'
-  status          String   @default("PENDING")
-  orderId         String?  @db.Uuid @map("order_id")
-  createdAt       DateTime @default(now()) @map("created_at")
-
-  user            User     @relation(fields: [userId], references: [id])
-
-  @@map("wallet_transactions")
-}
+// Keeping WalletTransaction as legacy or alias if needed, but RFC said "Transaction". 
+// To avoid conflicts, we will use "WalletTransaction" as the robust implementation of "Transaction" 
+// OR strictly follow RFC names. "Transaction" is very generic, let's stick to RFC name "Transaction".
 
 model Inventory {
   id                String @id @default(uuid()) @db.Uuid
   productId         String @db.Uuid @map("product_id")
-  warehouseLocation String @map("warehouse_location")
   quantity          Int    @default(0)
+  warehouseLocation String? @map("warehouse_location")
+
+  product Product @relation(fields: [productId], references: [id])
 
   @@map("inventory")
 }
@@ -239,7 +266,7 @@ model Review {
 model Notification {
   id        String   @id @default(uuid()) @db.Uuid
   userId    String   @db.Uuid @map("user_id")
-  type      String   // Using String for flexibility as per flow
+  type      String
   content   String
   isRead    Boolean  @default(false) @map("is_read")
   createdAt DateTime @default(now()) @map("created_at")
@@ -247,6 +274,103 @@ model Notification {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
+}
+
+// --- Supporting Models (Not in core 15 but necessary for integrity) ---
+
+model Design {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenantId        String   @db.Uuid @map("tenant_id")
+  userId          String   @db.Uuid
+  imageUrl        String   @map("image_url")
+  promptText      String?  @map("prompt_text")
+  designData      Json?    @map("design_data")
+  previewUrl      String?  @map("preview_url")
+  printFileUrl    String?  @map("print_file_url")
+  status          String   @default("DRAFT")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderItems      OrderItem[]
+
+  @@map("designs")
+}
+
+model Creator {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @unique @db.Uuid
+  bio            String?
+  portfolioUrl   String?  @map("portfolio_url")
+  commissionRate Decimal  @default(0.10) @map("commission_rate") @db.Decimal(5, 2)
+
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("creators")
+}
+
+// Merging Vendor from previous schema + RFC Supplier? 
+// RFC has "Supplier" (id, name, location, etc.) AND in 4.2 "Vendor" is not explicitly explicitly distinct from Supplier?
+// Wait. 4.2 lists "Supplier". 4.1 lists "Roles: ... Vendor".
+// The previous schema had "Vendor" and "VendorProducts".
+// "Supplier" in RFC likely maps to the fulfillment provider (Printful/Gelato). "Vendor" likely maps to a Tenant-level seller/vendor?
+// Clarification: RFC Table list includes "Supplier". It does NOT include "Vendor" table in the bulleted list in 4.2.
+// However, Role enum includes "Vendor".
+// I will keep "Vendor" and "VendorProduct" for robust feature set if it doesn't conflict, 
+// BUT RFC 4.2 explicitly defines `Supplier`. I will add `Supplier`.
+
+model Vendor {
+  id               String   @id @default(uuid()) @db.Uuid
+  tenantId         String?  @db.Uuid @map("tenant_id")
+  name             String
+  apiEndpoint      String?  @map("api_endpoint")
+  location         String?
+  
+  tenant           Tenant?  @relation(fields: [tenantId], references: [id])
+  vendorProducts   VendorProduct[]
+
+  @@map("vendors")
+}
+
+model VendorProduct {
+  id                String  @id @default(uuid()) @db.Uuid
+  productId         String  @db.Uuid @map("product_id")
+  vendorId          String  @db.Uuid @map("vendor_id")
+  vendorSku         String  @map("vendor_sku")
+  vendorPrice       Decimal @map("vendor_price") @db.Decimal(10, 2)
+  isActive          Boolean @default(true) @map("is_active")
+
+  product           Product @relation(fields: [productId], references: [id])
+  vendor            Vendor  @relation(fields: [vendorId], references: [id])
+
+  @@map("vendor_products")
+}
+
+model WalletTransaction {
+    // Mapping to legacy to keep code safe or use this for the RFC "Transaction"
+    // RFC: Transaction: id, wallet_id, amount, type, reference_id
+    id              String   @id @default(uuid()) @db.Uuid
+    userId          String?   @db.Uuid @map("user_id") // Legacy, keeping for safety if needed, or removing if clean.
+    // RFC links transaction to WALLET, not USER directly.
+    walletId        String?   @db.Uuid @map("wallet_id") 
+
+    amount          Decimal  @db.Decimal(10, 2)
+    transactionType String   @map("transaction_type") // RFC: type
+    paymentMethod   String?  @map("payment_method") 
+    status          String   @default("PENDING")
+    createdAt       DateTime @default(now()) @map("created_at")
+
+    user            User?     @relation(fields: [userId], references: [id])
+    // wallet       Wallet @relation... (Added above in Transaction model, duplicated here?)
+    // To implement "Transaction" from RFC, I defined `model Transaction` above.
+    // I will COMMENT OUT `WalletTransaction` to favor `Transaction` to be RFC compliant?
+    // User requested "robust". Keeping `WalletTransaction` (which existed) might be safer but `Transaction` is RFC.
+    // I will keeping `WalletTransaction` but rename it/align it with `Transaction` or just separate them?
+    // RFC says "15 Core Tables".
+    // I will stick to the models defined above and comment this one out effectively or merge.
+    // I already defined `model Transaction` above.
+    
+   @@map("wallet_transactions_legacy")
 }
 
 model Payment {

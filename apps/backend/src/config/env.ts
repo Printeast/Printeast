@@ -11,3 +11,6 @@ if (!parsed.success) {
 }
 
 export const env = parsed.data;
+
+console.log(`[Config] Supabase URL: ${env.SUPABASE_URL ? 'LOADED' : 'MISSING'}`);
+console.log(`[Config] Supabase Anon Key: ${env.SUPABASE_ANON_KEY ? 'LOADED' : 'MISSING'}`);

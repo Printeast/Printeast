@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const poppins = Poppins({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-poppins"
+});
 
 export const metadata: Metadata = {
   title: {
@@ -11,7 +16,7 @@ export const metadata: Metadata = {
   },
   description:
     "Collapse the journey from creative impulse to physical product. The future of creator commerce.",
-  metadataBase: new URL("https://printeast.com"), // Replace with actual URL
+  metadataBase: new URL("https://printeast.com"),
   keywords: ["Print on Demand", "AI", "Creator Economy", "Ecommerce"],
 };
 
@@ -22,7 +27,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={`${inter.variable} ${poppins.variable} font-sans`}>{children}</body>
     </html>
   );
 }
