@@ -169,6 +169,32 @@ export async function getSellerDashboardData(): Promise<SellerDashboardData> {
     };
 }
 
+export async function getSellerInventoryData() {
+    const supabase = await createClient();
+    const { data: userRes } = await supabase.auth.getUser();
+    const tenantId = userRes.user?.user_metadata?.tenant_id || userRes.user?.app_metadata?.tenant_id;
+
+    if (!tenantId) {
+        return { tenantId: null, inventory: [] as SellerDashboardData["inventory"] };
+    }
+
+    const { data: productRows = [] } = await supabase
+        .from("products")
+        .select("id,name,sku,base_price,inventory(quantity)")
+        .eq("tenant_id", tenantId)
+        .limit(100);
+
+    const inventory = (productRows as ProductRow[]).map((p) => ({
+        id: p.id,
+        name: p.name,
+        sku: p.sku,
+        base_price: p.base_price ? Number(p.base_price) : undefined,
+        quantity: Array.isArray(p.inventory) && p.inventory[0]?.quantity ? Number(p.inventory[0].quantity) : 0,
+    }));
+
+    return { tenantId, inventory };
+}
+
 function emptyState(): SellerDashboardData {
     return {
         orders: [],
