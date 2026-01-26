@@ -73,8 +73,7 @@ export interface SellerDashboardData {
 
 export async function getSellerDashboardData(): Promise<SellerDashboardData> {
     const supabase = await createClient();
-    const { data: userRes } = await supabase.auth.getUser();
-    const tenantId = userRes.user?.user_metadata?.tenant_id || userRes.user?.app_metadata?.tenant_id;
+    const tenantId = await resolveTenantId(supabase);
 
     if (!tenantId) {
         return emptyState();
@@ -171,8 +170,7 @@ export async function getSellerDashboardData(): Promise<SellerDashboardData> {
 
 export async function getSellerInventoryData() {
     const supabase = await createClient();
-    const { data: userRes } = await supabase.auth.getUser();
-    const tenantId = userRes.user?.user_metadata?.tenant_id || userRes.user?.app_metadata?.tenant_id;
+    const tenantId = await resolveTenantId(supabase);
 
     if (!tenantId) {
         return { tenantId: null, inventory: [] as SellerDashboardData["inventory"] };
@@ -193,6 +191,16 @@ export async function getSellerInventoryData() {
     }));
 
     return { tenantId, inventory };
+}
+
+async function resolveTenantId(supabase: Awaited<ReturnType<typeof createClient>>) {
+    const { data: userRes } = await supabase.auth.getUser();
+    const fromMeta = userRes.user?.user_metadata?.tenant_id || userRes.user?.app_metadata?.tenant_id;
+    if (fromMeta) return fromMeta;
+    const uid = userRes.user?.id;
+    if (!uid) return null;
+    const { data } = await supabase.from("users").select("tenant_id").eq("id", uid).single();
+    return data?.tenant_id ?? null;
 }
 
 function emptyState(): SellerDashboardData {

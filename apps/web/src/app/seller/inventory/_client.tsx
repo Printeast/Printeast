@@ -25,6 +25,8 @@ export function SellerInventoryClient({ userEmail, tenantId, initialInventory }:
     const [inventory, setInventory] = useState<InventoryItem[]>(initialInventory);
     const [form, setForm] = useState({ name: "", sku: "", price: "", quantity: "0" });
     const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const supabase = createClient();
 
     const lowStock = inventory.filter((i) => i.quantity < 20);
@@ -33,6 +35,8 @@ export function SellerInventoryClient({ userEmail, tenantId, initialInventory }:
         e.preventDefault();
         if (!tenantId) return;
         setLoading(true);
+        setMessage(null);
+        setError(null);
         try {
             const { data: productRes, error: productErr } = await supabase
                 .from("products")
@@ -64,8 +68,10 @@ export function SellerInventoryClient({ userEmail, tenantId, initialInventory }:
             ]);
 
             setForm({ name: "", sku: "", price: "", quantity: "0" });
+            setMessage("SKU added successfully.");
         } catch (err) {
             console.error("Add SKU error", err);
+            setError("Could not add SKU. Check Supabase RLS or credentials.");
         } finally {
             setLoading(false);
         }
@@ -94,11 +100,17 @@ export function SellerInventoryClient({ userEmail, tenantId, initialInventory }:
                         <p className="text-slate-400 mt-1">Manage SKUs, stock, and exports directly from Supabase.</p>
                     </div>
                     <div className="flex gap-3">
-                        <Button variant="outline" onClick={handleExport} disabled={!inventory.length}>
+                        <Button type="button" variant="outline" onClick={handleExport} disabled={!inventory.length}>
                             <Download className="h-4 w-4 mr-2" /> Export CSV
                         </Button>
                     </div>
                 </div>
+
+                {(message || error) && (
+                    <div className={`rounded-xl border px-4 py-3 ${error ? "border-red-500/40 bg-red-500/10 text-red-100" : "border-emerald-500/30 bg-emerald-500/10 text-emerald-100"}`}>
+                        {error || message}
+                    </div>
+                )}
 
                 <form
                     onSubmit={handleAdd}
