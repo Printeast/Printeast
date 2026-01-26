@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/services/api.service";
 import { Loader2, Building2, User, ArrowRight, CheckCircle2 } from "lucide-react";
-import { getMockUser, isMockAuthEnabled, setMockUser, getRolePath, TEST_USERS } from "@/lib/mock-auth";
+import { isMockAuthEnabled, setMockUser, getRolePath, TEST_USERS } from "@/lib/mock-auth";
 
 type Step = "role" | "details" | "complete";
 

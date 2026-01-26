@@ -2,7 +2,6 @@
 
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { getMockUser } from "@/lib/mock-auth";
-import { motion } from "framer-motion";
 import { Boxes, AlertTriangle, RefreshCcw } from "lucide-react";
 
 const mockUser = getMockUser() || { email: "seller@printeast.test", role: "SELLER" as const };

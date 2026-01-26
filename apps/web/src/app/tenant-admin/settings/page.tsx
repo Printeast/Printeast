@@ -2,7 +2,7 @@
 
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { getMockUser } from "@/lib/mock-auth";
-import { Settings, Database, Link } from "lucide-react";
+import { Settings, Link } from "lucide-react";
 
 const mockUser = getMockUser() || { email: "admin@printeast.test", role: "TENANT_ADMIN" as const };
 
