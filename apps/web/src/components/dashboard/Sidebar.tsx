@@ -14,7 +14,9 @@ import {
     BarChart2,
     Store,
     ShieldCheck,
+    Sparkles,
 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 type NavItem = { label: string; href: string; icon: React.ComponentType<{ className?: string }> };
 
@@ -55,44 +57,67 @@ const NAV: Record<Role, NavItem[]> = {
 
 interface SidebarProps {
     role: Role;
+    collapsed?: boolean;
+    onToggle?: () => void;
 }
 
-export function Sidebar({ role }: SidebarProps) {
+export function Sidebar({ role, collapsed }: SidebarProps) {
     const pathname = usePathname();
     const links = NAV[role] || [];
 
     return (
-        <aside className="w-64 border-r border-base-border bg-white px-4 py-6 shadow-sm" aria-label="Role navigation">
-            <div className="mb-8 flex items-center gap-3 px-2">
+        <aside
+            className={`border-r border-base-border bg-white/5 px-3 py-6 shadow-sm transition-all duration-200 ${collapsed ? "w-[78px]" : "w-64"}`}
+            aria-label="Role navigation"
+        >
+            <div className={`mb-8 flex items-center gap-3 px-2 ${collapsed ? "justify-center" : "justify-start"}`}>
                 <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary-orange to-primary-pink text-white flex items-center justify-center font-black text-lg">
                     P
                 </div>
-                <div>
-                    <div className="text-lg font-black text-text-main">Printeast</div>
-                    <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted">{role.replace("_", " ")}</div>
-                </div>
+                {!collapsed && (
+                    <div>
+                        <div className="text-lg font-black text-text-main">Printeast</div>
+                        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted">{role.replace("_", " ")}</div>
+                    </div>
+                )}
             </div>
 
             <nav className="space-y-1" aria-label={`${role} navigation`}>
                 {links.map((link) => {
                     const active = pathname === link.href;
                     const Icon = link.icon;
-                    return (
+                    const item = (
                         <Link
                             key={link.href}
                             href={link.href}
                             className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all ${active
                                     ? "bg-gradient-to-r from-primary-orange/15 to-primary-pink/15 text-text-main border border-primary-orange/30"
                                     : "text-text-secondary hover:bg-base-bg"}
-                            `}
+                            ${collapsed ? "justify-center" : ""}`}
                             aria-current={active ? "page" : undefined}
                         >
                             <Icon className="h-4 w-4" />
-                            {link.label}
+                            {!collapsed && <span className="truncate">{link.label}</span>}
                         </Link>
+                    );
+
+                    return collapsed ? (
+                        <Tooltip key={link.href}>
+                            <TooltipTrigger asChild>{item}</TooltipTrigger>
+                            <TooltipContent side="right">{link.label}</TooltipContent>
+                        </Tooltip>
+                    ) : (
+                        item
                     );
                 })}
             </nav>
+
+            {!collapsed && (
+                <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-3 text-xs text-slate-200 flex gap-2">
+                    <Sparkles className="h-4 w-4 text-primary-orange" />
+                    Shortcuts coming soon
+                </div>
+            )}
         </aside>
     );
 }

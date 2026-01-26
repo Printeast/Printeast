@@ -2,7 +2,9 @@
 
 import { Sidebar } from "./Sidebar";
 import { Role } from "@repo/types";
-import { Bell, CircleUser, LogOut, Search } from "lucide-react";
+import { Bell, CircleUser, LogOut, Search, Sidebar as SidebarIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -13,19 +15,44 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children, user }: DashboardLayoutProps) {
+    const [collapsed, setCollapsed] = useState(false);
+
+    // Respect prefers-reduced-motion for transitions where possible
+    useEffect(() => {
+        const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+        if (mq.matches) setCollapsed(false);
+    }, []);
+
     return (
         <div className="flex min-h-screen bg-gradient-to-br from-[#0b0f1a] via-[#0c0f17] to-[#0a0c14] text-slate-50">
-            <Sidebar role={user.role} />
+            <TooltipProvider>
+                <Sidebar role={user.role} collapsed={collapsed} onToggle={() => setCollapsed((c) => !c)} />
+            </TooltipProvider>
 
             <div className="flex flex-1 flex-col">
                 <header className="flex items-center justify-between border-b border-white/5 bg-white/5 px-6 py-4 backdrop-blur" role="banner">
-                    <div className="flex items-center gap-3 rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm text-slate-200 w-80" role="search">
-                        <Search className="h-4 w-4 text-slate-400" />
-                        <input
-                            aria-label="Search workspace"
-                            className="w-full bg-transparent text-sm placeholder:text-slate-500 focus:outline-none"
-                            placeholder="Search across workspace"
-                        />
+                    <div className="flex items-center gap-3">
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    type="button"
+                                    aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                                    onClick={() => setCollapsed((c) => !c)}
+                                    className="h-10 w-10 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition flex items-center justify-center"
+                                >
+                                    <SidebarIcon className="h-4 w-4 text-slate-200" />
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom">{collapsed ? "Expand sidebar" : "Collapse sidebar"}</TooltipContent>
+                        </Tooltip>
+                        <div className="flex items-center gap-3 rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm text-slate-200 w-72" role="search">
+                            <Search className="h-4 w-4 text-slate-400" />
+                            <input
+                                aria-label="Search workspace"
+                                className="w-full bg-transparent text-sm placeholder:text-slate-500 focus:outline-none"
+                                placeholder="Search across workspace"
+                            />
+                        </div>
                     </div>
                     <div className="flex items-center gap-3">
                         <button
@@ -53,8 +80,8 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
                     </div>
                 </header>
 
-                <main className="flex-1 p-8">
-                    <div className="rounded-3xl border border-white/5 bg-white/5 p-6 shadow-[0_20px_60px_-35px_rgba(0,0,0,0.6)] backdrop-blur">
+                <main className="flex-1 p-6 md:p-8">
+                    <div className="mx-auto w-full max-w-6xl space-y-6 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-[0_20px_60px_-35px_rgba(0,0,0,0.6)] backdrop-blur">
                         {children}
                     </div>
                 </main>
