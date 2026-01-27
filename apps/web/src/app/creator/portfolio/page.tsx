@@ -1,62 +1,64 @@
 import { getCreatorPortfolioData } from "../_data";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { ImageIcon, LayoutGrid } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { IconDashboard, IconImage } from "@/components/ui/icons";
 
 export default async function CreatorPortfolioPage() {
     const { userEmail, designs } = await getCreatorPortfolioData();
 
     return (
         <DashboardLayout user={{ email: userEmail, role: "CREATOR" }}>
-            <div className="flex flex-col gap-8 text-white">
+            <div className="flex flex-col gap-8 dash-text">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>
-                        <p className="text-xs uppercase tracking-[0.25em] text-slate-400">Portfolio</p>
-                        <h1 className="text-3xl font-black text-white">Collections</h1>
-                        <p className="text-slate-400 mt-1">Your latest designs from Supabase.</p>
+                        <p className="text-xs uppercase tracking-[0.25em] dash-muted">Portfolio</p>
+                        <h1 className="text-3xl font-black dash-text">Collections</h1>
+                        <p className="dash-muted mt-1">Your latest designs from Supabase.</p>
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-white/5 bg-white/5 p-5">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2 text-slate-200">
-                            <LayoutGrid className="h-4 w-4" />
-                            <h3 className="text-lg font-semibold">Designs</h3>
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 dash-muted-strong">
+                                <IconDashboard className="h-4 w-4" />
+                                <CardTitle>Designs</CardTitle>
+                            </div>
+                            <Badge>{designs.length} items</Badge>
                         </div>
-                        <span className="text-xs text-slate-400">{designs.length} items</span>
-                    </div>
-                    {designs.length === 0 ? (
-                        <EmptyState title="No designs" subtitle="Create a design to see it here." />
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {designs.map((d) => (
-                                <div key={d.id} className="rounded-2xl bg-gradient-to-br from-white/8 to-white/3 border border-white/10 p-4 flex flex-col gap-2">
-                                    <div className="flex items-center justify-between text-xs text-slate-300">
-                                        <Badge text={d.status || "-"} />
-                                        <span>{formatDate(d.created_at)}</span>
+                    </CardHeader>
+                    <CardContent>
+                        {designs.length === 0 ? (
+                            <EmptyState title="No designs" subtitle="Create a design to see it here." />
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {designs.map((d) => (
+                                    <div key={d.id} className="rounded-2xl border dash-border dash-panel p-4 flex flex-col gap-2">
+                                        <div className="flex items-center justify-between text-xs dash-muted">
+                                            <Badge tone={d.status?.toUpperCase() === "DRAFT" ? "warning" : "neutral"}>{d.status || "-"}</Badge>
+                                            <span>{formatDate(d.created_at)}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-sm dash-text font-semibold">
+                                            <IconImage className="h-4 w-4 dash-muted-strong" />
+                                            {d.prompt_text ? truncate(d.prompt_text, 60) : "Untitled"}
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-2 text-sm text-white font-semibold">
-                                        <ImageIcon className="h-4 w-4 text-slate-200" />
-                                        {d.prompt_text ? truncate(d.prompt_text, 60) : "Untitled"}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                                ))}
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
             </div>
         </DashboardLayout>
     );
 }
 
-function Badge({ text }: { text: string }) {
-    return <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold text-slate-100">{text}</span>;
-}
-
 function EmptyState({ title, subtitle }: { title: string; subtitle: string }) {
     return (
-        <div className="rounded-2xl border border-dashed border-white/10 bg-black/10 text-slate-200 p-6">
-            <p className="font-semibold">{title}</p>
-            <p className="text-sm text-slate-400">{subtitle}</p>
+        <div className="rounded-2xl border border-dashed dash-border dash-panel p-6">
+            <p className="font-semibold dash-text">{title}</p>
+            <p className="text-sm dash-muted">{subtitle}</p>
         </div>
     );
 }

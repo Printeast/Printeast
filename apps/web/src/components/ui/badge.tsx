@@ -8,17 +8,17 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 export function Badge({ className, tone = "neutral", ...props }: BadgeProps) {
     const toneClass =
         tone === "warning"
-            ? "bg-amber-500/20 border-amber-500/40 text-amber-100"
+            ? "bg-amber-500/15 border-amber-500/40 text-[color:var(--dash-text)]"
             : tone === "positive"
-                ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-100"
+                ? "bg-emerald-500/12 border-emerald-500/30 text-[color:var(--dash-text)]"
                 : tone === "info"
-                    ? "bg-sky-500/15 border-sky-500/30 text-sky-100"
-                    : "bg-white/10 border-white/15 text-slate-100";
+                    ? "bg-sky-500/12 border-sky-500/30 text-[color:var(--dash-text)]"
+                    : "dash-panel-strong dash-border text-[color:var(--dash-text)]";
 
     return (
         <span
             className={cn(
-                "inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-semibold",
+                "inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em]",
                 toneClass,
                 className,
             )}

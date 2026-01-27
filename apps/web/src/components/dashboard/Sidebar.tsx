@@ -1,57 +1,59 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Role } from "@repo/types";
 import {
-    LayoutDashboard,
-    Palette,
-    Wallet2,
-    ShoppingBag,
-    Boxes,
-    Settings,
-    Users2,
-    BarChart2,
-    Store,
-    ShieldCheck,
-    Sparkles,
-} from "lucide-react";
+    IconBag,
+    IconBoxes,
+    IconBrush,
+    IconChart,
+    IconDashboard,
+    IconSettings,
+    IconShield,
+    IconSpark,
+    IconStore,
+    IconUsers,
+    IconWallet,
+} from "@/components/ui/icons";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import logo from "@/printeast_logo-removebg-preview.png";
 
 type NavItem = { label: string; href: string; icon: React.ComponentType<{ className?: string }> };
 
 const NAV: Record<Role, NavItem[]> = {
     SUPER_ADMIN: [
-        { label: "Platform Overview", href: "/tenant-admin", icon: LayoutDashboard },
-        { label: "Tenants", href: "/tenant-admin/tenants", icon: Users2 },
-        { label: "Systems", href: "/tenant-admin/systems", icon: ShieldCheck },
+        { label: "Platform Overview", href: "/tenant-admin", icon: IconDashboard },
+        { label: "Tenants", href: "/tenant-admin/tenants", icon: IconUsers },
+        { label: "Systems", href: "/tenant-admin/systems", icon: IconShield },
     ],
     TENANT_ADMIN: [
-        { label: "Overview", href: "/tenant-admin", icon: LayoutDashboard },
-        { label: "Teams", href: "/tenant-admin/teams", icon: Users2 },
-        { label: "Settings", href: "/tenant-admin/settings", icon: Settings },
+        { label: "Overview", href: "/tenant-admin", icon: IconDashboard },
+        { label: "Teams", href: "/tenant-admin/teams", icon: IconUsers },
+        { label: "Settings", href: "/tenant-admin/settings", icon: IconSettings },
     ],
     CREATOR: [
-        { label: "Studio", href: "/creator", icon: Palette },
-        { label: "Portfolio", href: "/creator/portfolio", icon: LayoutDashboard },
-        { label: "Earnings", href: "/creator/earnings", icon: Wallet2 },
+        { label: "Studio", href: "/creator", icon: IconBrush },
+        { label: "Portfolio", href: "/creator/portfolio", icon: IconDashboard },
+        { label: "Earnings", href: "/creator/earnings", icon: IconWallet },
     ],
     SELLER: [
-        { label: "Orders", href: "/seller", icon: ShoppingBag },
-        { label: "Inventory", href: "/seller/inventory", icon: Boxes },
-        { label: "Storefront", href: "/seller/storefront", icon: Store },
+        { label: "Orders", href: "/seller", icon: IconBag },
+        { label: "Inventory", href: "/seller/inventory", icon: IconBoxes },
+        { label: "Storefront", href: "/seller/storefront", icon: IconStore },
     ],
     VENDOR: [
-        { label: "Production", href: "/vendor", icon: Boxes },
-        { label: "Logistics", href: "/vendor/logistics", icon: BarChart2 },
+        { label: "Production", href: "/vendor", icon: IconBoxes },
+        { label: "Logistics", href: "/vendor/logistics", icon: IconChart },
     ],
     AFFILIATE: [
-        { label: "Links", href: "/affiliate", icon: LayoutDashboard },
-        { label: "Payouts", href: "/affiliate/payouts", icon: Wallet2 },
+        { label: "Links", href: "/affiliate", icon: IconDashboard },
+        { label: "Payouts", href: "/affiliate/payouts", icon: IconWallet },
     ],
     CUSTOMER: [
-        { label: "Orders", href: "/customer", icon: ShoppingBag },
-        { label: "Profile", href: "/customer/profile", icon: Settings },
+        { label: "Orders", href: "/customer", icon: IconBag },
+        { label: "Profile", href: "/customer/profile", icon: IconSettings },
     ],
 };
 
@@ -67,17 +69,17 @@ export function Sidebar({ role, collapsed }: SidebarProps) {
 
     return (
         <aside
-            className={`border-r border-base-border bg-white/5 px-3 py-6 shadow-sm transition-all duration-200 ${collapsed ? "w-[78px]" : "w-64"}`}
+            className={`border-r dash-border dash-panel px-3 py-6 shadow-sm transition-all duration-200 ${collapsed ? "w-[78px]" : "w-64"}`}
             aria-label="Role navigation"
         >
             <div className={`mb-8 flex items-center gap-3 px-2 ${collapsed ? "justify-center" : "justify-start"}`}>
-                <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary-orange to-primary-pink text-white flex items-center justify-center font-black text-lg">
-                    P
+                <div className="h-10 w-10 rounded-2xl dash-panel border dash-border flex items-center justify-center shadow-[0_8px_24px_-12px_rgba(255,125,90,0.6)]">
+                    <Image src={logo} alt="Printeast logo" className="h-8 w-8 object-contain" />
                 </div>
                 {!collapsed && (
                     <div>
-                        <div className="text-lg font-black text-text-main">Printeast</div>
-                        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted">{role.replace("_", " ")}</div>
+                        <div className="text-lg font-black dash-text">Printeast</div>
+                        <div className="text-[10px] font-bold uppercase tracking-[0.2em] dash-muted">{role.replace("_", " ")}</div>
                     </div>
                 )}
             </div>
@@ -91,8 +93,8 @@ export function Sidebar({ role, collapsed }: SidebarProps) {
                             key={link.href}
                             href={link.href}
                             className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all ${active
-                                    ? "bg-gradient-to-r from-primary-orange/15 to-primary-pink/15 text-text-main border border-primary-orange/30"
-                                    : "text-text-secondary hover:bg-base-bg"}
+                                    ? "bg-gradient-to-r from-[var(--dash-accent-start)]/30 to-[var(--dash-accent-end)]/15 text-white border border-[var(--dash-accent-start)]/40"
+                                    : "dash-muted hover:bg-[var(--dash-panel-strong)]"}
                             ${collapsed ? "justify-center" : ""}`}
                             aria-current={active ? "page" : undefined}
                         >
@@ -113,8 +115,8 @@ export function Sidebar({ role, collapsed }: SidebarProps) {
             </nav>
 
             {!collapsed && (
-                <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-3 text-xs text-slate-200 flex gap-2">
-                    <Sparkles className="h-4 w-4 text-primary-orange" />
+                <div className="mt-8 rounded-2xl border dash-border dash-panel p-3 text-xs dash-muted-strong flex gap-2">
+                    <IconSpark className="h-4 w-4 text-[var(--dash-accent-start)]" />
                     Shortcuts coming soon
                 </div>
             )}

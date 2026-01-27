@@ -2,5 +2,5 @@ import { cn } from "@/lib/utils";
 import type { HTMLAttributes } from "react";
 
 export function Skeleton({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-    return <div className={cn("animate-pulse rounded-xl bg-white/10", className)} {...props} />;
+    return <div className={cn("animate-pulse rounded-xl bg-[var(--dash-panel-strong)]", className)} {...props} />;
 }

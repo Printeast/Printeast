@@ -26,14 +26,14 @@ export function TooltipContent({ children, className, side = "right", ...props }
                 side={side}
                 sideOffset={8}
                 className={cn(
-                    "z-50 rounded-lg bg-black/90 px-3 py-1.5 text-xs text-white shadow-lg backdrop-blur",
+                    "z-50 rounded-lg border dash-border bg-[var(--dash-panel-strong)] px-3 py-1.5 text-xs text-[color:var(--dash-text)] shadow-lg backdrop-blur",
                     "animate-in fade-in zoom-in-95",
                     className,
                 )}
                 {...props}
             >
                 {children}
-                <TooltipPrimitive.Arrow className="fill-black/90" />
+                <TooltipPrimitive.Arrow className="fill-[var(--dash-panel-strong)]" />
             </TooltipPrimitive.Content>
         </TooltipPrimitive.Portal>
     );
