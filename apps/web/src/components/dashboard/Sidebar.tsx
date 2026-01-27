@@ -93,12 +93,12 @@ export function Sidebar({ role, collapsed }: SidebarProps) {
                             key={link.href}
                             href={link.href}
                             className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all ${active
-                                    ? "bg-gradient-to-r from-[var(--dash-accent-start)]/30 to-[var(--dash-accent-end)]/15 text-white border border-[var(--dash-accent-start)]/40"
+                                    ? "bg-gradient-to-r from-[var(--dash-accent-start)]/30 to-[var(--dash-accent-end)]/15 text-[color:var(--dash-text)] border border-[var(--dash-accent-start)]/40"
                                     : "dash-muted hover:bg-[var(--dash-panel-strong)]"}
                             ${collapsed ? "justify-center" : ""}`}
                             aria-current={active ? "page" : undefined}
                         >
-                            <Icon className="h-4 w-4" />
+                            <Icon className={`h-4 w-4 ${active ? "dash-text" : "dash-muted-strong"}`} />
                             {!collapsed && <span className="truncate">{link.label}</span>}
                         </Link>
                     );
