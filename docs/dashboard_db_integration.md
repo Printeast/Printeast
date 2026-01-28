@@ -16,7 +16,8 @@ Used in both Seller and Creator flows.
 
 ## Seller Dashboard
 **Routes:** `/seller`, `/seller/inventory` (live)
-**Data loader:** `apps/web/src/app/seller/_data.ts`
+**Additional seller pages (live, frontend-only UI over Supabase):** `/seller/templates`, `/seller/design`, `/seller/analytics`, `/seller/branding`, `/seller/resources`, `/seller/support`
+**Data loader:** `apps/web/src/app/seller/_data.ts` (shared tenant resolver) + page-level fetches
 
 ### `/seller` (Main)
 **Cards – metrics**
@@ -90,6 +91,45 @@ Used in both Seller and Creator flows.
 **Export CSV**
 - Source: client-side export from current inventory list
 - Columns in CSV: `name, sku, quantity, base_price`
+
+### `/seller/templates`
+- Source: `public.designs`
+- Columns: `id`, `prompt_text`, `status`, `created_at`, `preview_url`, `image_url`
+- Filter: `tenant_id = tenantId`, status != `DRAFT`
+- Output: grid of published templates; empty state if none
+
+### `/seller/design` (AI & Design Studio)
+- Source: `public.designs`
+- Columns: `id`, `prompt_text`, `status`, `created_at`, `image_url`, `preview_url`
+- Filter: `tenant_id = tenantId`
+- Logic: draft vs live counts; grid of latest designs; CTA buttons are frontend-only placeholders
+
+### `/seller/analytics`
+- Sources:
+  - `public.orders` → `id`, `total_amount`, `created_at`, filter `tenant_id = tenantId`
+  - `public.payments` → `amount`, `status`, `created_at`
+- Metrics: GMV = sum orders.total_amount; Orders = count; Paid/Pending = sum payments by status; AOV = GMV / Orders
+- Chart: last 7 days sum of `orders.total_amount` by day
+- (Optional extension) top products: join `order_items` → `products` by `product_id`, filter `products.tenant_id = tenantId`
+
+### `/seller/branding`
+- Sources:
+  - `public.tenants` → `name`, `slug`, `metadata` (for colors)
+  - `public.categories` → `id`, `name`, `parent_id`, filter `tenant_id = tenantId`
+  - `public.products` → `id`, `name`, `sku`, `mockup_template_url`, `metadata`, filter `tenant_id = tenantId`
+- Outputs: brand kit (tenant), categories list, product branding (SKU + mockup_template_url)
+
+### `/seller/resources`
+- Sources:
+  - `public.suppliers` → `name`, `location`, `contact_email` (global)
+  - `public.vendors` → `name`, `location`, `api_endpoint`, filter `tenant_id = tenantId`
+- Outputs: supplier list, vendor list, static helpful links (frontend-only)
+
+### `/seller/support` (24/7 Support)
+- Sources:
+  - `public.notifications` → `type`, `content`, `is_read`, `created_at`, filter `user_id = auth.user.id`
+  - `public.audit_logs` → `action`, `resource`, `created_at`, filter `tenant_id = tenantId`
+- Outputs: notifications list, audit activity list; ticket CTA is frontend-only
 
 ---
 

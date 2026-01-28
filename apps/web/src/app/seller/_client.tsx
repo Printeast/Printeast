@@ -40,6 +40,15 @@ export function SellerDashboardClient({ userEmail, data }: Props) {
         },
     ];
 
+    const resources = [
+        { title: "My Templates", href: "/seller/templates" },
+        { title: "AI & Design Studio", href: "/seller/design" },
+        { title: "Analytics & Insights", href: "/seller/analytics" },
+        { title: "Branding", href: "/seller/branding" },
+        { title: "Resources", href: "/seller/resources" },
+        { title: "24/7 Support", href: "/seller/support" },
+    ];
+
     const lowStockItems = inventory.filter((i) => i.quantity < 20).slice(0, 5);
     const ordersSeries = buildDailySeries(orders.map((o) => ({ created_at: o.created_at, value: 1 })), 7);
     const ordersSeriesTotal = ordersSeries.reduce((sum, s) => sum + s.value, 0);
@@ -54,6 +63,28 @@ export function SellerDashboardClient({ userEmail, data }: Props) {
                         <p className="dash-muted mt-1">Live signals from orders, inventory, and payouts.</p>
                     </div>
                 </header>
+
+                <Card className="dash-panel-strong">
+                    <CardHeader className="pb-3">
+                        <CardTitle>Workspace shortcuts</CardTitle>
+                        <p className="text-sm dash-muted">Quick links into your seller toolkit (LinkedIn backend-ready).</p>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                        <ul className="space-y-2 text-sm">
+                            {resources.map((item) => (
+                                <li key={item.title}>
+                                    <a
+                                        href={item.href}
+                                        className="flex items-center gap-3 rounded-lg px-2 py-2 transition hover:bg-[var(--dash-panel)]"
+                                    >
+                                        <span className="h-1.5 w-1.5 rounded-full bg-[var(--dash-accent-start)]" aria-hidden />
+                                        <span className="dash-text">{item.title}</span>
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </CardContent>
+                </Card>
 
                 <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     {metrics.map((m, i) => {

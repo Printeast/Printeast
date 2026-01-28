@@ -193,7 +193,7 @@ export async function getSellerInventoryData() {
     return { tenantId, inventory };
 }
 
-async function resolveTenantId(supabase: Awaited<ReturnType<typeof createClient>>) {
+export async function resolveTenantId(supabase: Awaited<ReturnType<typeof createClient>>) {
     const { data: userRes } = await supabase.auth.getUser();
     const fromMeta = userRes.user?.user_metadata?.tenant_id || userRes.user?.app_metadata?.tenant_id;
     if (fromMeta) return fromMeta;

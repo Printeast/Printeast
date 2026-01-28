@@ -41,6 +41,12 @@ const NAV: Record<Role, NavItem[]> = {
     SELLER: [
         { label: "Orders", href: "/seller", icon: IconBag },
         { label: "Inventory", href: "/seller/inventory", icon: IconBoxes },
+        { label: "Templates", href: "/seller/templates", icon: IconStore },
+        { label: "AI & Design Studio", href: "/seller/design", icon: IconBrush },
+        { label: "Analytics & Insights", href: "/seller/analytics", icon: IconChart },
+        { label: "Branding", href: "/seller/branding", icon: IconSpark },
+        { label: "Resources", href: "/seller/resources", icon: IconDashboard },
+        { label: "24/7 Support", href: "/seller/support", icon: IconWallet },
         { label: "Storefront", href: "/seller/storefront", icon: IconStore },
     ],
     VENDOR: [
