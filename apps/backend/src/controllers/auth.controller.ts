@@ -121,7 +121,7 @@ export const verifyMagicLink: RequestHandler = catchAsync(
       }
     });
 
-    const roleNames = updatedUser.roles.map(ur => ur.role.name);
+    const roleNames = updatedUser.roles.map((ur: any) => ur.role.name);
     const primaryRole = roleNames[0] || "CUSTOMER";
 
     const { accessToken, refreshToken } = await TokenService.generateTokens({
@@ -172,7 +172,7 @@ export const onboard: RequestHandler = catchAsync(
 
     // 3. Clear existing "CUSTOMER" role and assign new role
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: any) => {
       // Use deleteMany on the transaction client
       await tx.userRole.deleteMany({ where: { userId } });
 

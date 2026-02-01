@@ -4,7 +4,7 @@ import { prisma as basePrisma } from "@repo/database";
 export const prisma = basePrisma.$extends({
     query: {
         $allModels: {
-            async $allOperations({ model, args, query }) {
+            async $allOperations({ model, args, query }: { model: any; args: any; query: any }) {
                 // List of models that MUST be tenant isolated
                 const tenantModels = [
                     "Product", "Order", "Design", "Category",
