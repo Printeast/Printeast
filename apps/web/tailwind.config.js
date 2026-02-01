@@ -25,7 +25,8 @@ module.exports = {
                 "printeast-gradient": "linear-gradient(135deg, #E23E83 0%, #FF7A39 100%)",
             },
             fontFamily: {
-                sans: ["Inter", "Poppins", "sans-serif"],
+                sans: ["var(--font-wix-text)", "Inter", "sans-serif"],
+                display: ["var(--font-wix-display)", "Poppins", "sans-serif"],
             },
         },
     },

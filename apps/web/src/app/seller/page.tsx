@@ -1,1 +1,23 @@
-export default function Placeholder() { return (<div className="min-h-screen bg-[#0a0a10] text-white flex items-center justify-center p-8"> <div className="text-center"> <h1 className="text-4xl font-black mb-4 uppercase">seller Dashboard</h1> <p className="text-white/40 mb-8">This workspace is currently under construction.</p> <a href="/login" className="px-8 py-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all font-bold"> Back to Safety </a> </div> </div>); }
+"use client";
+
+import { motion } from "framer-motion";
+
+export default function SellerDashboard() {
+    return (
+        <div className="min-h-screen bg-[#FDFDFD] flex flex-col items-center justify-center p-6 text-center select-none font-inter">
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                className="space-y-2"
+            >
+                <h1 className="text-neutral-900 text-4xl font-black tracking-tight font-poppins uppercase">
+                    Seller Dashboard
+                </h1>
+                <p className="text-neutral-400 font-mono text-[10px] uppercase tracking-[0.4em]">
+                    Work in progress
+                </p>
+            </motion.div>
+        </div>
+    );
+}

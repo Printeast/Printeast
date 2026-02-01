@@ -5,20 +5,22 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
 
 class ApiClient {
-  private supabase = createClient();
+  private _supabase: any = null;
+
+  public get supabase() {
+    if (!this._supabase) {
+      this._supabase = createClient();
+    }
+    return this._supabase;
+  }
 
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
     try {
-      // Get the latest session token from Supabase
       const { data: { session } } = await this.supabase.auth.getSession();
       const token = session?.access_token;
-
-      if (!token && typeof window !== "undefined") {
-        console.warn(`[API Client] No session token found for: ${endpoint}`);
-      }
 
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -34,10 +36,17 @@ class ApiClient {
         headers,
       });
 
+      // Handle 204 No Content or 304 Not Modified (No body transitions)
+      if (response.status === 204 || response.status === 304) {
+        // We return success but null data, or we'd need a cache. 
+        // For /auth/me, we really want the data, so we'll force no-cache if needed.
+        return { success: true, data: null as any };
+      }
 
-      // Handle 204 No Content
-      if (response.status === 204) {
-        return { success: true, data: null as T };
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        if (!response.ok) throw new Error(`API Error: ${response.status}`);
+        return { success: true, data: null as any };
       }
 
       const result: ApiResponse<T> = await response.json();
@@ -48,7 +57,7 @@ class ApiClient {
 
       return result;
     } catch (error: unknown) {
-      console.error(`[API Client Error] ${endpoint}:`, error);
+      console.error(`[API Error] ${endpoint}:`, error);
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
       return {
@@ -60,7 +69,11 @@ class ApiClient {
   }
 
   get<T>(endpoint: string) {
-    return this.request<T>(endpoint, { method: "GET" });
+    return this.request<T>(endpoint, {
+      method: "GET",
+      // Force reload for auth checks to avoid 304 empty body issues
+      cache: endpoint.includes('auth') ? 'no-cache' : 'default'
+    });
   }
 
   post<T>(endpoint: string, body: unknown) {

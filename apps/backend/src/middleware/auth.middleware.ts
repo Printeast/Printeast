@@ -35,19 +35,37 @@ export const protect: RequestHandler = async (
 
   if (sbUser && sbUser.email) {
     console.log(`[AuthMiddleware] Supabase user found: ${sbUser.email}`);
-    // Check if user exists in our DB, if not, create on the fly
+
+    // Check email verification from Supabase
+    const isEmailVerified = !!sbUser.email_confirmed_at;
+    const targetStatus = isEmailVerified ? "ACTIVE" : "PENDING_VERIFICATION";
+
+    // Check if user exists in our DB - Try ID first (Supabase ID), then email
     let user = await prisma.user.findFirst({
-      where: { email: sbUser.email },
+      where: {
+        OR: [
+          { id: sbUser.id },
+          { email: sbUser.email }
+        ]
+      },
       include: { roles: { include: { role: true } } }
     }) as any;
 
     if (!user) {
       // Create user in our DB synced with Supabase
+      // Robustness: Ensure user has a tenant
+      let userTenantId: string | null = null;
+      if (!userTenantId) {
+        const defaultTenant = await prisma.tenant.findFirst({ where: { slug: "printeast" } });
+        userTenantId = defaultTenant?.id || null;
+      }
+
       user = await prisma.user.create({
         data: {
-          id: sbUser.id, // Use same ID for consistency
+          id: sbUser.id,
           email: sbUser.email,
-          status: "ACTIVE",
+          status: targetStatus,
+          tenantId: userTenantId,
           roles: {
             create: {
               role: { connect: { name: "CUSTOMER" } }
@@ -55,6 +73,24 @@ export const protect: RequestHandler = async (
           }
         },
         include: { roles: { include: { role: true } } }
+      });
+    } else {
+      // Ensure DB status allows access if Supabase is verified
+      if (isEmailVerified && user.status === "PENDING_VERIFICATION") {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { status: "ACTIVE" },
+          include: { roles: { include: { role: true } } }
+        });
+      }
+    }
+
+    // OPTIONAL VERIFICATION CHECK (Less strict in DEV)
+    const isDev = process.env.NODE_ENV !== "production";
+    if (!isDev && (!isEmailVerified || user.status !== "ACTIVE")) {
+      return res.status(403).json({
+        message: "Email not verified. Please check your inbox.",
+        code: "EMAIL_NOT_VERIFIED"
       });
     }
 

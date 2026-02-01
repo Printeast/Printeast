@@ -36,3 +36,10 @@ Thumbs.db
 
 # Turbo
 .turbo
+
+# TypeScript
+*.tsbuildinfo
+
+# Large internal docs (not for version control)
+docs/PRINTEAST Onboarding Questionnaire.pdf
+docs/PRINTEAST Onboarding Questionnaire_page-0001.jpg

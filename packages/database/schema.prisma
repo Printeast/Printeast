@@ -71,7 +71,8 @@ model User {
   notifications      Notification[]
   reviews            Review[]
   creatorProfile     Creator?
-  auditLogs          AuditLog[]
+  onboardingData Json?     @map("onboarding_data")
+  auditLogs      AuditLog[]
 
   @@unique([tenantId, email]) // Tenant-scoped Email uniqueness
   @@index([email])
@@ -147,6 +148,7 @@ model Product {
   reviews           Review[]
   inventory         Inventory[]
 
+  @@index([tenantId])
   @@unique([tenantId, sku])
   @@map("products")
 }
@@ -166,6 +168,8 @@ model Order {
   items           OrderItem[]
   payment         Payment?
 
+  @@index([tenantId])
+  @@index([buyerId])
   @@map("orders")
 }
 
@@ -180,6 +184,9 @@ model OrderItem {
   product Product @relation(fields: [productId], references: [id])
   design  Design  @relation(fields: [designId], references: [id])
 
+  @@index([orderId])
+  @@index([productId])
+  @@index([designId])
   @@map("order_items")
 }
 
@@ -193,6 +200,8 @@ model Category {
   parent    Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
   children  Category[] @relation("CategoryToCategory")
 
+  @@index([tenantId])
+  @@index([parentId])
   @@map("categories")
 }
 
@@ -229,9 +238,10 @@ model Transaction {
   // NOTE: RFC mentions "Transaction", schema below has "WalletTransaction". 
   // Consolidating to "Transaction" per RFC 4.2 table name, but linking logically.
   
-  @@map("transactions")
-  // Using loose relation or adding Wallet relation:
   wallet Wallet @relation(fields: [walletId], references: [id]) // Implicit in RFC
+
+  @@index([walletId])
+  @@map("transactions")
 }
 
 // Keeping WalletTransaction as legacy or alias if needed, but RFC said "Transaction". 
@@ -246,6 +256,7 @@ model Inventory {
 
   product Product @relation(fields: [productId], references: [id])
 
+  @@index([productId])
   @@map("inventory")
 }
 
@@ -260,6 +271,8 @@ model Review {
   user      User     @relation(fields: [userId], references: [id])
   product   Product  @relation(fields: [productId], references: [id])
 
+  @@index([userId])
+  @@index([productId])
   @@map("reviews")
 }
 
@@ -273,6 +286,7 @@ model Notification {
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("notifications")
 }
 
@@ -294,6 +308,8 @@ model Design {
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   orderItems      OrderItem[]
 
+  @@index([tenantId])
+  @@index([userId])
   @@map("designs")
 }
 

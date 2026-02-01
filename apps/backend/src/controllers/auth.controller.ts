@@ -33,9 +33,22 @@ export const requestMagicLink: RequestHandler = catchAsync(
     const token = crypto.randomBytes(32).toString("hex");
     const expires = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
 
-    const tenantId = getTenantId();
+    let tenantId = getTenantId();
+
+    // Log context for debugging
+    console.log(`[Auth] Magic Link Request for ${email}. Tenant: ${tenantId || 'NONE'}`);
+
     if (!tenantId) {
-      return next(new AppError("Tenant Context Required", 400));
+      // Robust Fallback: Try to find the default tenant if none provided
+      const defaultTenant = await prisma.tenant.findFirst({
+        where: { slug: 'printeast' }
+      });
+      if (defaultTenant) {
+        tenantId = defaultTenant.id;
+        console.log(`[Auth] Falling back to default tenant: ${defaultTenant.name}`);
+      } else {
+        return next(new AppError("Tenant Context Required or Default Tenant Missing", 400));
+      }
     }
 
     // Role handling: Default to CUSTOMER if not provided.
@@ -54,6 +67,7 @@ export const requestMagicLink: RequestHandler = catchAsync(
         tenantId,
         magicLinkToken: token,
         magicLinkExpires: expires,
+        status: "PENDING_VERIFICATION",
         roles: {
           create: {
             role: {
@@ -128,28 +142,88 @@ export const verifyMagicLink: RequestHandler = catchAsync(
 
 export const onboard: RequestHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { role } = req.body;
+    const { role, businessName, onboardingData } = req.body;
     const userId = (req as AuthRequest).user?.userId;
 
     if (!userId) return next(new AppError("User context required", 401));
 
     if (!role) return next(new AppError("Role required", 400));
 
-    await prisma.userRole.deleteMany({ where: { userId } });
-
-    const user = await prisma.user.update({
+    // 1. Security Check: Is the user already onboarded?
+    const currentUser = await prisma.user.findUnique({
       where: { id: userId },
-      data: {
-        roles: {
-          create: {
-            role: { connect: { name: role } }
-          }
-        }
-      },
-      select: { id: true, email: true, roles: { include: { role: true } } }
+      include: { roles: { include: { role: true } } }
     });
 
-    res.status(200).json({ success: true, data: { user } });
+    if (!currentUser) return next(new AppError("User not found", 404));
+
+    const currentRole = currentUser.roles[0]?.role?.name || "CUSTOMER";
+
+    // Only allow onboarding if current role is CUSTOMER
+    if (currentRole !== "CUSTOMER" && currentRole !== "PENDING") {
+      return next(new AppError("User already onboarded as " + currentRole, 403));
+    }
+
+    // 2. Validate Allowed Roles
+    const ALLOWED_ONBOARD_ROLES = ["SELLER", "CREATOR", "CUSTOMER"];
+    if (!ALLOWED_ONBOARD_ROLES.includes(role)) {
+      return next(new AppError("Invalid role selection", 400));
+    }
+
+    // 3. Clear existing "CUSTOMER" role and assign new role
+
+    await prisma.$transaction(async (tx) => {
+      // Use deleteMany on the transaction client
+      await tx.userRole.deleteMany({ where: { userId } });
+
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          roles: {
+            create: {
+              role: { connect: { name: role } }
+            }
+          },
+          onboardingData: onboardingData || null
+        },
+        select: { id: true }
+      });
+    });
+
+    // 3. Handle Role-Specific Data
+    // We store the data if models exist. This ensures we capture the input.
+    if (role === "CREATOR") {
+      // Create an empty Creator profile if one doesn't exist
+      // This acts as a flag that they are a creator
+      const existing = await prisma.creator.findUnique({ where: { userId } });
+      if (!existing) {
+        await prisma.creator.create({
+          data: { userId }
+        });
+      }
+    } else if (role === "SELLER" && businessName) {
+      // For Phase 0, we can store the Business Name in a Vendor record
+      // linked to the main tenant (assuming tenantId is on user)
+      // Or we just log it/ignore it if Vendor schema is strict about Tenants.
+      // Let's try to create a Vendor if the user has a tenantId.
+      const userWithTenant = await prisma.user.findUnique({ where: { id: userId }, select: { tenantId: true } });
+      if (userWithTenant?.tenantId) {
+        await prisma.vendor.create({
+          data: {
+            name: businessName,
+            tenantId: userWithTenant.tenantId
+          }
+        });
+      }
+    }
+    const updatedUser = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        roles: { include: { role: true } }
+      }
+    });
+
+    res.status(200).json({ success: true, data: { user: updatedUser } });
   }
 );
 

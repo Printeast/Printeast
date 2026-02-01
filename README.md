@@ -108,6 +108,20 @@ For manual setup:
 - Fail-Fast Environment: Centralized validation ensures the system will not boot if critical configurations (JWT secrets, DB URLs) are missing.
 - Direct-Path API Architecture: Standardized JSON responses for predictable consumption by frontend and mobile clients.
 
+## Deployment
+
+### Deploying to Vercel
+
+This monorepo is optimized for Vercel deployment:
+
+1.  **Framework Preset**: Next.js
+2.  **Root Directory**: Leave as root (Turborepo will be detected)
+3.  **Build Command**: `pnpm build`
+4.  **Install Command**: `pnpm install`
+5.  **Environment Variables**: Ensure all variables from `.env.example` are added to your Vercel Project Settings.
+
+> **Note**: For the `web` app to communicate with the `backend`, ensure `NEXT_PUBLIC_API_URL` points to your deployed backend URL.
+
 ---
 
 Confidential and Proprietary. Copyright 2026 Printeast Technologies.

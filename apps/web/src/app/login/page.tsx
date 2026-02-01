@@ -66,7 +66,7 @@ export default function LoginPage() {
             )}
 
             <div className="mt-8 w-full text-center text-[14px] text-slate-500 font-medium">
-                Don't have an account? <Link href="/signup" className="text-[#0066cc] hover:underline font-bold ml-1.5 transition-colors">Sign up</Link>
+                Don&apos;t have an account? <Link href="/signup" className="text-[#0066cc] hover:underline font-bold ml-1.5 transition-colors">Sign up</Link>
             </div>
         </AuthLayout>
     );

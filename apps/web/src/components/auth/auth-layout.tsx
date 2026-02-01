@@ -10,7 +10,7 @@ interface AuthLayoutProps {
     images?: string[];
 }
 
-export function AuthLayout({ children, title, subtitle, images = [] }: AuthLayoutProps) {
+export function AuthLayout({ children, subtitle, images = [] }: AuthLayoutProps) {
     const defaultImages = [
         "https://gkscoxpxoiggeeoegyac.supabase.co/storage/v1/object/sign/creator-assets/auth-bg-1.webp?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV84ZGZhMmNiMC0xZDY5LTQyNmItYTdjZi1kNjZhZGE0MGY0MDUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmVhdG9yLWFzc2V0cy9hdXRoLWJnLTEud2VicCIsImlhdCI6MTc2OTE3ODc1MSwiZXhwIjoxNzcxNzcwNzUxfQ.4nTQoltqnDD6Jszo75geUgsKrFMDk5d2Jzi76lPkgQc",
         "https://gkscoxpxoiggeeoegyac.supabase.co/storage/v1/object/sign/creator-assets/auth-bg-2.webp.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV84ZGZhMmNiMC0xZDY5LTQyNmItYTdjZi1kNjZhZGE0MGY0MDUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmVhdG9yLWFzc2V0cy9hdXRoLWJnLTIud2VicC5wbmciLCJpYXQiOjE3NjkxNzkxNTEsImV4cCI6MTc3MTc3MTE1MX0.mInXZTaNMKTRWn2qbaus6g2x1Mvc0Ilu_t69GACIm2Y",
@@ -30,7 +30,7 @@ export function AuthLayout({ children, title, subtitle, images = [] }: AuthLayou
                             opacity: [0.3, 0.5, 0.3],
                         }}
                         transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute -top-[20%] -right-[20%] w-[1000px] h-[1000px] bg-gradient-to-br from-primary-orange/20 via-primary-pink/10 to-transparent blur-[120px] rounded-full"
+                        className="absolute -top-[20%] -right-[20%] w-[1000px] h-[1000px] bg-gradient-to-br from-blue-600/20 via-blue-400/10 to-transparent blur-[120px] rounded-full"
                     />
                 </div>
 
@@ -51,8 +51,8 @@ export function AuthLayout({ children, title, subtitle, images = [] }: AuthLayou
                                     transition={{ delay: 0.6, duration: 0.8 }}
                                 >
                                     <h2 className="text-6xl font-extrabold mb-6 font-poppins text-white tracking-tight leading-tight">
-                                        {title} <br />
-                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-orange to-primary-pink">journey.</span>
+                                        Create without <br />
+                                        limits <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-slate-100">journey.</span>
                                     </h2>
                                     {subtitle && (
                                         <p className="text-white/60 text-xl max-w-md font-light leading-relaxed mb-8">

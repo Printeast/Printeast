@@ -328,8 +328,8 @@ export class AuthService {
     /**
      * Subscribe to auth state changes
      */
-    static onAuthStateChange(callback: (event: string, session: Session | null) => void) {
-        return this.supabase.auth.onAuthStateChange((event, session) => {
+    static onAuthStateChange(callback: (event: any, session: Session | null) => void) {
+        return this.supabase.auth.onAuthStateChange((event: any, session: Session | null) => {
             callback(event, session);
         });
     }
