@@ -48,7 +48,7 @@ function StarLayer({
             data-slot="star-layer"
             animate={{ y: [0, -2000] }}
             transition={transition}
-            className={cn("absolute top-0 left-0 w-full h-[2000px]", className)}
+            className={cn("absolute top-0 left-0 w-full h-[2000px] will-change-transform", className)}
             {...props}
         >
             <div
@@ -117,13 +117,13 @@ export function StarsBackground({
         >
             <motion.div style={{ x: springX, y: springY }}>
                 <StarLayer
-                    count={500}
+                    count={1000}
                     size={1}
                     transition={{ repeat: Infinity, duration: speed, ease: "linear" }}
                     starColor={starColor}
                 />
                 <StarLayer
-                    count={200}
+                    count={400}
                     size={2}
                     transition={{
                         repeat: Infinity,
@@ -133,7 +133,7 @@ export function StarsBackground({
                     starColor={starColor}
                 />
                 <StarLayer
-                    count={100}
+                    count={200}
                     size={3}
                     transition={{
                         repeat: Infinity,

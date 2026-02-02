@@ -171,7 +171,7 @@ const Logos3 = ({
     ],
 }: Logos3Props) => {
     return (
-        <section className="py-32 bg-white/50 relative overflow-hidden">
+        <section className="py-32 bg-transparent relative overflow-hidden">
             <div className="container mx-auto px-6 lg:px-16 mb-16">
                 <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase leading-[0.95] text-slate-900 mb-6">
                     CONNECT <span className="text-blue-600">STORE</span>

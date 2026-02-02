@@ -100,9 +100,9 @@ export function Footer() {
                     {/* Massive Text Logo */}
                     <div className="w-full flex justify-center overflow-hidden select-none pointer-events-none leading-none">
                         <motion.h1
-                            initial={{ y: 100, opacity: 0 }}
+                            initial={{ y: 30, opacity: 0.5 }}
                             whileInView={{ y: 0, opacity: 1 }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                             className="text-[13.5vw] leading-[0.8] font-black tracking-tighter text-white mix-blend-overlay opacity-90 text-center"
                         >
                             PRINTEAST

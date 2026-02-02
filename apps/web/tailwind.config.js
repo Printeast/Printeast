@@ -28,6 +28,15 @@ module.exports = {
                 sans: ["var(--font-wix-text)", "Inter", "sans-serif"],
                 display: ["var(--font-wix-display)", "Poppins", "sans-serif"],
             },
+            animation: {
+                "shimmer": "shimmer 2s infinite",
+                "spin-slow": "spin 8s linear infinite",
+            },
+            keyframes: {
+                shimmer: {
+                    "100%": { transform: "translateX(100%)" },
+                },
+            },
         },
     },
     plugins: [],

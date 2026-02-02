@@ -78,7 +78,7 @@ export function CustomizableProducts() {
                         className="max-w-4xl"
                     >
                         <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase leading-[0.95] text-slate-900">
-                            CUSTOMISABLE <span className="text-blue-600">PRODUCTS</span>
+                            CUSTOMIZABLE <span className="text-blue-600">PRODUCTS</span>
                         </h2>
                         <p className="text-sm md:text-base text-slate-500 max-w-2xl font-medium leading-relaxed mt-4">
                             Handpick best-sellers across apparel, lifestyle, and accessories. Mix, match, and publish in minutes with on-brand mockups.

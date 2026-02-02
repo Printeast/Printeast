@@ -19,7 +19,7 @@ export function AiStudioSection() {
     const isInView = useInView(containerRef, { once: true, amount: 0.2 })
 
     return (
-        <section ref={containerRef} className="py-24 bg-[#fafafa] text-slate-900 relative overflow-hidden">
+        <section ref={containerRef} className="py-24 bg-transparent text-slate-900 relative overflow-hidden">
             {/* Background Elements */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-400/10 rounded-full blur-[120px]" />
@@ -52,7 +52,7 @@ export function AiStudioSection() {
                 </div>
 
                 {/* THE STUDIO SIMULATION */}
-                <div className="w-full max-w-6xl mx-auto">
+                <div className="w-full max-w-[1400px] mx-auto">
                     <StudioSimulation isInView={isInView} />
                 </div>
 

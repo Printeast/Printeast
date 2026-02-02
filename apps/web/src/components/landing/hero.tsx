@@ -42,7 +42,7 @@ export function ImageCarouselHero({
                         }}
                         className="text-3xl sm:text-4xl lg:text-6xl font-black text-[#111827] leading-none tracking-tight mb-6 whitespace-nowrap uppercase"
                     >
-                        Create. Customise. <span className="text-blue-600">Print. Sell.</span>
+                        Create. Customize. <span className="text-blue-600">Print. Sell.</span>
                     </m.h1>
 
                     <m.p

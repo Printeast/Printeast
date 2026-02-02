@@ -135,7 +135,7 @@ export function Testimonials() {
 
 
     return (
-        <section className="relative w-full py-32 bg-slate-50 overflow-hidden">
+        <section className="relative w-full py-32 bg-transparent overflow-hidden">
             {/* Background Atmosphere */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[1200px] h-[1200px] bg-blue-100/40 rounded-full blur-[150px] mix-blend-multiply opacity-70" />

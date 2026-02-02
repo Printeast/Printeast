@@ -148,7 +148,7 @@ function FeatureCard({ item, index }: { item: typeof SHOWCASE_ITEMS[0], index: n
                             {item.title}
                         </h3>
 
-                        <div className="w-12 h-1.5 bg-white/20 rounded-full mb-4 group-hover:w-20 group-hover:bg-primary-pink/80 transition-all duration-500" />
+                        <div className="h-1.5 bg-white/20 rounded-full mb-4 w-12 group-hover:w-24 group-hover:bg-[linear-gradient(90deg,#3b82f6_0%,#3b82f6_80%,#f8fafc_100%)] transition-all duration-500" />
 
                         <p className="text-white/80 font-medium text-xl leading-relaxed">
                             {item.description}

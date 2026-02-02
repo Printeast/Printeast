@@ -10,65 +10,78 @@ export function GlobalReach() {
     const [hotspots, setHotspots] = useState<{ id: string; x: number; y: number; visible: boolean; name: string }[]>([])
 
     return (
-        <section className="relative w-full min-h-screen bg-white overflow-hidden py-24 flex flex-col items-center justify-center">
-            {/* Subtle Light Background Pattern */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.08)_0%,transparent_50%),radial-gradient(circle_at_80%_80%,rgba(16,185,129,0.08)_0%,transparent_50%)]" />
+        <section className="relative w-full min-h-screen bg-transparent py-24 px-4 flex flex-col items-center justify-center">
 
-            {/* Content Container */}
-            <div className="container relative z-10 px-6 mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* CARD CONTAINER for Cosmic Theme */}
+            <div className="relative w-full max-w-[95vw] 2xl:max-w-[1800px] mx-auto rounded-[48px] overflow-hidden border border-white/5 shadow-2xl my-12">
 
-                {/* Left: Text Content */}
-                <div className="order-2 lg:order-1 flex flex-col justify-center space-y-8">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="space-y-6"
-                    >
+                {/* StarsWrapper: Wraps content to capture mouse movement for parallax effect */}
+                <StarsBackground
+                    starColor="rgba(226, 232, 240, 0.5)" // 50% opacity to match previous style
+                    factor={0.5}
+                    speed={150}
+                    className="size-full bg-[#020617]" // Dark cosmic background
+                >
 
+                    {/* Nebula-like Glows */}
+                    <div className="absolute top-1/4 left-1/4 w-[60vw] h-[60vw] bg-blue-900/20 rounded-full blur-[160px] animate-pulse" style={{ animationDuration: '10s' }} />
+                    <div className="absolute bottom-1/4 right-1/4 w-[50vw] h-[50vw] bg-indigo-900/20 rounded-full blur-[140px]" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[40vw] bg-blue-600/10 rounded-full blur-[180px] rotate-12" />
 
-                        <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase leading-[0.95] text-slate-900">
-                            WE WORK ROUND THE CLOCK.
-                            <br />
-                            <span className="text-blue-600">WE DELIVER ROUND THE GLOBE.</span>
-                        </h2>
+                    {/* Deep Dark Globe Arena Glow */}
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[100vw] h-[100vw] max-w-[1200px] max-h-[1200px] bg-[radial-gradient(circle_at_center,rgba(15,23,42,0.9)_0%,rgba(2,6,23,0)_70%)] pointer-events-none z-0" />
 
-                        <p className="text-sm md:text-base text-slate-500 max-w-xl font-medium leading-relaxed mt-4">
-                            Printeast operates on a truly borderless infrastructure. Our 24/7 autonomous fulfillment centers ensure your products move faster than the competition, reaching customers in over 180 countries.
-                        </p>
-                    </motion.div>
+                    <div className="container relative z-10 px-6 py-24 mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
-
-                </div>
-
-                {/* Right: Globe Visualization with Enhanced Card - Premium Dark Theme */}
-                <div className="order-1 lg:order-2 relative h-[450px] lg:h-[600px] flex items-center justify-center">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 30 }}
-                        whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                        transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-                        className="relative h-full aspect-square flex items-center justify-center w-full max-w-[600px]"
-                    >
-                        {/* Premium Dark Surface with Massive Shadow */}
-                        <div className="absolute inset-0 rounded-2xl bg-[#020308] border border-white/10 shadow-[0_50px_100px_-30px_rgba(0,0,0,0.8),0_20px_40px_-20px_rgba(0,0,0,0.4)] overflow-hidden">
-
-                            {/* Inner Decorative Rings */}
-                            <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/5 z-20 pointer-events-none" />
-                            <div className="absolute inset-1 rounded-2xl border border-white/5 z-10 pointer-events-none" />
-
-                            {/* Background Atmosphere - Enhanced for Blue Theme */}
-                            <div className="absolute top-0 right-0 w-[80%] h-[80%] bg-gradient-to-br from-blue-500/10 via-transparent to-transparent blur-[120px] pointer-events-none" />
-                            <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-gradient-to-tr from-cyan-500/5 via-transparent to-transparent blur-[100px] pointer-events-none" />
-
-                            <StarsBackground
-                                starColor="#ffffff"
-                                factor={0.01}
-                                speed={100}
-                                className="pointer-events-auto z-0 bg-[#020617]" // Ensure background captures mouse for parallax
+                        {/* Left: Text Content - Updated for Dark Theme */}
+                        <div className="order-2 lg:order-1 flex flex-col justify-center space-y-8 lg:-ml-8">
+                            <motion.div
+                                initial={{ opacity: 0, x: -30 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 1, ease: "easeOut" }}
+                                className="space-y-6"
                             >
-                                {/* Globe Container centered */}
-                                <div className="absolute inset-0 flex items-center justify-center overflow-hidden z-10 pointer-events-none"> {/* Globe is visual, canvas handles its own interaciton if pointer-events-auto */}
-                                    <div className="w-full h-full flex items-center justify-center scale-115 translate-y-5 pointer-events-auto">
+                                <h2 className="text-4xl lg:text-7xl font-black tracking-tighter uppercase leading-[0.9] text-white">
+                                    <span className="whitespace-nowrap">WE WORK ROUND</span> <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 whitespace-nowrap">THE CLOCK.</span>
+                                    <br />
+                                    <br />
+                                    <span className="text-white whitespace-nowrap">WE DELIVER ROUND</span> <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 whitespace-nowrap">THE GLOBE.</span>
+                                </h2>
+
+                                <p className="text-lg md:text-xl text-slate-400 max-w-xl font-medium leading-relaxed mt-4">
+                                    Printeast operates on a truly borderless infrastructure. Our 24/7 autonomous fulfillment centers ensure your products move faster, reaching customers across every continent.
+                                </p>
+
+                                <div className="flex flex-wrap gap-12 pt-4">
+                                    {[
+                                        { label: 'Active Hubs', value: '45+' },
+                                        { label: 'Countries', value: '180+' },
+                                        { label: 'Uptime', value: '99.9%' }
+                                    ].map((stat) => (
+                                        <div key={stat.label} className="flex flex-col">
+                                            <span className="text-3xl font-black text-white tracking-tight">{stat.value}</span>
+                                            <span className="text-xs uppercase tracking-widest text-slate-500 font-bold">{stat.label}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        </div>
+
+                        {/* Right: Globe Visualization - Cosmic Style */}
+                        <div className="order-1 lg:order-2 relative h-[500px] lg:h-[700px] flex items-center justify-center">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 1.5, ease: [0.19, 1, 0.22, 1] }}
+                                className="relative h-full aspect-square flex items-center justify-center w-full max-w-[650px]"
+                            >
+
+
+                                {/* Globe Container */}
+                                <div className="absolute inset-0 flex items-center justify-center overflow-hidden z-10">
+                                    <div className="w-full h-full flex items-center justify-center scale-125 translate-y-8 will-change-transform">
                                         <RotatingEarth
                                             className="w-full h-full"
                                             onHotspotsUpdate={setHotspots}
@@ -76,77 +89,65 @@ export function GlobalReach() {
                                     </div>
                                 </div>
 
-                                {/* Hint Removed as per request */}
+                                {/* Floating Stat Cards - Tracking Multiple Hotspots */}
+                                <AnimatePresence>
+                                    {hotspots.map((hotspot) => (
+                                        hotspot.visible && (
+                                            <motion.div
+                                                key={hotspot.id}
+                                                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                                                animate={{
+                                                    opacity: 1,
+                                                    scale: 1,
+                                                    x: hotspot.id === 'india' ? hotspot.x - 110 : hotspot.x - 40,
+                                                    y: hotspot.y - 140
+                                                }}
+                                                exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                                                className="absolute left-0 top-0 z-20 pointer-events-none will-change-transform"
+                                                transition={{ type: "spring", damping: 20, stiffness: 120, mass: 0.5 }}
+                                            >
+                                                <div className="relative bg-[#0F172A]/80 backdrop-blur-2xl rounded-2xl p-4 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.7)] border border-blue-500/30 min-w-[200px] group overflow-hidden">
+                                                    {/* Interior Nebula Glow */}
+                                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/10 via-transparent to-transparent opacity-50" />
 
-                                {/* Bottom Fade */}
-                                <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none z-20" />
-                            </StarsBackground>
+                                                    {hotspot.id === 'india' ? (
+                                                        <div className="relative flex flex-col gap-2">
+                                                            <div className="flex items-center gap-2 mb-0.5">
+                                                                <Crosshair className="w-4 h-4 text-cyan-400 animate-[spin_4s_linear_infinite]" />
+                                                                <span className="text-[10px] font-mono text-slate-400 uppercase tracking-[0.2em]">Regional Hub</span>
+                                                            </div>
+                                                            <div className="text-sm font-medium text-white leading-tight">
+                                                                <span className="text-cyan-400 block font-black text-base">ASIA-PACIFIC</span>
+                                                                Autonomous Routing Active.
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="relative flex flex-col gap-2">
+                                                            <div className="flex items-center gap-2 mb-0.5">
+                                                                <Globe2 className="w-4 h-4 text-blue-400 animate-pulse" />
+                                                                <span className="text-[10px] font-mono text-slate-400 uppercase tracking-[0.2em]">HQ Node</span>
+                                                            </div>
+                                                            <div className="text-sm font-medium text-white leading-tight">
+                                                                <span className="text-blue-400 block font-black text-base">GLOBAL CONTROL</span>
+                                                                Infrastructure Scaling Live.
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    <div className="absolute left-1/2 -bottom-8 -translate-x-1/2 flex flex-col items-center">
+                                                        <div className="w-[1px] h-8 bg-gradient-to-b from-blue-500/50 to-transparent" />
+                                                        <div className="w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_15px_rgba(59,130,246,1)]" />
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        )
+                                    ))}
+                                </AnimatePresence>
+                            </motion.div>
                         </div>
+                    </div>
 
-                        {/* Floating Stat Cards - Tracking Multiple Hotspots */}
-                        <AnimatePresence>
-                            {hotspots.map((hotspot) => (
-                                hotspot.visible && (
-                                    <motion.div
-                                        key={hotspot.id}
-                                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                                        animate={{
-                                            opacity: 1,
-                                            scale: 1,
-                                            x: hotspot.id === 'india' ? hotspot.x - 110 : hotspot.x - 40, // Different offsets to avoid overlap if close, though they are geographically far
-                                            y: hotspot.y - 140
-                                        }}
-                                        exit={{ opacity: 0, scale: 0.8, y: 20 }}
-                                        className="absolute left-0 top-0 z-20 pointer-events-none will-change-transform"
-                                        transition={{ type: "spring", damping: 20, stiffness: 120, mass: 0.5 }}
-                                    >
-                                        <div className="relative bg-gradient-to-br from-[#0F172A]/90 to-black/90 backdrop-blur-xl rounded-xl p-3 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] border border-teal-500/30 min-w-[180px] group overflow-hidden">
-                                            {/* Glow Effect only - Stars removed */}
-                                            <div className="absolute inset-0 rounded-xl bg-teal-500/5 group-hover:bg-teal-500/10 transition-colors duration-500" />
-
-                                            {hotspot.id === 'india' ? (
-                                                /* India Hub Card - High Tech Style */
-                                                <div className="relative flex flex-col gap-1.5">
-                                                    <div className="flex items-center gap-2 mb-0.5">
-                                                        <Crosshair className="w-3.5 h-3.5 text-teal-400 animate-[spin_3s_linear_infinite]" />
-                                                        <span className="text-[9px] font-mono text-gray-400 uppercase tracking-widest">300 POPs</span>
-                                                    </div>
-
-                                                    <div className="text-xs font-medium text-teal-50 leading-tight">
-                                                        <span className="text-teal-400 block font-bold">24/7 SUPPORT</span>
-                                                        Instant Global Loading.
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                /* USA Hub Card - High Tech Style */
-                                                <div className="relative flex flex-col gap-1.5">
-                                                    <div className="flex items-center gap-2 mb-0.5">
-                                                        <Globe2 className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-                                                        <span className="text-[9px] font-mono text-gray-400 uppercase tracking-widest">Global infra</span>
-                                                    </div>
-
-                                                    <div className="text-xs font-medium text-cyan-50 leading-tight">
-                                                        <span className="text-cyan-400 block font-bold">GLOBAL PRODUCTS</span>
-                                                        Infinite Scalability.
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {/* Connector */}
-                                            <div className="absolute left-1/2 -bottom-6 -translate-x-1/2 flex flex-col items-center">
-                                                <div className="w-[1px] h-6 bg-gradient-to-b from-teal-500/50 to-transparent" />
-                                                <div className="w-1.5 h-1.5 rounded-full bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.8)]" />
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                )
-                            ))}
-                        </AnimatePresence>
-
-                        {/* Ambient Glow Behind Globe - Cyan/Blue */}
-                        <div className="absolute inset-20 -z-10 bg-gradient-to-br from-cyan-500/20 via-blue-500/10 to-transparent blur-3xl rounded-full scale-125 opacity-40" />
-                    </motion.div>
-                </div>
+                </StarsBackground>
 
             </div>
         </section>
