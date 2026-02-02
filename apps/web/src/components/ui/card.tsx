@@ -2,7 +2,16 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-    return <div className={cn("rounded-2xl border border-white/8 bg-white/5 shadow-[0_20px_60px_-35px_rgba(0,0,0,0.6)] backdrop-blur", className)} {...props} />;
+    return (
+        <div
+            className={cn(
+                "rounded-2xl border dash-border dash-panel dash-shadow backdrop-blur",
+                "transition-transform duration-200 hover:-translate-y-0.5",
+                className,
+            )}
+            {...props}
+        />
+    );
 }
 
 function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
@@ -10,11 +19,11 @@ function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement
 }
 
 function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-    return <h3 className={cn("text-lg font-semibold text-white", className)} {...props} />;
+    return <h3 className={cn("text-lg font-semibold dash-text", className)} {...props} />;
 }
 
 function CardDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-    return <p className={cn("text-sm text-slate-300", className)} {...props} />;
+    return <p className={cn("text-sm dash-muted", className)} {...props} />;
 }
 
 function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {

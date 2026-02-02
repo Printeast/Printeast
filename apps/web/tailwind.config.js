@@ -7,11 +7,11 @@ module.exports = {
         extend: {
             colors: {
                 primary: {
-                    pink: "#E23E83", // "Hot Pink"
-                    orange: "#FF7A39", // "Coral Orange"
+                    pink: "#2563eb", // "Primary Blue"
+                    orange: "#2563eb", // "Primary Blue"
                 },
                 base: {
-                    bg: "#F8F9FC", // Primary Background
+                    bg: "#F9F8F6", // Primary Background
                     card: "#FFFFFF", // Card Background
                     border: "#E5E7EB", // Borders
                 },

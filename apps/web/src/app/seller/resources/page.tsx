@@ -13,11 +13,14 @@ export default async function SellerResourcesPage() {
     const userEmail = userRes.user?.email || "seller";
     const tenantId = await resolveTenantId(supabase);
 
-    const { data: suppliers = [] } = await supabase.from("suppliers").select("id,name,location,contact_email").limit(20);
+    const { data: suppliers } = await supabase.from("suppliers").select("id,name,location,contact_email").limit(20);
 
-    const { data: vendors = [] } = tenantId
+    const { data: vendors } = tenantId
         ? await supabase.from("vendors").select("id,name,location,api_endpoint").eq("tenant_id", tenantId).limit(20)
         : { data: [] };
+
+    const supplierRows = suppliers ?? [];
+    const vendorRows = vendors ?? [];
 
     return (
         <DashboardLayout user={{ email: userEmail, role: "SELLER" }}>
@@ -28,7 +31,7 @@ export default async function SellerResourcesPage() {
                         <h1 className="text-3xl font-black">Resources</h1>
                         <p className="dash-muted mt-1">Suppliers and vendors from Supabase tables.</p>
                     </div>
-                    <Badge tone="info">{suppliers.length + vendors.length} entries</Badge>
+                    <Badge tone="info">{supplierRows.length + vendorRows.length} entries</Badge>
                 </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -38,11 +41,11 @@ export default async function SellerResourcesPage() {
                             <p className="text-sm dash-muted">From suppliers table.</p>
                         </CardHeader>
                         <CardContent>
-                            {suppliers.length === 0 ? (
+                            {supplierRows.length === 0 ? (
                                 <EmptyState title="No suppliers" subtitle="Add rows to suppliers to see them here." />
                             ) : (
                                 <ul className="space-y-3 text-sm">
-                                    {suppliers.map((s) => (
+                                    {supplierRows.map((s) => (
                                         <li key={s.id} className="rounded-xl border dash-border dash-panel p-3">
                                             <div className="flex items-center justify-between">
                                                 <span className="font-semibold dash-text">{s.name}</span>
@@ -63,11 +66,11 @@ export default async function SellerResourcesPage() {
                             <p className="text-sm dash-muted">From vendors table (tenant scoped).</p>
                         </CardHeader>
                         <CardContent>
-                            {vendors.length === 0 ? (
+                            {vendorRows.length === 0 ? (
                                 <EmptyState title="No vendors" subtitle="Add rows to vendors to see them here." />
                             ) : (
                                 <ul className="space-y-3 text-sm">
-                                    {vendors.map((v) => (
+                                    {vendorRows.map((v) => (
                                         <li key={v.id} className="rounded-xl border dash-border dash-panel p-3">
                                             <div className="flex items-center justify-between">
                                                 <span className="font-semibold dash-text">{v.name}</span>

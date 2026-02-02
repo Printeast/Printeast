@@ -10,6 +10,10 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: '**.cloudflare.com', // For Cloudflare CDN
+            },
+            {
+                protocol: 'https',
+                hostname: 'i.pravatar.cc',
             }
         ],
         formats: ['image/avif', 'image/webp'], // Maximum compression for LCP

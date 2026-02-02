@@ -1,24 +1,19 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
+import { type NextRequest } from 'next/server'
+import { updateSession } from '@/utils/supabase/middleware'
 
-const SECRET = new TextEncoder().encode(
-  process.env.JWT_ACCESS_SECRET || "changeme_access_secret",
-);
-
-export async function proxy(req: NextRequest) {
-  const token = req.cookies.get("accessToken")?.value;
-
-  if (!token) return NextResponse.redirect(new URL("/login", req.url));
-
-  try {
-    await jwtVerify(token, SECRET);
-    return NextResponse.next();
-  } catch {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
+export default async function proxy(request: NextRequest) {
+    return await updateSession(request)
 }
 
 export const config = {
-  matcher: ["/app/:path*", "/admin/:path*", "/seller/:path*"],
-};
+    matcher: [
+        /*
+         * Match all request paths except for the ones starting with:
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         * Feel free to modify this pattern to include more paths.
+         */
+        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    ],
+}

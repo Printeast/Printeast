@@ -7,81 +7,115 @@
 @tailwind utilities;
 
 :root {
-  --printeast-bg: #070a12;
-  --printeast-panel: rgba(255, 255, 255, 0.06);
-  --printeast-border: rgba(255, 255, 255, 0.12);
-  --printeast-text: #eef1f8;
-  --printeast-subtle: #9aa7c2;
-  --printeast-accent: linear-gradient(135deg, #ff9258, #ff6c77);
-  --printeast-accent-strong: #ff7b5f;
-  --dash-bg: #070a12;
+  --printeast-bg: #F9F8F6;
+  --printeast-panel: #ffffff;
+  --printeast-border: #e5e7eb;
+  --printeast-text: #111827;
+  --printeast-subtle: #667085;
+  --printeast-accent: linear-gradient(135deg, #2563eb, #2563eb);
+  --printeast-accent-strong: #2563eb;
+  --dash-bg: #F9F8F6;
   --dash-backdrop:
-    radial-gradient(circle at 20% 20%, rgba(255, 146, 88, 0.12), transparent 40%),
-    radial-gradient(circle at 85% 10%, rgba(100, 150, 255, 0.16), transparent 35%),
-    radial-gradient(circle at 50% 90%, rgba(255, 255, 255, 0.05), transparent 45%);
-  --dash-panel: rgba(255, 255, 255, 0.06);
-  --dash-panel-strong: rgba(255, 255, 255, 0.12);
-  --dash-border: rgba(255, 255, 255, 0.16);
-  --dash-text: #eef1f8;
-  --dash-muted: #9aa7c2;
-  --dash-muted-strong: #c9d3e6;
-  --dash-accent-start: #ff9258;
-  --dash-accent-end: #ff6c77;
-  --dash-shadow: 0 20px 60px -35px rgba(0, 0, 0, 0.6);
+    radial-gradient(circle at 15% 18%, rgba(37, 99, 235, 0.12), transparent 42%),
+    radial-gradient(circle at 80% 0%, rgba(15, 23, 42, 0.06), transparent 38%),
+    radial-gradient(circle at 50% 92%, rgba(37, 99, 235, 0.08), transparent 46%);
+  --dash-panel: #ffffff;
+  --dash-panel-strong: #ffffff;
+  --dash-border: #e5e7eb;
+  --dash-text: #111827;
+  --dash-muted: #667085;
+  --dash-muted-strong: #475467;
+  --dash-accent-start: #2563eb;
+  --dash-accent-end: #2563eb;
+  --dash-shadow: 0 20px 50px -30px rgba(15, 23, 42, 0.18);
 }
 
 :root[data-dashboard-theme="light"] {
-  --dash-bg: #f7f4f1;
+  --dash-bg: #F9F8F6;
   --dash-backdrop:
-    radial-gradient(circle at 20% 20%, rgba(255, 146, 88, 0.18), transparent 40%),
-    radial-gradient(circle at 80% 0%, rgba(99, 123, 255, 0.16), transparent 35%),
-    radial-gradient(circle at 40% 85%, rgba(0, 0, 0, 0.05), transparent 45%);
-  --dash-panel: rgba(255, 255, 255, 0.85);
-  --dash-panel-strong: rgba(255, 255, 255, 0.95);
-  --dash-border: rgba(17, 24, 39, 0.08);
-  --dash-text: #101828;
-  --dash-muted: #5b6478;
-  --dash-muted-strong: #303a4e;
-  --dash-accent-start: #ff9258;
-  --dash-accent-end: #ff6c77;
-  --dash-shadow: 0 20px 50px -30px rgba(16, 24, 40, 0.18);
+    radial-gradient(circle at 15% 18%, rgba(37, 99, 235, 0.12), transparent 42%),
+    radial-gradient(circle at 80% 0%, rgba(15, 23, 42, 0.06), transparent 38%),
+    radial-gradient(circle at 50% 92%, rgba(37, 99, 235, 0.08), transparent 46%);
+  --dash-panel: #ffffff;
+  --dash-panel-strong: #ffffff;
+  --dash-border: #e5e7eb;
+  --dash-text: #111827;
+  --dash-muted: #667085;
+  --dash-muted-strong: #475467;
+  --dash-accent-start: #2563eb;
+  --dash-accent-end: #2563eb;
+  --dash-shadow: 0 20px 50px -30px rgba(15, 23, 42, 0.18);
+}
+
+:root[data-dashboard-theme="dark"] {
+  --dash-bg: #0b1120;
+  --dash-backdrop:
+    radial-gradient(circle at 15% 18%, rgba(37, 99, 235, 0.18), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(2, 6, 23, 0.6), transparent 40%),
+    radial-gradient(circle at 50% 92%, rgba(37, 99, 235, 0.14), transparent 50%);
+  --dash-panel: #0f172a;
+  --dash-panel-strong: #111827;
+  --dash-border: #1f2937;
+  --dash-text: #f8fafc;
+  --dash-muted: #94a3b8;
+  --dash-muted-strong: #cbd5e1;
+  --dash-accent-start: #2563eb;
+  --dash-accent-end: #2563eb;
+  --dash-shadow: 0 20px 50px -30px rgba(2, 6, 23, 0.6);
 }
 
 .dashboard-shell {
-  --dash-bg: #070a12;
+  --dash-bg: #F9F8F6;
   --dash-backdrop:
-    radial-gradient(circle at 20% 20%, rgba(255, 146, 88, 0.12), transparent 40%),
-    radial-gradient(circle at 85% 10%, rgba(100, 150, 255, 0.16), transparent 35%),
-    radial-gradient(circle at 50% 90%, rgba(255, 255, 255, 0.05), transparent 45%);
-  --dash-panel: rgba(255, 255, 255, 0.06);
-  --dash-panel-strong: rgba(255, 255, 255, 0.12);
-  --dash-border: rgba(255, 255, 255, 0.16);
-  --dash-text: #eef1f8;
-  --dash-muted: #9aa7c2;
-  --dash-muted-strong: #c9d3e6;
-  --dash-accent-start: #ff9258;
-  --dash-accent-end: #ff6c77;
-  --dash-shadow: 0 20px 60px -35px rgba(0, 0, 0, 0.6);
+    radial-gradient(circle at 15% 18%, rgba(37, 99, 235, 0.12), transparent 42%),
+    radial-gradient(circle at 80% 0%, rgba(15, 23, 42, 0.06), transparent 38%),
+    radial-gradient(circle at 50% 92%, rgba(37, 99, 235, 0.08), transparent 46%);
+  --dash-panel: #ffffff;
+  --dash-panel-strong: #ffffff;
+  --dash-border: #e5e7eb;
+  --dash-text: #111827;
+  --dash-muted: #667085;
+  --dash-muted-strong: #475467;
+  --dash-accent-start: #2563eb;
+  --dash-accent-end: #2563eb;
+  --dash-shadow: 0 20px 50px -30px rgba(15, 23, 42, 0.18);
   background: var(--dash-bg);
   background-image: var(--dash-backdrop);
   color: var(--dash-text);
 }
 
 .dashboard-shell[data-theme="light"] {
-  --dash-bg: #f7f4f1;
+  --dash-bg: #F9F8F6;
   --dash-backdrop:
-    radial-gradient(circle at 20% 20%, rgba(255, 146, 88, 0.18), transparent 40%),
-    radial-gradient(circle at 80% 0%, rgba(99, 123, 255, 0.16), transparent 35%),
-    radial-gradient(circle at 40% 85%, rgba(0, 0, 0, 0.05), transparent 45%);
-  --dash-panel: rgba(255, 255, 255, 0.85);
-  --dash-panel-strong: rgba(255, 255, 255, 0.95);
-  --dash-border: rgba(17, 24, 39, 0.08);
-  --dash-text: #101828;
-  --dash-muted: #5b6478;
-  --dash-muted-strong: #303a4e;
-  --dash-accent-start: #ff9258;
-  --dash-accent-end: #ff6c77;
-  --dash-shadow: 0 20px 50px -30px rgba(16, 24, 40, 0.18);
+    radial-gradient(circle at 15% 18%, rgba(37, 99, 235, 0.12), transparent 42%),
+    radial-gradient(circle at 80% 0%, rgba(15, 23, 42, 0.06), transparent 38%),
+    radial-gradient(circle at 50% 92%, rgba(37, 99, 235, 0.08), transparent 46%);
+  --dash-panel: #ffffff;
+  --dash-panel-strong: #ffffff;
+  --dash-border: #e5e7eb;
+  --dash-text: #111827;
+  --dash-muted: #667085;
+  --dash-muted-strong: #475467;
+  --dash-accent-start: #2563eb;
+  --dash-accent-end: #2563eb;
+  --dash-shadow: 0 20px 50px -30px rgba(15, 23, 42, 0.18);
+}
+
+.dashboard-shell[data-theme="dark"] {
+  --dash-bg: #0b1120;
+  --dash-backdrop:
+    radial-gradient(circle at 15% 18%, rgba(37, 99, 235, 0.18), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(2, 6, 23, 0.6), transparent 40%),
+    radial-gradient(circle at 50% 92%, rgba(37, 99, 235, 0.14), transparent 50%);
+  --dash-panel: #0f172a;
+  --dash-panel-strong: #111827;
+  --dash-border: #1f2937;
+  --dash-text: #f8fafc;
+  --dash-muted: #94a3b8;
+  --dash-muted-strong: #cbd5e1;
+  --dash-accent-start: #2563eb;
+  --dash-accent-end: #2563eb;
+  --dash-shadow: 0 20px 50px -30px rgba(2, 6, 23, 0.6);
 }
 
 .dashboard-shell .dash-panel {
@@ -123,9 +157,9 @@ body {
   max-width: 100vw;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 20% 20%, rgba(255, 146, 88, 0.12), transparent 40%),
-    radial-gradient(circle at 85% 10%, rgba(100, 150, 255, 0.16), transparent 35%),
-    radial-gradient(circle at 50% 90%, rgba(255, 255, 255, 0.05), transparent 45%),
+    radial-gradient(circle at 15% 18%, rgba(37, 99, 235, 0.12), transparent 42%),
+    radial-gradient(circle at 80% 0%, rgba(15, 23, 42, 0.06), transparent 38%),
+    radial-gradient(circle at 50% 92%, rgba(37, 99, 235, 0.08), transparent 46%),
     var(--printeast-bg);
   color: var(--printeast-text);
   font-family: 'Bricolage Grotesque', 'IBM Plex Mono', sans-serif;

@@ -1,21 +1,39 @@
 import { ApiResponse } from "@repo/types";
+import { createClient } from "@/utils/supabase/browser";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
 
 class ApiClient {
+  private supabase = createClient();
+
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
     try {
+      // Get the latest session token from Supabase
+      const { data: { session } } = await this.supabase.auth.getSession();
+      const token = session?.access_token;
+
+      if (!token && typeof window !== "undefined") {
+        console.warn(`[API Client] No session token found for: ${endpoint}`);
+      }
+
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        ...options.headers as Record<string, string>,
+      };
+
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         ...options,
-        headers: {
-          "Content-Type": "application/json",
-          ...options.headers,
-        },
+        headers,
       });
+
 
       // Handle 204 No Content
       if (response.status === 204) {
