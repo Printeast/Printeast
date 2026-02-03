@@ -3,8 +3,10 @@
 import { motion } from "framer-motion"
 import { ArrowRight, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useTranslations } from "next-intl"
 
 export function ReadyToStart() {
+    const t = useTranslations('ReadyToStart');
     return (
         <section className="relative w-full py-20 lg:py-24 bg-transparent overflow-hidden">
             {/* Background Atmosphere - Connecting from previous section */}
@@ -14,13 +16,12 @@ export function ReadyToStart() {
 
             <div className="container mx-auto px-6 lg:px-12 relative z-10">
                 <motion.div
-                    initial={{ opacity: 0, y: 40 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                     className="relative w-full max-w-6xl mx-auto"
                 >
                     {/* The Massive Card */}
-                    <div className="relative overflow-hidden rounded-2xl bg-[#020617] shadow-[0_50px_100px_-20px_rgba(2,6,23,0.3)]">
+                    <div className="relative overflow-hidden rounded-md bg-[#020617]">
 
                         {/* 1. Dynamic Background Texture (Blexd Texture) */}
                         <div className="absolute inset-0 z-0">
@@ -50,31 +51,33 @@ export function ReadyToStart() {
                         <div className="relative z-10 px-6 py-12 lg:py-16 flex flex-col items-center text-center">
 
                             {/* Main Heading - "100% Free..." but making it sleek as requested */}
-                            <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase leading-[0.95] text-white">
-                                LAUNCH YOUR <span className="text-blue-400">BRAND TODAY.</span>
+                            <h2 className="text-4xl lg:text-6xl font-black tracking-tighter leading-[0.95] text-white">
+                                {t.rich('title', {
+                                    blue: (chunks) => <span className="text-blue-400">{chunks}</span>
+                                })}
                             </h2>
 
                             {/* Subtext */}
-                            <p className="mt-6 text-sm md:text-base text-blue-100/60 max-w-2xl font-light leading-relaxed">
-                                What are you waiting for? Launch your global brand today with zero risk.
-                                <strong className="text-white block mt-1 font-medium">Production, Logistics, and Support — handled by us.</strong>
-                            </p>
+                            <div className="mt-6 text-sm md:text-base text-blue-100/60 max-w-2xl font-light leading-relaxed">
+                                <p>{t('subtitle')}</p>
+                                <strong className="text-white block mt-1 font-medium">{t('handledByUs')}</strong>
+                            </div>
 
                             {/* Action Buttons */}
                             <div className="mt-10 flex flex-col sm:flex-row gap-4 items-center justify-center w-full sm:w-auto">
                                 <Button
-                                    className="h-14 px-8 rounded-xl bg-white text-black font-bold text-base hover:bg-blue-50 transition-all hover:scale-105 shadow-[0_0_40px_-5px_rgba(255,255,255,0.3)] group"
+                                    className="h-14 px-8 rounded-md bg-white text-black font-bold text-base hover:bg-blue-50 transition-all hover:scale-105 group"
                                 >
-                                    INITIALIZE NOW
+                                    {t('buttons.initialize')}
                                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                                 </Button>
 
                                 <Button
                                     variant="outline"
-                                    className="h-14 px-8 rounded-xl border-white/10 bg-white/5 text-white backdrop-blur-sm hover:bg-white/10 hover:border-white/20 font-medium text-base transition-all"
+                                    className="h-14 px-8 rounded-md border-white/10 bg-white/5 text-white backdrop-blur-sm hover:bg-white/10 hover:border-white/20 font-medium text-base transition-all"
                                 >
                                     <Building2 className="w-5 h-5 mr-2 opacity-70" />
-                                    CONTACT ENTERPRISE
+                                    {t('buttons.contactEnterprise')}
                                 </Button>
                             </div>
 
@@ -87,7 +90,7 @@ export function ReadyToStart() {
                     </div>
 
                     {/* Background Glow behind the card */}
-                    <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 to-emerald-500 opacity-20 blur-3xl rounded-2xl -z-10" />
+                    <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 to-emerald-500 opacity-20 blur-3xl rounded-md -z-10" />
 
                 </motion.div>
             </div>

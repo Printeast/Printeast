@@ -1,0 +1,385 @@
+{
+    "Navbar": {
+        "tabs": {
+            "seller": "Seller hub",
+            "personal": "Personal Orders",
+            "artist": "Artist Hub"
+        },
+        "links": {
+            "products": "Products",
+            "marketplace": "Marketplace",
+            "aiStudio": "AI Design Studio",
+            "pricing": "Pricing",
+            "howItWorks": "How it works",
+            "learn": "Learn",
+            "solutions": "Solutions",
+            "support": "Support",
+            "stories": "Stories"
+        },
+        "selectRegion": "Select Region",
+        "startNow": "Start Now"
+    },
+    "Hero": {
+        "title": "Create Customize <blue>Print Sell</blue>",
+        "subtitle": "The smartest AI-powered Print-on-Demand platform. Zero inventory, global shipping, and quality you can trust.",
+        "badges": {
+            "noCreditCard": "No Credit Card",
+            "freeForever": "Free Forever"
+        },
+        "buttons": {
+            "createFree": "Create for free",
+            "startSelling": "Start Selling now"
+        }
+    },
+    "FeatureShowcase": {
+        "title": "How It <blue>Works</blue>",
+        "subtitle": "You are few steps away from creating your profitable brand. Production, Logistics, and Support — handled by us.",
+        "items": {
+            "1": {
+                "title": "Create",
+                "description": "Upload your designs or use our AI Studio."
+            },
+            "2": {
+                "title": "Customize",
+                "description": "Mockup on 500+ premium products."
+            },
+            "3": {
+                "title": "Sell",
+                "description": "Connect to Shopify, Etsy, or TikTok Shop."
+            },
+            "4": {
+                "title": "Scale",
+                "description": "We handle printing, packing, and shipping."
+            },
+            "5": {
+                "title": "Earn Profits",
+                "description": "Keep 100% of your profits while we handle the fulfillment."
+            }
+        }
+    },
+    "GlobalReach": {
+        "title": {
+            "line1": "We work round",
+            "line1Blue": "The Clock.",
+            "line2": "We deliver round",
+            "line2Blue": "The Globe."
+        },
+        "description": "Printeast operates on a truly borderless infrastructure. Our 24/7 autonomous fulfillment centers ensure your products move faster, reaching customers across every continent.",
+        "stats": {
+            "activeHubs": "Active Hubs",
+            "countries": "Countries",
+            "uptime": "Uptime"
+        },
+        "hotspots": {
+            "regionalHub": "Regional Hub",
+            "asiaPacific": "Asia-Pacific",
+            "autonomousRouting": "Autonomous Routing Active.",
+            "hqNode": "HQ Node",
+            "globalControl": "Global Control",
+            "infrastructureScaling": "Infrastructure Scaling Live."
+        }
+    },
+    "AiStudio": {
+        "title": "Design Like A Pro <blue>Powered By AI</blue>",
+        "description": "The world's most advanced design editor, built directly into Printeast. Experience fluid, cinematic creation with smart mockups.",
+        "editor": {
+            "untitled": "Untitled Project",
+            "export": "Export",
+            "share": "Share",
+            "zoom": "100%",
+            "sidebar": {
+                "templates": "Templates",
+                "text": "Text",
+                "uploads": "Uploads",
+                "elements": "Elements",
+                "aiGen": "AI Gen"
+            },
+            "aiPanel": {
+                "title": "AI Generator",
+                "description": "Turn your imagination into reality.",
+                "prompt": "Prompt",
+                "style": "Style",
+                "viewAll": "View All",
+                "btnGenerate": "Generate Image",
+                "btnGenerating": "Generating...",
+                "typingText": "Purple and orange t-shirt with abstract geometric shapes all over it kind of bold and patterned....",
+                "styles": {
+                    "geometric": "Geometric",
+                    "3dRender": "3D Render",
+                    "anime": "Anime",
+                    "digitalArt": "Digital Art"
+                }
+            }
+        }
+    },
+    "FeaturesGrid": {
+        "studio": "AI Studio",
+        "createCustom": "Create Your <br /> Custom T-Shirt",
+        "startsFrom": "Starts from",
+        "startDesigning": "Start Designing",
+        "newDrop": "New Drop",
+        "smartMockup": "Mockup intelligent.",
+        "artistHub": "Artist Hub",
+        "monetize": "Monetize Your Assets."
+    },
+    "ProcessShowcase": {
+        "phases": {
+            "catalog": {
+                "label": "Premium Catalog",
+                "description": "Select from 900+ high-end products"
+            },
+            "design": {
+                "label": "AI Creative Studio",
+                "description": "AI transforms ideas into masterpieces"
+            },
+            "sync": {
+                "label": "Global Distribution",
+                "description": "One-click sync to major marketplaces"
+            },
+            "profit": {
+                "label": "Instant Revenue",
+                "description": "Automated fulfillment, pure profit"
+            }
+        },
+        "cursor": {
+            "selectTemplate": "Select Template",
+            "triggerAi": "Trigger AI Studio",
+            "marketplaceSync": "Marketplace Sync",
+            "claimRevenue": "Claim Revenue"
+        },
+        "scenes": {
+            "catalog": {
+                "liveSync": "Live Inventory Sync"
+            },
+            "design": {
+                "studio": "AI Studio",
+                "prompt": "Pmt",
+                "renderingComplete": "Rendering Complete",
+                "processing": "Processing..."
+            },
+            "sync": {
+                "connected": "Connected"
+            },
+            "earn": {
+                "netWorth": "Total Net Worth",
+                "velocity": "Growth Velocity",
+                "weeklySales": "Weekly Sales",
+                "fulfilled": "Orders fulfilled automatically",
+                "empire": "Start your global empire.",
+                "getStarted": "Get Started"
+            }
+        }
+    },
+    "ReadyToStart": {
+        "title": "Launch Your <blue>Brand Today</blue>",
+        "subtitle": "What are you waiting for? Launch your global brand today with zero risk.",
+        "handledByUs": "Production, Logistics, and Support — handled by us.",
+        "buttons": {
+            "initialize": "Initialize Now",
+            "contactEnterprise": "Contact Enterprise"
+        }
+    },
+    "Testimonials": {
+        "title": "Real Talk From <blue>Real Creators</blue>",
+        "rating": "Rating",
+        "reviews": {
+            "1": {
+                "name": "Marcus Chen",
+                "role": "Digital Artist & Seller",
+                "quote": "Honestly, I was skeptical about another POD site. But the print quality on the heavy cotton tees? Actually insane. My returns dropped to basically zero.",
+                "tags": [
+                    "Print Quality",
+                    "Art"
+                ]
+            },
+            "2": {
+                "name": "Sarah Jenkins",
+                "role": "Eco-Brand Founder",
+                "quote": "The sustainability claims are actually legit. I ordered samples first—the organic texture is perfect. Shipping to Europe took a day longer than expected, but the quality made it worth it.",
+                "tags": [
+                    "Legit Eco",
+                    "Quality"
+                ]
+            },
+            "3": {
+                "name": "David Miller",
+                "role": "Content Creator",
+                "quote": "I'm not a tech guy, so the dashboard saved my life. Set up my entire merch line in an afternoon. Had one issue with a graphic, but support fixed it in like 10 mins.",
+                "tags": [
+                    "Easy Setup",
+                    "Support"
+                ]
+            },
+            "4": {
+                "name": "Elena Rodriguez",
+                "role": "Dropshipper",
+                "quote": "The profit margins here are just better. I've tried four other platforms, but Printeast is the only one where I'm not eating costs on 'surprise' shipping fees. It's stable.",
+                "tags": [
+                    "Profits",
+                    "Reliable"
+                ]
+            }
+        }
+    },
+    "ProfitCalculator": {
+        "title": "See How Much You Can Make From Your <word />",
+        "words": [
+            "Brand",
+            "Hobby",
+            "Side Hustle",
+            "Business"
+        ],
+        "subtitle": "Our premium infrastructure ensures high margins. Adjust the values below to estimate your potential monthly earnings.",
+        "modelSeries": "Model Series",
+        "selectProduct": "Select Product",
+        "productCost": "Product cost",
+        "sellingPrice": "Selling Price",
+        "dailySales": "Daily Sales",
+        "perDay": "/ day",
+        "oneSale": "1 sale",
+        "hundredSales": "100 sales",
+        "yourCountry": "Your country",
+        "viewEarnings": "View earnings",
+        "aiSuggestion": "AI suggests pricing at <price /> for best conversion",
+        "estimatedProfit": "Estimated {period} Profit",
+        "startEarning": "Start Earning Now",
+        "perMonth": "Per Month",
+        "perYear": "Per Year",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "estimates": "*Estimates based on sales volume",
+        "categories": {
+            "Apparel": "Apparel",
+            "Drinkware": "Drinkware",
+            "Home & Living": "Home & Living",
+            "Accessories": "Accessories"
+        }
+    },
+    "Footer": {
+        "columns": {
+            "about": "About",
+            "explore": "Explore",
+            "connect": "Connect",
+            "startSelling": "Start Selling",
+            "learn": "Learn"
+        },
+        "links": {
+            "ourStory": "Our Story",
+            "careers": "Careers",
+            "press": "Press",
+            "contact": "Contact",
+            "globalNetwork": "Global Network",
+            "products": "Products",
+            "pricing": "Pricing",
+            "showcase": "Showcase",
+            "apiDocs": "API Docs",
+            "shopifyApp": "Shopify App",
+            "etsyConnect": "Etsy Connect",
+            "customSolutions": "Custom Solutions",
+            "creatorStudio": "Creator Studio",
+            "merchantPortal": "Merchant Portal",
+            "sampleKits": "Sample Kits",
+            "shippingInfo": "Shipping Info",
+            "blog": "Blog",
+            "academy": "Academy",
+            "helpCenter": "Help Center",
+            "community": "Community"
+        },
+        "legal": {
+            "rights": "All rights reserved.",
+            "privacyPolicy": "Privacy Policy",
+            "termsOfService": "Terms of Service"
+        }
+    },
+    "IdeasInspiration": {
+        "title": "Inspiration <blue>& Ideas</blue>",
+        "subtitle": "Need ideas for your next bestseller? Explore trending niches, popular design styles, and proven concepts that drive sales.",
+        "startDesigning": "Start Designing",
+        "startsFrom": "Starts from",
+        "items": {
+            "phoneCases": {
+                "title": "Custom Phone Cases",
+                "category": "Tech Accessories",
+                "hotspots": {
+                    "toughCase": "Tough Case",
+                    "cozySweater": "Cozy Sweater"
+                },
+                "hotspotCategories": {
+                    "mobile": "Mobile Accessories",
+                    "apparel": "Apparel"
+                }
+            },
+            "familyGroup": {
+                "title": "Customs for the Whole Family",
+                "category": "Clothing & Home",
+                "hotspots": {
+                    "cap": "Custom Cap",
+                    "apron": "Designer Apron",
+                    "mug": "Ceramic Mug",
+                    "jumpsuit": "Toddler Jumpsuit"
+                },
+                "hotspotCategories": {
+                    "apparel": "Apparel",
+                    "home": "Home & Living",
+                    "drinkware": "Drinkware",
+                    "kids": "Kids"
+                }
+            },
+            "petAccessories": {
+                "title": "Pet Accessories",
+                "category": "Pets",
+                "hotspots": {
+                    "jacket": "Dog Jacket"
+                },
+                "hotspotCategories": {
+                    "wear": "Pet Wear"
+                }
+            },
+            "ecoBags": {
+                "title": "Eco-Friendly Bags",
+                "category": "Accessories",
+                "hotspots": {
+                    "bag": "Shopping Bag"
+                },
+                "hotspotCategories": {
+                    "bags": "Bags"
+                }
+            }
+        }
+    },
+    "CustomizableProducts": {
+        "title": "Customizable <blue>Products</blue>",
+        "subtitle": "Handpick best-sellers across apparel, lifestyle, and accessories. Mix, match, and publish in minutes with on-brand mockups.",
+        "explore": "Explore",
+        "items": {
+            "apparel": {
+                "title": "Apparel",
+                "description": "Premium cotton & blends."
+            },
+            "drinkware": {
+                "title": "Drinkware",
+                "description": "Ceramics & travel mugs."
+            },
+            "tech": {
+                "title": "Tech Gear",
+                "description": "Cases & sleeves."
+            },
+            "wallArt": {
+                "title": "Wall Art",
+                "description": "Posters & canvases."
+            },
+            "accessories": {
+                "title": "Accessories",
+                "description": "Totes & lifestyle."
+            },
+            "stationery": {
+                "title": "Stationery",
+                "description": "Stickers & notebooks."
+            }
+        }
+    },
+    "Logos": {
+        "title": "Connect <blue>Store</blue>",
+        "subtitle": "Integrate with your existing store or create a new one. We support all major platforms with seamless synchronization."
+    }
+}

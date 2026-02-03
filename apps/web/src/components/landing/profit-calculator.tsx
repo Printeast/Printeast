@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, memo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { ChevronDown, Check, ChevronRight, ArrowLeft, Shirt, Coffee, Home, ShoppingBag, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 // --- Data ---
 
@@ -94,13 +95,14 @@ const PRODUCTS: Product[] = [
 // --- Components ---
 
 export function ProfitCalculator() {
+    const t = useTranslations('ProfitCalculator');
     const [selectedProduct, setSelectedProduct] = useState<Product>(PRODUCTS[0]!)
     const [sellingPrice, setSellingPrice] = useState(PRODUCTS[0]!.defaultPrice)
     const [dailySales, setDailySales] = useState(5)
 
     // New States for functional dropdowns
     const [selectedCountry, setSelectedCountry] = useState("United States ($)")
-    const [selectedPeriod, setSelectedPeriod] = useState("Per Month")
+    const [selectedPeriod, setSelectedPeriod] = useState(t('perMonth'))
 
     // Reset defaults when product changes
     useEffect(() => {
@@ -109,12 +111,13 @@ export function ProfitCalculator() {
 
     const profitPerUnit = sellingPrice - selectedProduct.baseCost
     // Calculate profit based on selected period
-    const estimatedProfit = profitPerUnit * dailySales * (selectedPeriod === "Per Year" ? 365 : 30)
+    const estimatedProfit = profitPerUnit * dailySales * (selectedPeriod === t('perYear') ? 365 : 30)
 
     // Dynamic Header Text Animation
-    const [headerWord, setHeaderWord] = useState("Brand")
+    const words = t.raw('words') as string[];
+    const [headerWord, setHeaderWord] = useState(words[0])
+
     useEffect(() => {
-        const words = ["Brand", "Hobby", "Side Hustle", "Business"]
         let i = 0
         const interval = setInterval(() => {
             i = (i + 1) % words.length
@@ -122,12 +125,12 @@ export function ProfitCalculator() {
             if (nextWord) setHeaderWord(nextWord)
         }, 2000)
         return () => clearInterval(interval)
-    }, [])
+    }, [words])
 
     const aiSuggestedPrice = selectedProduct.suggestedPrice;
 
     return (
-        <section className="py-24 bg-transparent relative overflow-hidden">
+        <section className="py-24 bg-transparent relative overflow-hidden transform-gpu">
             {/* Background Decor */}
             <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-600/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-400/5 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3" />
@@ -136,43 +139,46 @@ export function ProfitCalculator() {
 
                 {/* Section Header */}
                 <div className="text-left mb-16">
-                    <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase leading-[0.95] text-slate-900">
-                        SEE HOW MUCH YOU <br />
-                        CAN MAKE FROM YOUR{" "}
-                        <span className="relative inline-block w-[6ch] text-left">
-                            <AnimatePresence mode="wait">
-                                <motion.span
-                                    key={headerWord}
-                                    initial={{ y: 20, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    exit={{ y: -20, opacity: 0 }}
-                                    transition={{ duration: 0.3 }}
-                                    className="absolute left-0 text-blue-600"
-                                >
-                                    {headerWord}
-                                </motion.span>
-                            </AnimatePresence>
-                            <span className="invisible text-blue-600">HOBBY</span> {/* Spacer in caps */}
-                        </span>
+                    <h2 className="text-4xl lg:text-6xl font-black tracking-tighter leading-[0.95] text-slate-900 transform-gpu">
+                        {t.rich('title', {
+                            word: () => (
+                                <span className="relative inline-block min-w-[12ch] text-left">
+                                    <AnimatePresence mode="wait">
+                                        <motion.span
+                                            key={headerWord}
+                                            initial={{ y: 20, opacity: 0 }}
+                                            animate={{ y: 0, opacity: 1 }}
+                                            exit={{ y: -20, opacity: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                            className="absolute left-0 text-blue-600 whitespace-nowrap"
+                                        >
+                                            {headerWord}
+                                        </motion.span>
+                                    </AnimatePresence>
+                                    <span className="invisible text-blue-600">Side Hustle</span>
+                                </span>
+                            )
+                        })}
                     </h2>
                     <p className="text-sm md:text-base text-slate-500 max-w-2xl font-medium leading-relaxed mt-4">
-                        Our premium infrastructure ensures high margins. Adjust the values below to estimate your potential monthly earnings.
+                        {t('subtitle')}
                     </p>
                 </div>
 
-                <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 lg:p-6 flex flex-col lg:flex-row gap-6 items-center max-w-5xl mx-auto">
+                <div className="bg-white rounded-md border border-gray-100 p-4 lg:p-6 flex flex-col lg:flex-row gap-6 items-center max-w-5xl mx-auto ring-1 ring-black/5">
 
                     {/* LEFT: Product Preview */}
                     <motion.div
                         layout
-                        className="w-full lg:w-[55%] aspect-[4/5] relative rounded-2xl overflow-hidden bg-[#0B0F17] group will-change-transform"
+                        className="w-full lg:w-[55%] aspect-[4/5] relative rounded-md overflow-hidden bg-[#0B0F17] group will-change-transform transform-gpu"
                     >
                         <Image
                             src={selectedProduct.image}
                             alt={selectedProduct.name}
                             fill
-                            className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-90"
+                            className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 will-change-transform"
                             sizes="(max-width: 1024px) 100vw, 600px"
+                            loading="lazy"
                         />
 
                         {/* Dramatic Bottom Fade (Reference Style) */}
@@ -180,7 +186,7 @@ export function ProfitCalculator() {
 
                         {/* Floating Model Series Label (Reference Style) */}
                         <div className="absolute bottom-6 left-6 z-20">
-                            <p className="text-[10px] font-black text-white/70 uppercase tracking-[0.2em] mb-2">Model Series</p>
+                            <p className="text-[10px] font-black text-white/70 uppercase tracking-[0.2em] mb-2">{t('modelSeries')}</p>
                             <p className="text-white font-extrabold text-2xl leading-tight max-w-[90%]">{selectedProduct.name}</p>
                         </div>
 
@@ -194,15 +200,16 @@ export function ProfitCalculator() {
                         {/* Product Selector */}
                         <div className="space-y-3">
                             <div className="flex items-center justify-between px-1">
-                                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Select Product</label>
+                                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('selectProduct')}</label>
                                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                    Product cost <span className="text-gray-900 font-bold text-sm">${selectedProduct.baseCost.toFixed(2)}</span>
+                                    {t('productCost')} <span className="text-gray-900 font-bold text-sm">${selectedProduct.baseCost.toFixed(2)}</span>
                                 </span>
                             </div>
                             <ProductSelector
                                 products={PRODUCTS}
                                 selected={selectedProduct}
                                 onSelect={setSelectedProduct}
+                                t={t}
                             />
                         </div>
 
@@ -212,8 +219,8 @@ export function ProfitCalculator() {
                             {/* Sell Price Slider */}
                             <div className="space-y-2">
                                 <div className="flex justify-between items-end">
-                                    <label className="text-xs font-black text-gray-900 uppercase tracking-wider">Selling Price</label>
-                                    <div className="flex items-center gap-1 bg-gray-50 px-3 py-1 rounded-lg border border-gray-200">
+                                    <label className="text-xs font-black text-gray-900 uppercase tracking-wider">{t('sellingPrice')}</label>
+                                    <div className="flex items-center gap-1 bg-gray-50 px-3 py-1 rounded-md border border-gray-200">
                                         <span className="text-gray-400 font-bold text-sm">$</span>
                                         <input
                                             type="number"
@@ -239,15 +246,15 @@ export function ProfitCalculator() {
                             {/* Volume Slider */}
                             <div className="space-y-2">
                                 <div className="flex justify-between items-end">
-                                    <label className="text-xs font-black text-gray-900 uppercase tracking-wider">Daily Sales</label>
-                                    <div className="flex items-center gap-1 bg-gray-50 px-3 py-1 rounded-lg border border-gray-200">
+                                    <label className="text-xs font-black text-gray-900 uppercase tracking-wider">{t('dailySales')}</label>
+                                    <div className="flex items-center gap-1 bg-gray-50 px-3 py-1 rounded-md border border-gray-200">
                                         <input
                                             type="number"
                                             value={dailySales}
                                             onChange={(e) => setDailySales(Number(e.target.value))}
                                             className="w-12 bg-transparent font-bold text-lg text-right outline-none text-gray-900"
                                         />
-                                        <span className="text-gray-400 font-bold text-xs">/ day</span>
+                                        <span className="text-gray-400 font-bold text-xs">{t('perDay')}</span>
                                     </div>
                                 </div>
                                 <CustomSlider
@@ -258,8 +265,8 @@ export function ProfitCalculator() {
                                     formatLabel={(v) => v.toString()}
                                 />
                                 <div className="flex justify-between text-[10px] font-bold text-gray-400">
-                                    <span>1 sale</span>
-                                    <span>100 sales</span>
+                                    <span>{t('oneSale')}</span>
+                                    <span>{t('hundredSales')}</span>
                                 </div>
                             </div>
                         </div>
@@ -270,7 +277,7 @@ export function ProfitCalculator() {
                             {/* Intermediate Selectors */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Your country</label>
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">{t('yourCountry')}</label>
                                     <SimpleDropdown
                                         options={["United States ($)", "United Kingdom (£)", "Canada (CAD)", "Europe (€)", "India (₹)"]}
                                         selected={selectedCountry}
@@ -278,9 +285,9 @@ export function ProfitCalculator() {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">View earnings</label>
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">{t('viewEarnings')}</label>
                                     <SimpleDropdown
-                                        options={["Per Month", "Per Year"]}
+                                        options={[t('perMonth'), t('perYear')]}
                                         selected={selectedPeriod}
                                         onSelect={setSelectedPeriod}
                                     />
@@ -290,21 +297,25 @@ export function ProfitCalculator() {
                             {/* AI Suggestion Banner */}
                             <button
                                 onClick={() => setSellingPrice(aiSuggestedPrice)}
-                                className="w-full text-left bg-blue-50 hover:bg-blue-100 border border-blue-100 rounded-xl p-3 flex items-center gap-2.5 shadow-sm transition-colors group/ai"
+                                className="w-full text-left bg-blue-50 hover:bg-blue-100 border border-blue-100 rounded-md p-3 flex items-center gap-2.5 transition-colors group/ai"
                             >
                                 <Sparkles className="w-4 h-4 text-blue-600 shrink-0 group-hover/ai:scale-110 transition-transform" />
-                                <p className="text-xs font-bold text-blue-700">
-                                    AI suggests pricing at <span className="underline decoration-blue-300 decoration-2 underline-offset-2">${aiSuggestedPrice}</span> for best conversion
-                                </p>
+                                <div className="text-xs font-bold text-blue-700">
+                                    {t.rich('aiSuggestion', {
+                                        price: () => <span className="text-blue-600 underline decoration-blue-300 decoration-2 underline-offset-2">${aiSuggestedPrice}</span>
+                                    })}
+                                </div>
                             </button>
 
-                            <div className="bg-[#0B0F17] rounded-2xl p-6 text-white relative overflow-hidden group">
+                            <div className="bg-[#0B0F17] rounded-md p-6 text-white relative overflow-hidden group transform-gpu">
                                 {/* Blue Glow Effect */}
                                 <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/20 blur-[60px] rounded-full translate-x-1/2 -translate-y-1/2 group-hover:bg-blue-500/30 transition-colors duration-500" />
 
                                 <div className="relative z-10 flex flex-col gap-4">
                                     <div>
-                                        <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mb-1">Estimated {selectedPeriod === "Per Month" ? "Monthly" : "Yearly"} Profit</p>
+                                        <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mb-1">
+                                            {t('estimatedProfit', { period: selectedPeriod === t('perMonth') ? t('monthly') : t('yearly') })}
+                                        </p>
                                         <div className="flex items-baseline gap-1">
                                             <span className="text-4xl lg:text-5xl font-black tracking-tight text-white">
                                                 <AnimatedNumber value={estimatedProfit} />
@@ -312,13 +323,13 @@ export function ProfitCalculator() {
                                         </div>
                                     </div>
 
-                                    <button className="w-full py-3 bg-white text-black hover:bg-gray-100 rounded-xl font-bold text-base shadow-lg hover:shadow-xl hover:scale-[1.01] transition-all active:scale-[0.98]">
-                                        Start Earning Now
+                                    <button className="w-full py-3 bg-white text-black hover:bg-gray-100 rounded-md font-bold text-base transition-all active:scale-[0.98]">
+                                        {t('startEarning')}
                                     </button>
                                 </div>
                             </div>
 
-                            <p className="text-[10px] font-bold text-gray-300 pl-1">*Estimates based on sales volume</p>
+                            <p className="text-[10px] font-bold text-gray-300 pl-1">{t('estimates')}</p>
                         </div>
 
                     </div>
@@ -330,7 +341,7 @@ export function ProfitCalculator() {
 
 // --- Subcomponents ---
 
-function ProductSelector({ products, selected, onSelect }: { products: Product[], selected: Product, onSelect: (p: Product) => void }) {
+const ProductSelector = memo(({ products, selected, onSelect, t }: { products: Product[], selected: Product, onSelect: (p: Product) => void, t: any }) => {
     const [isOpen, setIsOpen] = useState(false)
     const [view, setView] = useState<"categories" | "products">("categories")
     const [activeCategory, setActiveCategory] = useState<Category | null>(null)
@@ -370,15 +381,15 @@ function ProductSelector({ products, selected, onSelect }: { products: Product[]
         <div className="relative z-30">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between bg-white hover:bg-gray-50 border-2 border-gray-100 hover:border-blue-100 hover:shadow-lg hover:shadow-blue-500/5 px-4 py-4 rounded-2xl transition-all duration-300 group"
+                className="w-full flex items-center justify-between bg-white hover:bg-gray-50 border-2 border-gray-100 hover:border-blue-100 px-4 py-4 rounded-md transition-all duration-300 group"
             >
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl overflow-hidden relative bg-gray-100 shadow-sm border border-gray-100 group-hover:scale-105 transition-transform">
-                        <Image src={selected.image} alt={selected.name} fill className="object-cover" />
+                    <div className="w-12 h-12 rounded-md overflow-hidden relative bg-gray-100 border border-gray-100 group-hover:scale-105 transition-transform">
+                        <Image src={selected.image} alt={selected.name} fill className="object-cover" sizes="48px" />
                     </div>
                     <div className="text-left">
                         <div className="flex items-center gap-1.5 mb-0.5">
-                            <span className="text-[10px] text-gray-400 font-extrabold uppercase tracking-wider">{selected.category}</span>
+                            <span className="text-[10px] text-gray-400 font-extrabold uppercase tracking-wider">{t(`categories.${selected.category}`)}</span>
                         </div>
                         <p className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{selected.name}</p>
                     </div>
@@ -396,7 +407,7 @@ function ProductSelector({ products, selected, onSelect }: { products: Product[]
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.98 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-2xl shadow-blue-900/10 border border-gray-100 p-3 z-50 overflow-hidden ring-1 ring-black/5"
+                        className="absolute top-full left-0 right-0 mt-3 bg-white rounded-md border border-gray-100 p-3 z-50 overflow-hidden ring-1 ring-black/5"
                     >
                         <div className="relative w-full overflow-hidden">
                             <motion.div
@@ -407,20 +418,20 @@ function ProductSelector({ products, selected, onSelect }: { products: Product[]
                             >
                                 {/* View 1: Categories */}
                                 <div className="w-full space-y-1">
-                                    <h4 className="px-3 py-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">Select Category</h4>
+                                    <h4 className="px-3 py-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('selectProduct')}</h4>
                                     {Object.keys(grouped).map((category) => {
                                         const Icon = CATEGORY_ICONS[category as Category] || Check;
                                         return (
                                             <button
                                                 key={category}
                                                 onClick={() => handleCategoryClick(category)}
-                                                className="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all hover:bg-gray-50 group/item hover:pl-5"
+                                                className="w-full flex items-center justify-between px-4 py-3 rounded-md transition-all hover:bg-gray-50 group/item hover:pl-5"
                                             >
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 group-hover/item:bg-blue-100 group-hover/item:text-blue-600 transition-colors">
                                                         <Icon className="w-4 h-4" />
                                                     </div>
-                                                    <span className="font-bold text-sm text-gray-700 group-hover/item:text-gray-900">{category}</span>
+                                                    <span className="font-bold text-sm text-gray-700 group-hover/item:text-gray-900">{t(`categories.${category}`)}</span>
                                                 </div>
                                                 <ChevronRight className="w-4 h-4 text-gray-300 group-hover/item:text-blue-500" />
                                             </button>
@@ -440,11 +451,11 @@ function ProductSelector({ products, selected, onSelect }: { products: Product[]
                                     <div className="flex items-center gap-2 p-2 mb-1 border-b border-gray-50">
                                         <button
                                             onClick={handleBack}
-                                            className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-900 transition-colors"
+                                            className="p-1.5 hover:bg-gray-100 rounded-md text-gray-500 hover:text-gray-900 transition-colors"
                                         >
                                             <ArrowLeft className="w-4 h-4" />
                                         </button>
-                                        <span className="text-xs font-black text-gray-900 uppercase tracking-wider">{activeCategory}</span>
+                                        <span className="text-xs font-black text-gray-900 uppercase tracking-wider">{t(`categories.${activeCategory}`)}</span>
                                     </div>
 
                                     <div className="flex-1 overflow-y-auto max-h-[300px] space-y-1 p-1">
@@ -456,19 +467,19 @@ function ProductSelector({ products, selected, onSelect }: { products: Product[]
                                                     setIsOpen(false)
                                                 }}
                                                 className={cn(
-                                                    "w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all hover:bg-gray-50",
+                                                    "w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all hover:bg-gray-50",
                                                     selected.id === product.id && "bg-blue-50/80 hover:bg-blue-50 ring-1 ring-blue-100"
                                                 )}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-9 h-9 rounded-lg overflow-hidden relative bg-gray-100 border border-gray-100">
+                                                    <div className="relative w-12 h-12 rounded-md overflow-hidden ring-2 ring-slate-100">
                                                         <Image src={product.image} alt={product.name} fill className="object-cover" sizes="36px" />
                                                     </div>
                                                     <span className={cn("text-sm font-bold", selected.id === product.id ? "text-blue-700" : "text-gray-600")}>
                                                         {product.name}
                                                     </span>
                                                 </div>
-                                                {selected.id === product.id && <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/20"><Check className="w-3 h-3 text-white" /></div>}
+                                                {selected.id === product.id && <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center"><Check className="w-3 h-3 text-white" /></div>}
                                             </button>
                                         ))}
                                     </div>
@@ -480,15 +491,15 @@ function ProductSelector({ products, selected, onSelect }: { products: Product[]
             </AnimatePresence>
         </div>
     )
-}
+})
 
-function CustomSlider({ value, min, max, onChange, formatLabel }: {
+const CustomSlider = memo(({ value, min, max, onChange, formatLabel }: {
     value: number,
     min: number,
     max: number,
     onChange: (val: number) => void,
     formatLabel: (val: number) => string
-}) {
+}) => {
     // Calculate percentage for background fill
     const percentage = ((value - min) / (max - min)) * 100
 
@@ -516,16 +527,16 @@ function CustomSlider({ value, min, max, onChange, formatLabel }: {
 
             {/* Custom Thumb - Positioned via left% */}
             <div
-                className="absolute top-1/2 w-5 h-5 bg-white border-2 border-blue-500 rounded-full shadow-md z-10 pointer-events-none transition-transform duration-100 ease-out group-hover:scale-125 -translate-y-1/2 -translate-x-1/2 flex items-center justify-center"
+                className="absolute top-1/2 w-5 h-5 bg-white border-2 border-blue-500 rounded-full z-10 pointer-events-none transition-transform duration-100 ease-out group-hover:scale-125 -translate-y-1/2 -translate-x-1/2 flex items-center justify-center"
                 style={{ left: `${percentage}%` }}
             >
                 <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
             </div>
         </div>
     )
-}
+})
 
-function AnimatedNumber({ value }: { value: number }) {
+const AnimatedNumber = memo(({ value }: { value: number }) => {
     const [displayValue, setDisplayValue] = useState(value)
 
     useEffect(() => {
@@ -556,16 +567,16 @@ function AnimatedNumber({ value }: { value: number }) {
             {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(displayValue)}
         </span>
     )
-}
+})
 
-function SimpleDropdown({ options, selected, onSelect }: { options: string[], selected: string, onSelect: (val: string) => void }) {
+const SimpleDropdown = memo(({ options, selected, onSelect }: { options: string[], selected: string, onSelect: (val: string) => void }) => {
     const [isOpen, setIsOpen] = useState(false)
 
     return (
         <div className="relative z-20">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between text-left text-sm font-bold text-gray-900 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-4 py-2.5 rounded-xl transition-all active:scale-95"
+                className="w-full flex items-center justify-between text-left text-sm font-bold text-gray-900 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-4 py-2.5 rounded-md transition-all active:scale-95"
             >
                 <div className="flex items-center gap-2 truncate">
                     <span className="truncate">{selected}</span>
@@ -582,7 +593,7 @@ function SimpleDropdown({ options, selected, onSelect }: { options: string[], se
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 4, scale: 0.95 }}
                             transition={{ duration: 0.1 }}
-                            className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-100 p-1 z-20 overflow-hidden"
+                            className="absolute top-full left-0 right-0 mt-2 bg-white rounded-md border border-gray-100 p-1 z-20 overflow-hidden"
                         >
                             {options.map((option) => (
                                 <button
@@ -592,7 +603,7 @@ function SimpleDropdown({ options, selected, onSelect }: { options: string[], se
                                         setIsOpen(false)
                                     }}
                                     className={cn(
-                                        "w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-gray-50",
+                                        "w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-gray-50",
                                         selected === option ? "text-blue-600 bg-blue-50" : "text-gray-600"
                                     )}
                                 >
@@ -605,4 +616,4 @@ function SimpleDropdown({ options, selected, onSelect }: { options: string[], se
             </AnimatePresence>
         </div>
     )
-}
+})

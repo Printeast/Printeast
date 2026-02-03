@@ -2,56 +2,59 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
-
-const FOOTER_LINKS = [
-    {
-        title: "About",
-        links: [
-            { label: "Our Story", href: "#" },
-            { label: "Careers", href: "#" },
-            { label: "Press", href: "#" },
-            { label: "Contact", href: "#" },
-        ],
-    },
-    {
-        title: "Explore",
-        links: [
-            { label: "Global Network", href: "#" },
-            { label: "Products", href: "#" },
-            { label: "Pricing", href: "#" },
-            { label: "Showcase", href: "#" },
-        ],
-    },
-    {
-        title: "Connect",
-        links: [
-            { label: "API Docs", href: "#" },
-            { label: "Shopify App", href: "#" },
-            { label: "Etsy Connect", href: "#" },
-            { label: "Custom Solutions", href: "#" },
-        ],
-    },
-    {
-        title: "Start Selling",
-        links: [
-            { label: "Creator Studio", href: "#" },
-            { label: "Merchant Portal", href: "#" },
-            { label: "Sample Kits", href: "#" },
-            { label: "Shipping Info", href: "#" },
-        ],
-    },
-    {
-        title: "Learn",
-        links: [
-            { label: "Blog", href: "#" },
-            { label: "Academy", href: "#" },
-            { label: "Help Center", href: "#" },
-            { label: "Community", href: "#" },
-        ],
-    },
-]
+import { useTranslations } from "next-intl"
 
 export function Footer() {
+    const t = useTranslations('Footer');
+
+    const FOOTER_LINKS = [
+        {
+            title: t('columns.about'),
+            links: [
+                { label: t('links.ourStory'), href: "#" },
+                { label: t('links.careers'), href: "#" },
+                { label: t('links.press'), href: "#" },
+                { label: t('links.contact'), href: "#" },
+            ],
+        },
+        {
+            title: t('columns.explore'),
+            links: [
+                { label: t('links.globalNetwork'), href: "#" },
+                { label: t('links.products'), href: "#" },
+                { label: t('links.pricing'), href: "#" },
+                { label: t('links.showcase'), href: "#" },
+            ],
+        },
+        {
+            title: t('columns.connect'),
+            links: [
+                { label: t('links.apiDocs'), href: "#" },
+                { label: t('links.shopifyApp'), href: "#" },
+                { label: t('links.etsyConnect'), href: "#" },
+                { label: t('links.customSolutions'), href: "#" },
+            ],
+        },
+        {
+            title: t('columns.startSelling'),
+            links: [
+                { label: t('links.creatorStudio'), href: "#" },
+                { label: t('links.merchantPortal'), href: "#" },
+                { label: t('links.sampleKits'), href: "#" },
+                { label: t('links.shippingInfo'), href: "#" },
+            ],
+        },
+        {
+            title: t('columns.learn'),
+            links: [
+                { label: t('links.blog'), href: "#" },
+                { label: t('links.academy'), href: "#" },
+                { label: t('links.helpCenter'), href: "#" },
+                { label: t('links.community'), href: "#" },
+            ],
+        },
+    ]
+
     return (
         <footer className="relative w-full bg-black text-white pt-40 pb-0 overflow-hidden z-40">
             <div className="container mx-auto px-6 lg:px-12 relative z-10">
@@ -61,13 +64,11 @@ export function Footer() {
                     {FOOTER_LINKS.map((column, colIndex) => (
                         <motion.div
                             key={column.title}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: colIndex * 0.1 }}
-                            viewport={{ once: true }}
                             className="flex flex-col gap-6"
                         >
-                            <h4 className="text-sm font-semibold text-white/40 uppercase tracking-wider">
+                            <h4 className="text-sm font-semibold text-white/40 tracking-wider">
                                 {column.title}
                             </h4>
                             <ul className="flex flex-col gap-4">
@@ -90,18 +91,17 @@ export function Footer() {
                 <div className="relative border-t border-white/10 pt-10 pb-3 flex flex-col items-center">
                     {/* Legal Links (Small) */}
                     <div className="w-full flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 mb-12 sm:mb-24 gap-4 px-4 text-center md:text-left">
-                        <p>&copy; {new Date().getFullYear()} Printeast Technologies. All rights reserved.</p>
+                        <p>&copy; {new Date().getFullYear()} Printeast Technologies. {t('legal.rights')}</p>
                         <div className="flex gap-6 justify-center md:justify-start">
-                            <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-                            <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
+                            <Link href="#" className="hover:text-white transition-colors">{t('legal.privacyPolicy')}</Link>
+                            <Link href="#" className="hover:text-white transition-colors">{t('legal.termsOfService')}</Link>
                         </div>
                     </div>
 
                     {/* Massive Text Logo */}
                     <div className="w-full flex justify-center overflow-hidden select-none pointer-events-none leading-none">
                         <motion.h1
-                            initial={{ y: 30, opacity: 0.5 }}
-                            whileInView={{ y: 0, opacity: 1 }}
+                            animate={{ y: 0, opacity: 1 }}
                             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                             className="text-[13.5vw] leading-[0.8] font-black tracking-tighter text-white mix-blend-overlay opacity-90 text-center"
                         >

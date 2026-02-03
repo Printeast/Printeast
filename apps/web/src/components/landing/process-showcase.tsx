@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, memo, useMemo } from "react"
 import { motion, AnimatePresence, useInView } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { MousePointer2, Check, DollarSign, Activity, ChevronRight, Wand2 } from "lucide-react"
 import Image from "next/image"
+import { useTranslations } from "next-intl"
 
 // --- ASSETS ---
 const ASSETS = {
@@ -21,60 +22,68 @@ const CATALOG_PRODUCTS = [
     { id: 6, name: "Eco Tote", image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=400&auto=format&fit=crop", category: "Accessories" }
 ]
 
-const PHASES = [
-    { id: "catalog", label: "PREMIUM CATALOG", description: "Select from 900+ high-end products", gradient: "from-blue-500 via-indigo-500 to-indigo-600", duration: 5000 },
-    { id: "design", label: "AI CREATIVE STUDIO", description: "AI transforms ideas into masterpieces", gradient: "from-violet-500 via-purple-500 to-fuchsia-600", duration: 8500 },
-    { id: "sync", label: "GLOBAL DISTRIBUTION", description: "One-click sync to major marketplaces", gradient: "from-emerald-400 via-teal-500 to-emerald-600", duration: 5000 },
-    { id: "profit", label: "INSTANT REVENUE", description: "Automated fulfillment, pure profit", gradient: "from-amber-400 via-orange-500 to-rose-500", duration: 5000 }
+const PHASES_CONFIG = [
+    { id: "catalog", gradient: "from-blue-500 via-indigo-500 to-indigo-600", duration: 5000 },
+    { id: "design", gradient: "from-violet-500 via-purple-500 to-fuchsia-600", duration: 8500 },
+    { id: "sync", gradient: "from-emerald-400 via-teal-500 to-emerald-600", duration: 5000 },
+    { id: "profit", gradient: "from-amber-400 via-orange-500 to-rose-500", duration: 5000 }
 ] as const
 
-// --- CURSOR CONFIGURATION ---
-const CURSOR_SCRIPT = [
-    {
-        phase: 0, // Catalog
-        start: { x: 80, y: 40, label: "" },
-        actions: [
-            { x: 30, y: 28, label: "Select Template", delay: 850 },
-            { clicking: true, delay: 2050 },
-            { clicking: false, delay: 2250 }
-        ]
-    },
-    {
-        phase: 1, // Design
-        start: { x: 10, y: 60, label: "" },
-        actions: [
-            { x: 28, y: 68, label: "Trigger AI Studio", delay: 800 },
-            { clicking: true, delay: 2200 },
-            { clicking: false, delay: 2500 },
-            { x: 85, y: 70, label: "", delay: 3500 } // Move away to observe
-        ]
-    },
-    {
-        phase: 2, // Sync
-        start: { x: 45, y: 30, label: "" },
-        actions: [
-            { x: 74, y: 35, label: "Marketplace Sync", delay: 700 },
-            { y: 58, delay: 2800 }
-        ]
-    },
-    {
-        phase: 3, // Profit
-        start: { x: 80, y: 30, label: "" },
-        actions: [
-            { x: 58, y: 62, label: "Claim Revenue", delay: 800 },
-            { clicking: true, delay: 1950 },
-            { clicking: false, delay: 2250 }
-        ]
-    }
-]
-
 // --- MAIN COMPONENT ---
-export function ProcessShowcase() {
+function ProcessShowcaseComponent() {
+    const t = useTranslations('ProcessShowcase');
     const [phase, setPhase] = useState(0)
     const [cursor, setCursor] = useState({ x: 50, y: 50, clicking: false, label: "" })
     const [showCursor, setShowCursor] = useState(false)
     const containerRef = useRef<HTMLDivElement>(null)
-    const isInView = useInView(containerRef, { once: true, amount: 0.3 })
+    const isInView = useInView(containerRef, { margin: "0px 0px -20% 0px", once: false })
+
+    // Build the phases array with translated labels and descriptions
+    const PHASES = useMemo(() => PHASES_CONFIG.map(config => ({
+        ...config,
+        label: t(`phases.${config.id}.label`),
+        description: t(`phases.${config.id}.description`)
+    })), [t]);
+
+    // Build the cursor script with translated labels
+    const CURSOR_SCRIPT = useMemo(() => [
+        {
+            phase: 0, // Catalog
+            start: { x: 80, y: 40, label: "" },
+            actions: [
+                { x: 30, y: 28, label: t('cursor.selectTemplate'), delay: 850 },
+                { clicking: true, delay: 2050 },
+                { clicking: false, delay: 2250 }
+            ]
+        },
+        {
+            phase: 1, // Design
+            start: { x: 10, y: 60, label: "" },
+            actions: [
+                { x: 28, y: 68, label: t('cursor.triggerAi'), delay: 800 },
+                { clicking: true, delay: 2200 },
+                { clicking: false, delay: 2500 },
+                { x: 85, y: 70, label: "", delay: 3500 } // Move away to observe
+            ]
+        },
+        {
+            phase: 2, // Sync
+            start: { x: 45, y: 30, label: "" },
+            actions: [
+                { x: 74, y: 35, label: t('cursor.marketplaceSync'), delay: 700 },
+                { y: 58, delay: 2800 }
+            ]
+        },
+        {
+            phase: 3, // Profit
+            start: { x: 80, y: 30, label: "" },
+            actions: [
+                { x: 58, y: 62, label: t('cursor.claimRevenue'), delay: 800 },
+                { clicking: true, delay: 1950 },
+                { clicking: false, delay: 2250 }
+            ]
+        }
+    ], [t]);
 
     useEffect(() => {
         if (!isInView) return
@@ -113,14 +122,14 @@ export function ProcessShowcase() {
             clearTimeout(exitTimer)
             mouseTimers.forEach(t => clearTimeout(t))
         }
-    }, [phase, isInView])
+    }, [phase, isInView, t]); // Added t to dependencies
 
-    const currentPhase = PHASES[phase] ?? PHASES[0]
+    const currentPhase = PHASES[phase] ?? PHASES[0]!
 
     return (
         <div
             ref={containerRef}
-            className="w-full h-[600px] bg-white/40 backdrop-blur-3xl rounded-2xl overflow-hidden relative shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] border border-white/40 group ring-1 ring-white/60"
+            className="w-full h-[600px] bg-white/40 backdrop-blur-3xl rounded-md overflow-hidden relative border border-white/40 group ring-1 ring-white/60"
         >
             {/* Cinematic Background Layer */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -145,7 +154,6 @@ export function ProcessShowcase() {
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={phase}
-                        initial={{ opacity: 0, scale: 0.9, y: 30, filter: "blur(20px)" }}
                         animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
                         exit={{ opacity: 0, scale: 1.1, y: -30, filter: "blur(20px)" }}
                         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -166,7 +174,6 @@ export function ProcessShowcase() {
                         <div className="overflow-hidden">
                             <motion.h3
                                 key={currentPhase.label}
-                                initial={{ y: "100%" }}
                                 animate={{ y: 0 }}
                                 transition={{ duration: 0.5, ease: "circOut" }}
                                 className="text-5xl font-black text-slate-900 tracking-tighter"
@@ -184,8 +191,6 @@ export function ProcessShowcase() {
                             {currentPhase.description}
                         </motion.p>
                     </div>
-
-                    {/* Progress indicators removed as requested */}
                 </div>
             </div>
 
@@ -205,20 +210,25 @@ export function ProcessShowcase() {
                     opacity: { duration: 0.2 }
                 }}
             >
-                <motion.div
-                    animate={{
-                        scale: cursor.clicking ? 0.85 : 1,
-                        rotate: cursor.clicking ? -15 : 0
-                    }}
-                    transition={{ type: "spring", stiffness: 500, damping: 25, mass: 0.5 }}
-                    className="relative"
-                >
-                    <MousePointer2 className="w-5 h-5 text-white fill-indigo-600 drop-shadow-[0_2px_10px_rgba(79,70,229,0.4)]" strokeWidth={1.5} />
-                </motion.div>
+                <div className="relative">
+                    <motion.div
+                        animate={{
+                            scale: cursor.clicking ? 0.85 : 1,
+                            rotate: cursor.clicking ? -15 : 0
+                        }}
+                        transition={{ type: "spring", stiffness: 500, damping: 25, mass: 0.5 }}
+                        className="relative"
+                    >
+                        <MousePointer2 className="w-5 h-5 text-white fill-indigo-600" strokeWidth={1.5} />
+                    </motion.div>
+
+                    {/* Tooltip Label */}
+
+                </div>
+
                 <AnimatePresence>
                     {cursor.clicking && (
                         <div className="absolute inset-0 flex items-center justify-center">
-                            {/* Inner Ripple */}
                             <motion.div
                                 initial={{ scale: 0, opacity: 0.8 }}
                                 animate={{ scale: 2, opacity: 0 }}
@@ -233,29 +243,28 @@ export function ProcessShowcase() {
                                 transition={{ duration: 0.7, ease: "easeOut", delay: 0.05 }}
                                 className="absolute w-8 h-8 bg-indigo-500/10 rounded-full border border-indigo-500/20"
                             />
-                            {/* Hit Marker */}
                             <motion.div
                                 initial={{ scale: 0 }}
                                 animate={{ scale: [0, 1.2, 1] }}
                                 exit={{ scale: 0, opacity: 0 }}
-                                className="w-2 h-2 bg-indigo-600 rounded-full shadow-[0_0_15px_rgba(79,70,229,0.8)]"
+                                className="w-2 h-2 bg-indigo-600 rounded-full"
                             />
                         </div>
                     )}
                 </AnimatePresence>
             </motion.div>
-
         </div>
     )
 }
 
+export const ProcessShowcase = memo(ProcessShowcaseComponent);
 
 // --- CATALOG SCENE ---
-function CatalogScene() {
+const CatalogScene = memo(function CatalogSceneComponent() {
+    const t = useTranslations('ProcessShowcase.scenes.catalog');
     const [selectedIdx, setSelectedIdx] = useState(-1)
 
     useEffect(() => {
-        // Precise sync with cursor click (2050ms in script)
         const timer = setTimeout(() => {
             setSelectedIdx(0)
         }, 900)
@@ -270,7 +279,6 @@ function CatalogScene() {
                     return (
                         <motion.div
                             key={product.id}
-                            initial={{ opacity: 0, scale: 0.9 }}
                             animate={{
                                 opacity: selectedIdx === -1 || isSelected ? 1 : 0.4,
                                 scale: isSelected ? 1.05 : 1,
@@ -280,13 +288,13 @@ function CatalogScene() {
                             }}
                             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                             className={cn(
-                                "relative w-40 h-48 bg-white/80 backdrop-blur-xl rounded-xl overflow-hidden p-2 flex flex-col transition-all duration-500",
+                                "relative w-40 h-48 bg-white/80 backdrop-blur-xl rounded-md overflow-hidden p-2 flex flex-col transition-all duration-500",
                                 isSelected
-                                    ? "shadow-[0_20px_60px_-10px_rgba(79,70,229,0.3)] ring-2 ring-indigo-500/20 scale-105 z-20"
-                                    : "shadow-sm border border-white/60 hover:border-indigo-200"
+                                    ? "ring-2 ring-indigo-500/20 scale-105 z-20"
+                                    : "border border-white/60 hover:border-indigo-200"
                             )}
                         >
-                            <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-slate-50 mb-3 group-hover:bg-slate-100 transition-colors">
+                            <div className="relative w-full aspect-square rounded-md overflow-hidden bg-slate-50 mb-3 group-hover:bg-slate-100 transition-colors">
                                 <Image
                                     src={product.image}
                                     className="object-cover opacity-90 transition-transform duration-700"
@@ -300,7 +308,7 @@ function CatalogScene() {
                                         animate={{ opacity: 1, scale: 1 }}
                                         className="absolute inset-0 bg-indigo-600/10 flex items-center justify-center backdrop-blur-[1px]"
                                     >
-                                        <div className="bg-white p-2 rounded-full shadow-lg">
+                                        <div className="bg-white p-2 rounded-full">
                                             <Check className="w-5 h-5 text-indigo-600" strokeWidth={3} />
                                         </div>
                                     </motion.div>
@@ -321,98 +329,66 @@ function CatalogScene() {
             >
                 <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Live Inventory Sync</span>
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">{t('liveSync')}</span>
                 </div>
             </motion.div>
         </div>
     )
-}
+});
 
 // --- DESIGN SCENE ---
-function DesignScene() {
+const DesignScene = memo(function DesignSceneComponent() {
+    const t = useTranslations('ProcessShowcase.scenes.design');
     const [progress, setProgress] = useState(0)
     const [displayText] = useState("Purple and orange t-shirt with abstract geometric shapes all over it kind of bold and patterned....")
 
     useEffect(() => {
-        // Wait for cursor click (2200ms in script) before starting engine
         const startDelay = setTimeout(() => {
             let p = 0
             const interval = setInterval(() => {
-                // Variable speed simulation for realism
-                // Fast start, slow middle (processing), fast finish
                 let increment = 0
-                if (p < 30) increment = 4.0 // Explosive start
-                else if (p < 80) increment = 1.5 // Faster "compute" phase
-                else increment = 5.0 // Rapid finish
-
-                // Add slight randomness
+                if (p < 30) increment = 4.0
+                else if (p < 80) increment = 1.5
+                else increment = 5.0
                 increment += (Math.random() - 0.5) * 1.5
-
                 p = Math.min(p + increment, 100)
                 setProgress(p)
-
-                if (p >= 100) {
-                    clearInterval(interval)
-                }
-            }, 40) // Faster tick rate (40ms vs 50ms)
+                if (p >= 100) clearInterval(interval)
+            }, 40)
             return () => clearInterval(interval)
         }, 2200)
-
         return () => clearTimeout(startDelay)
     }, [])
 
     return (
         <div className="w-full h-full flex items-center justify-center">
             <motion.div
-                className="relative w-[380px] h-[400px] bg-[#050506] rounded-2xl border border-white/10 shadow-[0_50px_120px_-20px_rgba(0,0,0,0.8)] p-0 overflow-hidden flex flex-col group ring-1 ring-white/10"
+                className="relative w-[380px] h-[400px] bg-[#050506] rounded-md border border-white/10 p-0 overflow-hidden flex flex-col group ring-1 ring-white/10"
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 24, opacity: 1 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
-                {/* Precision Reflection */}
                 <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none" />
-
-                {/* Main Viewport - Now starts from the top */}
                 <div className="mx-0 h-[280px] bg-[#010101] border-b border-white/5 overflow-hidden relative flex items-center justify-center">
-                    {/* Floating Label */}
                     <div className="absolute top-4 right-4 z-30 flex items-center gap-2 px-3 py-1 bg-black/40 backdrop-blur-md rounded-full border border-white/10">
-                        <span className="text-[9px] font-medium text-white/60 uppercase tracking-widest">AI Studio</span>
+                        <span className="text-[9px] font-medium text-white/60 uppercase tracking-widest">{t('studio')}</span>
                     </div>
-
-                    {/* Render Stage */}
                     <div className="relative w-full h-full flex items-center justify-center">
                         <motion.div
-                            className="absolute inset-0 w-full h-full overflow-hidden rounded-xl"
-                            animate={{
-                                opacity: progress < 50 ? 1 : 0,
-                            }}
+                            className="absolute inset-0 w-full h-full overflow-hidden rounded-md transform-gpu"
+                            animate={{ opacity: progress < 50 ? 1 : 0 }}
                             transition={{ duration: 0.3 }}
                         >
-                            <img
-                                src={ASSETS.plain}
-                                alt="Plain T-Shirt"
-                                className="absolute inset-0 w-full h-full object-cover"
-                                loading="eager"
-                            />
+                            <Image src={ASSETS.plain} alt="Plain T-Shirt" className="absolute inset-0 w-full h-full object-cover transform-gpu" fill sizes="380px" unoptimized />
                         </motion.div>
                         <motion.div
-                            className="absolute inset-0 w-full h-full overflow-hidden rounded-xl"
+                            className="absolute inset-0 w-full h-full overflow-hidden rounded-md transform-gpu"
                             initial={{ opacity: 0 }}
-                            animate={{
-                                opacity: progress >= 50 ? 1 : 0,
-                                scale: progress >= 50 && progress < 80 ? 1.05 : 1,
-                            }}
+                            animate={{ opacity: progress >= 50 ? 1 : 0, scale: progress >= 50 && progress < 80 ? 1.05 : 1 }}
                             transition={{ duration: 0.5 }}
                         >
-                            <img
-                                src={ASSETS.designed}
-                                alt="Designed T-Shirt"
-                                className="absolute inset-0 w-full h-full object-cover"
-                                loading="lazy"
-                            />
+                            <Image src={ASSETS.designed} alt="Designed T-Shirt" className="absolute inset-0 w-full h-full object-cover transform-gpu" fill sizes="380px" unoptimized />
                         </motion.div>
-
-                        {/* High-Precision Scan Wave & Glow Overlay */}
                         <AnimatePresence>
                             {progress > 5 && progress < 95 && (
                                 <>
@@ -423,63 +399,33 @@ function DesignScene() {
                                         transition={{ duration: 1.8, repeat: Infinity, ease: "linear" }}
                                         style={{ boxShadow: "0 0 40px 6px rgba(139, 92, 246, 0.8)" }}
                                     />
-                                    <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        className="absolute inset-0 bg-violet-500/10 backdrop-blur-[1px] z-15"
-                                    />
+                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-violet-500/10 backdrop-blur-[1px] z-15" />
                                 </>
                             )}
                         </AnimatePresence>
                     </div>
-
                 </div>
-
-                {/* Command & Control Bar */}
                 <div className="p-5 flex flex-col gap-3">
-                    {/* Prompt Text - Now on top */}
-                    <div className="bg-white/[0.03] rounded-xl p-3 px-5 border border-white/5 flex items-center gap-4">
-                        <div className="text-violet-500/40 font-mono text-[9px] font-black uppercase tracking-widest">Pmt</div>
+                    <div className="bg-white/[0.03] rounded-md p-3 px-5 border border-white/5 flex items-center gap-4">
+                        <div className="text-violet-500/40 font-mono text-[9px] font-black uppercase tracking-widest">{t('prompt')}</div>
                         <p className="text-[11px] text-white/80 font-medium font-mono leading-relaxed truncate flex-1 tracking-tight italic">
                             "{displayText.slice(0, 52)}..."
                         </p>
-                        <motion.div
-                            animate={{ opacity: [1, 0] }}
-                            transition={{ duration: 0.8, repeat: Infinity }}
-                            className="w-1.5 h-3 bg-violet-500/40 rounded-sm"
-                        />
+                        <motion.div animate={{ opacity: [1, 0] }} transition={{ duration: 0.8, repeat: Infinity }} className="w-1.5 h-3 bg-violet-500/40 rounded-md" />
                     </div>
-
-                    {/* Progress Bar - Now below and more compact */}
                     <div className="flex items-center justify-between gap-4 px-1">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center border border-violet-500/20">
                                 <Wand2 className="w-4 h-4 text-violet-300" />
                             </div>
-                            <span className={cn(
-                                "text-[9px] font-bold uppercase tracking-widest transition-colors duration-300",
-                                progress === 100 ? "text-emerald-400" : "text-white/40"
-                            )}>
-                                {progress === 100 ? "Rendering Complete" : "Processing..."}
+                            <span className={cn("text-[9px] font-bold uppercase tracking-widest transition-colors duration-300", progress === 100 ? "text-emerald-400" : "text-white/40")}>
+                                {progress === 100 ? t('renderingComplete') : t('processing')}
                             </span>
                         </div>
-
                         <div className="flex-1 flex flex-col items-end gap-1.5">
-                            <span className={cn(
-                                "text-[10px] font-bold tabular-nums transition-colors duration-300 leading-none",
-                                progress === 100 ? "text-emerald-400" : "text-violet-300"
-                            )}>{Math.round(progress)}%</span>
+                            <span className={cn("text-[10px] font-bold tabular-nums transition-colors duration-300 leading-none", progress === 100 ? "text-emerald-400" : "text-violet-300")}>{Math.round(progress)}%</span>
                             <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden max-w-[130px]">
-                                <motion.div
-                                    className={cn(
-                                        "h-full shadow-[0_0_15px_rgba(139,92,246,0.6)] transition-colors duration-300",
-                                        progress === 100 ? "bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.6)]" : "bg-violet-500"
-                                    )}
-                                    initial={{ width: "0%" }}
-                                    animate={{ width: `${progress}%` }}
-                                    transition={{ type: "tween", ease: "linear", duration: 0.1 }}
-                                />
+                                <motion.div className={cn("h-full transition-colors duration-300", progress === 100 ? "bg-emerald-500" : "bg-violet-500")} initial={{ width: "0%" }} animate={{ width: `${progress}%` }} transition={{ type: "tween", ease: "linear", duration: 0.1 }} />
                             </div>
                         </div>
                     </div>
@@ -487,10 +433,11 @@ function DesignScene() {
             </motion.div>
         </div>
     )
-}
+});
 
 // --- SYNC SCENE ---
-function SyncScene() {
+const SyncScene = memo(function SyncSceneComponent() {
+    const t = useTranslations('ProcessShowcase.scenes.sync');
     const [started, setStarted] = useState(false)
     const STORES = [
         { name: 'Shopify', logo: 'https://cdn.simpleicons.org/shopify/96bf48', color: '#96bf48' },
@@ -500,7 +447,6 @@ function SyncScene() {
     ]
 
     useEffect(() => {
-        // Sync with cursor drift (700ms in parent)
         const timer = setTimeout(() => setStarted(true), 1200)
         return () => clearTimeout(timer)
     }, [])
@@ -508,43 +454,17 @@ function SyncScene() {
     return (
         <div className="w-full h-full flex items-center justify-center overflow-visible">
             <div className="relative flex items-center justify-center gap-24">
-                {/* Source Product - ON LEFT */}
-                <motion.div
-                    className="relative w-[340px] h-[380px] bg-white/90 backdrop-blur-xl rounded-2xl shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] overflow-hidden p-[3px] z-20 border border-white/60 ring-1 ring-white/80"
-                    initial={{ scale: 0.8, opacity: 0, x: 10 }}
-                    animate={{ scale: 1, opacity: 1, x: 40 }}
-                    transition={{ duration: 0.8, ease: "circOut" }}
-                >
-                    <div className="w-full h-full rounded-xl overflow-hidden bg-slate-50 relative">
-                        <img
-                            src={ASSETS.designed}
-                            className="absolute inset-0 w-full h-full object-cover"
-                            alt="Designed Product"
-                            loading="lazy"
-                        />
+                <motion.div className="relative w-[340px] h-[380px] bg-white/90 backdrop-blur-xl rounded-md overflow-hidden p-[3px] z-20 border border-white/60 ring-1 ring-white/80 transform-gpu" initial={{ scale: 0.8, opacity: 0, x: 10 }} animate={{ scale: 1, opacity: 1, x: 40 }} transition={{ duration: 0.8, ease: "circOut" }}>
+                    <div className="w-full h-full rounded-md overflow-hidden bg-slate-50 relative">
+                        <Image src={ASSETS.designed} className="absolute inset-0 w-full h-full object-cover transform-gpu" alt="Designed Product" fill sizes="340px" unoptimized />
                     </div>
                 </motion.div>
-
-                {/* Marketplace Column - ON RIGHT */}
                 <div className="flex flex-col gap-3 z-20">
                     {STORES.map((shop, i) => (
-                        <motion.div
-                            key={shop.name}
-                            initial={{ x: 50, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            transition={{ delay: 0.4 + i * 0.15, duration: 0.5, ease: "backOut" }}
-                            className="bg-white/80 backdrop-blur-md rounded-xl p-2.5 px-5 flex items-center gap-3 w-[170px] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] border border-white/60 group cursor-default hover:border-emerald-400 hover:shadow-[0_0_25px_-5px_rgba(52,211,153,0.5)] transition-all duration-500 transform hover:scale-105"
-                        >
-                            <div className="relative w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center p-2 transition-transform group-hover:scale-105 duration-300">
-                                <Image
-                                    src={shop.logo}
-                                    alt={shop.name}
-                                    fill
-                                    className="object-contain p-2"
-                                    sizes="40px"
-                                    unoptimized
-                                />
-                                <div className="absolute inset-0 rounded-xl ring-1 ring-black/5" />
+                        <motion.div key={shop.name} initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 + i * 0.15, duration: 0.5, ease: "backOut" }} className="bg-white/80 backdrop-blur-md rounded-md p-2.5 px-5 flex items-center gap-3 w-[170px] border border-white/60 group cursor-default transition-all duration-500 transform hover:scale-105">
+                            <div className="relative w-10 h-10 rounded-md bg-slate-50 flex items-center justify-center p-2 transition-transform group-hover:scale-105 duration-300">
+                                <Image src={shop.logo} alt={shop.name} fill className="object-contain p-2" sizes="40px" unoptimized />
+                                <div className="absolute inset-0 rounded-md ring-1 ring-black/5" />
                             </div>
                             <div className="flex-1 min-w-0">
                                 <h4 className="text-slate-900 font-bold text-xs leading-none mb-1">{shop.name}</h4>
@@ -553,7 +473,7 @@ function SyncScene() {
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                         <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
                                     </span>
-                                    <span className="text-[8px] font-black text-emerald-600/80 tracking-[0.1em] uppercase group-hover:text-emerald-600 transition-colors">Connected</span>
+                                    <span className="text-[8px] font-black text-emerald-600/80 tracking-[0.1em] uppercase group-hover:text-emerald-600 transition-colors">{t('connected')}</span>
                                 </div>
                             </div>
                             <div className="w-6 h-6 rounded-full bg-emerald-50 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-50 group-hover:scale-100 transition-all duration-300">
@@ -562,9 +482,6 @@ function SyncScene() {
                         </motion.div>
                     ))}
                 </div>
-
-                {/* Animated Connection Lines */}
-                {/* Animated Connection Lines - Continuous Energy Beam */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-10" viewBox="0 0 1000 600">
                     <defs>
                         <linearGradient id="energy-beam" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -578,51 +495,24 @@ function SyncScene() {
                         </filter>
                     </defs>
                     {[0, 1, 2, 3].map((i) => (
-                        <motion.path
-                            key={i}
-                            d={`M 480 300 C 530 300, 520 ${188 + i * 75}, 570 ${188 + i * 75}`}
-                            stroke="url(#energy-beam)"
-                            strokeWidth="3"
-                            fill="none"
-                            filter="url(#glow-beam)"
-                            initial={{ pathLength: 0, opacity: 0 }}
-                            animate={started ? { pathLength: 1, opacity: 1 } : {}}
-                            transition={{ duration: 1.2, delay: i * 0.15, ease: "easeInOut" }}
-                        />
+                        <motion.path key={i} d={`M 480 300 C 530 300, 520 ${188 + i * 75}, 570 ${188 + i * 75}`} stroke="url(#energy-beam)" strokeWidth="3" fill="none" filter="url(#glow-beam)" initial={{ pathLength: 0, opacity: 0 }} animate={started ? { pathLength: 1, opacity: 1 } : {}} transition={{ duration: 1.2, delay: i * 0.15, ease: "easeInOut" }} />
                     ))}
-                    {/* Pulse Travelers */}
                     {[0, 1, 2, 3].map((i) => (
-                        <motion.circle
-                            key={`p-${i}`}
-                            r="4"
-                            fill="#ecfdf5"
-                            filter="url(#glow-beam)"
-                            initial={{ offsetDistance: "0%" }}
-                            animate={started ? { offsetDistance: "100%" } : {}}
-                            transition={{
-                                duration: 2,
-                                delay: 1.2 + i * 0.2,
-                                repeat: Infinity,
-                                ease: "linear"
-                            }}
-                            style={{
-                                offsetPath: `path("M 480 300 C 530 300, 520 ${188 + i * 75}, 570 ${188 + i * 75}")`
-                            }}
-                        />
+                        <motion.circle key={`p-${i}`} r="4" fill="#ecfdf5" filter="url(#glow-beam)" initial={{ offsetDistance: "0%" }} animate={started ? { offsetDistance: "100%" } : {}} transition={{ duration: 2, delay: 1.2 + i * 0.2, repeat: Infinity, ease: "linear" }} style={{ offsetPath: `path("M 480 300 C 530 300, 520 ${188 + i * 75}, 570 ${188 + i * 75}")` }} />
                     ))}
                 </svg>
             </div>
         </div>
     )
-}
+});
 
 // --- EARN SCENE ---
-function EarnScene() {
+const EarnScene = memo(function EarnSceneComponent() {
+    const t = useTranslations('ProcessShowcase.scenes.earn');
     const [count, setCount] = useState(0)
     const [started, setStarted] = useState(false)
 
     useEffect(() => {
-        // Sync with cursor click (1950ms in script)
         const t1 = setTimeout(() => setStarted(true), 1950)
         return () => clearTimeout(t1)
     }, [])
@@ -638,19 +528,15 @@ function EarnScene() {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center pt-2">
             <div className="w-full max-w-4xl flex items-stretch gap-6 h-[85%]">
-                <motion.div
-                    className="flex-1 bg-slate-100/60 backdrop-blur-3xl rounded-2xl border border-white/60 p-8 overflow-hidden relative group shadow-[0_20px_60px_-10px_rgba(0,0,0,0.05)] ring-1 ring-white/80"
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                >
+                <motion.div className="flex-1 bg-slate-100/60 backdrop-blur-3xl rounded-md border border-white/60 p-8 overflow-hidden relative group ring-1 ring-white/80" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
                     <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2" />
                     <div className="relative z-10 flex flex-col h-full">
                         <div className="flex items-center gap-4 mb-10">
-                            <div className="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center shadow-[0_0_30px_rgba(245,158,11,0.2)]">
+                            <div className="w-14 h-14 rounded-md bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
                                 <DollarSign className="w-7 h-7 text-amber-500" />
                             </div>
                             <div>
-                                <h4 className="text-slate-400 font-black text-xs uppercase tracking-[0.2em] mb-1">Total Net Worth</h4>
+                                <h4 className="text-slate-400 font-black text-xs uppercase tracking-[0.2em] mb-1">{t('netWorth')}</h4>
                                 <div className="flex items-baseline gap-2">
                                     <span className="text-slate-900 text-5xl font-black tabular-nums tracking-tighter">${count.toLocaleString()}</span>
                                     <span className="text-amber-500 font-black text-sm tabular-nums">.00</span>
@@ -660,18 +546,12 @@ function EarnScene() {
                         <div className="flex-1 flex flex-col justify-end gap-6">
                             <div className="space-y-4">
                                 <div className="flex justify-between items-end">
-                                    <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">Growth Velocity</span>
+                                    <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">{t('velocity')}</span>
                                     <span className="text-emerald-500 font-bold text-xs">{started ? "+14.2%" : "+0.0%"}</span>
                                 </div>
                                 <div className="h-24 w-full flex items-end gap-1.5 px-1">
                                     {[40, 60, 45, 80, 55, 90, 70, 100, 85, 95].map((h, i) => (
-                                        <motion.div
-                                            key={i}
-                                            initial={{ height: "4px" }}
-                                            animate={started ? { height: `${h}%` } : { height: "4px" }}
-                                            transition={{ delay: i * 0.05, duration: 0.6, ease: "backOut" }}
-                                            className="flex-1 bg-amber-400 rounded-full opacity-90"
-                                        />
+                                        <motion.div key={i} initial={{ height: "4px" }} animate={started ? { height: `${h}%` } : { height: "4px" }} transition={{ delay: i * 0.05, duration: 0.6, ease: "backOut" }} className="flex-1 bg-amber-400 rounded-full opacity-90" />
                                     ))}
                                 </div>
                             </div>
@@ -679,34 +559,23 @@ function EarnScene() {
                     </div>
                 </motion.div>
                 <div className="w-72 flex flex-col gap-6">
-                    <motion.div
-                        className="flex-1 bg-slate-100/40 backdrop-blur-2xl rounded-xl border border-slate-900/5 p-8 flex flex-col justify-center gap-4 shadow-[0_20px_40px_rgba(0,0,0,0.05)]"
-                        initial={{ x: 50, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        transition={{ delay: 0.3 }}
-                    >
-                        <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                    <motion.div className="flex-1 bg-slate-100/40 backdrop-blur-2xl rounded-md border border-slate-900/5 p-8 flex flex-col justify-center gap-4" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.3 }}>
+                        <div className="w-10 h-10 rounded-md bg-blue-500/10 flex items-center justify-center">
                             <Activity className="w-5 h-5 text-blue-500" />
                         </div>
                         <div>
-                            <p className="text-slate-400 text-[9px] font-black uppercase tracking-widest mb-1">Weekly Sales</p>
+                            <p className="text-slate-400 text-[9px] font-black uppercase tracking-widest mb-1">{t('weeklySales')}</p>
                             <p className="text-slate-900 text-3xl font-black">1,248</p>
-                            <p className="text-blue-500 text-[9px] font-bold mt-1 tracking-tight">Orders fulfilled automatically</p>
+                            <p className="text-blue-500 text-[9px] font-bold mt-1 tracking-tight">{t('fulfilled')}</p>
                         </div>
                     </motion.div>
-                    <motion.div
-                        className="h-1/2 bg-gradient-to-br from-white to-gray-200 rounded-xl p-8 flex flex-col justify-between group cursor-pointer overflow-hidden relative shadow-[0_20px_40px_rgba(0,0,0,0.3)]"
-                        initial={{ x: 50, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        transition={{ delay: 0.4 }}
-                    >
+                    <motion.div className="h-1/2 bg-gradient-to-br from-white to-gray-200 rounded-md p-8 flex flex-col justify-between group cursor-pointer overflow-hidden relative" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
                         <div className="absolute inset-0 bg-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
                         <div className="relative z-10 space-y-2">
-                            <h4 className="text-black group-hover:text-white text-2xl font-black tracking-tight leading-tight transition-colors">Start your global empire.</h4>
+                            <h4 className="text-black group-hover:text-white text-2xl font-black tracking-tight leading-tight transition-colors">{t('empire')}</h4>
                         </div>
                         <div className="relative z-10 flex items-center justify-between">
-                            <span className="text-black/60 group-hover:text-white/60 text-[10px] font-bold transition-colors underline underline-offset-4">Get Started</span>
+                            <span className="text-black/60 group-hover:text-white/60 text-[10px] font-bold transition-colors underline underline-offset-4">{t('getStarted')}</span>
                             <ChevronRight className="w-5 h-5 text-black group-hover:text-white transition-colors" />
                         </div>
                     </motion.div>
@@ -714,4 +583,4 @@ function EarnScene() {
             </div >
         </div >
     )
-}
+});

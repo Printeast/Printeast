@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { motion, useInView, AnimatePresence } from "framer-motion"
+import { useState, useEffect, useRef, memo } from "react"
+import { motion, AnimatePresence, useInView } from "framer-motion"
 import { Sparkles, Wand2, Zap, MousePointer2, Type, Image as ImageIcon, Box, Download, Share2, ZoomIn, Undo, Redo, LayoutTemplate } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
@@ -14,12 +14,15 @@ const ASSETS = {
     result: "https://gkscoxpxoiggeeoegyac.supabase.co/storage/v1/object/sign/creator-assets/after.avif?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV84ZGZhMmNiMC0xZDY5LTQyNmItYTdjZi1kNjZhZGE0MGY0MDUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmVhdG9yLWFzc2V0cy9hZnRlci5hdmlmIiwiaWF0IjoxNzY5OTY4NTE4LCJleHAiOjE3NzI1NjA1MTh9.P4gPpHsApaex6Ku3g5-jtz4CeX317Gop67dojKILCw0"
 }
 
+import { useTranslations } from "next-intl"
+
 export function AiStudioSection() {
+    const t = useTranslations('AiStudio');
     const containerRef = useRef(null)
-    const isInView = useInView(containerRef, { once: true, amount: 0.2 })
+    const isInView = useInView(containerRef, { margin: "0px 0px -20% 0px", once: false })
 
     return (
-        <section ref={containerRef} className="py-24 bg-transparent text-slate-900 relative overflow-hidden">
+        <section ref={containerRef} className="py-24 bg-transparent text-slate-900 relative overflow-hidden transform-gpu">
             {/* Background Elements */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-400/10 rounded-full blur-[120px]" />
@@ -32,28 +35,27 @@ export function AiStudioSection() {
                 {/* Section Header */}
                 <div className="text-center mb-16 max-w-5xl mx-auto">
                     <motion.h2
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={isInView ? { opacity: 1, y: 0 } : {}}
+                        animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.1 }}
-                        className="text-4xl lg:text-5xl font-black tracking-tighter uppercase leading-[0.95] text-slate-900 mb-6 lg:whitespace-nowrap"
+                        className="text-4xl lg:text-5xl font-black tracking-tighter leading-[0.95] text-slate-900 mb-6 lg:whitespace-nowrap transform-gpu"
                     >
-                        DESIGN LIKE A PRO. <span className="text-blue-600">POWERED BY AI.</span>
+                        {t.rich('title', {
+                            blue: (chunks) => <span className="text-blue-600">{chunks}</span>
+                        })}
                     </motion.h2>
 
                     <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={isInView ? { opacity: 1, y: 0 } : {}}
+                        animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
                         className="text-slate-500 text-lg leading-relaxed"
                     >
-                        The world's most advanced design editor, built directly into Printeast.
-                        Experience fluid, cinematic creation with smart mockups.
+                        {t('description')}
                     </motion.p>
                 </div>
 
                 {/* THE STUDIO SIMULATION */}
                 <div className="w-full max-w-[1400px] mx-auto">
-                    <StudioSimulation isInView={isInView} />
+                    <StudioSimulation isInView={isInView} t={t} />
                 </div>
 
             </div>
@@ -61,7 +63,7 @@ export function AiStudioSection() {
     )
 }
 
-function StudioSimulation({ isInView }: { isInView: boolean }) {
+const StudioSimulation = memo(({ isInView, t }: { isInView: boolean, t: any }) => {
     // Animation Phases:
     // 0: Idle
     // 1: Cursor enters -> Moves to AI Tab
@@ -106,7 +108,7 @@ function StudioSimulation({ isInView }: { isInView: boolean }) {
     }, [isInView])
 
     return (
-        <div className="relative w-full aspect-[16/9] bg-[#0f0f11] rounded-2xl overflow-hidden shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] ring-1 ring-white/10 flex flex-col font-sans select-none">
+        <div className="relative w-full aspect-[16/9] bg-[#0f0f11] rounded-md overflow-hidden ring-1 ring-white/10 flex flex-col font-sans select-none">
             {/* --- TOP BAR --- */}
             <div className="h-14 bg-[#1a1a1c]/95 backdrop-blur-md border-b border-white/5 flex items-center justify-between px-6 z-40">
                 <div className="flex items-center gap-5">
@@ -118,26 +120,26 @@ function StudioSimulation({ isInView }: { isInView: boolean }) {
                     <div className="h-5 w-[1px] bg-white/5" />
                     <div className="flex items-center gap-3 text-gray-500">
                         <div className="flex gap-1">
-                            <button className="p-1.5 hover:bg-white/5 rounded-xl transition-colors hover:text-gray-300">
+                            <button className="p-1.5 hover:bg-white/5 rounded-md transition-colors hover:text-gray-300">
                                 <Undo className="w-4 h-4" />
                             </button>
-                            <button className="p-1.5 hover:bg-white/5 rounded-xl transition-colors hover:text-gray-300">
+                            <button className="p-1.5 hover:bg-white/5 rounded-md transition-colors hover:text-gray-300">
                                 <Redo className="w-4 h-4" />
                             </button>
                         </div>
                         <span className="text-xs font-medium text-gray-500/50 select-none">|</span>
-                        <div className="text-xs font-medium text-gray-400">Untitled Project</div>
+                        <div className="text-xs font-medium text-gray-400">{t('editor.untitled')}</div>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 bg-black/20 border border-white/5 px-3 py-1.5 rounded-full text-[10px] font-medium text-gray-400">
-                        <ZoomIn className="w-3 h-3" /> 100%
+                    <div className="flex items-center gap-2 bg-black/20 border border-white/5 px-3 py-1.5 rounded-md text-[10px] font-medium text-gray-400">
+                        <ZoomIn className="w-3 h-3" /> {t('editor.zoom')}
                     </div>
-                    <button className="px-4 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold rounded-xl shadow-lg shadow-blue-500/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95">
-                        <Download className="w-3 h-3" /> Export
+                    <button className="px-4 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold rounded-md flex items-center gap-2 transition-all hover:scale-105 active:scale-95">
+                        <Download className="w-3 h-3" /> {t('editor.export')}
                     </button>
-                    <button className="px-4 py-1.5 bg-white/5 hover:bg-white/10 border border-white/5 text-gray-300 text-xs font-semibold rounded-xl flex items-center gap-2 transition-all hover:text-white">
-                        <Share2 className="w-3 h-3" /> Share
+                    <button className="px-4 py-1.5 bg-white/5 hover:bg-white/10 border border-white/5 text-gray-300 text-xs font-semibold rounded-md flex items-center gap-2 transition-all hover:text-white">
+                        <Share2 className="w-3 h-3" /> {t('editor.share')}
                     </button>
                 </div>
             </div>
@@ -147,20 +149,20 @@ function StudioSimulation({ isInView }: { isInView: boolean }) {
 
                 {/* LEFT SIDEBAR */}
                 <div className="w-[72px] bg-[#1a1a1c] border-r border-white/5 flex flex-col items-center py-6 gap-6 z-40">
-                    <SidebarIcon icon={LayoutTemplate} label="Templates" />
-                    <SidebarIcon icon={Type} label="Text" />
-                    <SidebarIcon icon={ImageIcon} label="Uploads" />
-                    <SidebarIcon icon={Box} label="Elements" />
+                    <SidebarIcon icon={LayoutTemplate} label={t('editor.sidebar.templates')} />
+                    <SidebarIcon icon={Type} label={t('editor.sidebar.text')} />
+                    <SidebarIcon icon={ImageIcon} label={t('editor.sidebar.uploads')} />
+                    <SidebarIcon icon={Box} label={t('editor.sidebar.elements')} />
                     <div className="relative w-full flex justify-center">
                         <SidebarIcon
                             icon={Sparkles}
-                            label="AI Gen"
+                            label={t('editor.sidebar.aiGen')}
                             active={phase >= 2}
-                            className={phase >= 2 ? "text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" : ""}
+                            className={phase >= 2 ? "text-blue-400" : ""}
                         />
                         {/* AI Active Indicator */}
                         {phase >= 2 && (
-                            <motion.div layoutId="active-bar" className="absolute left-0 top-2 bottom-2 w-1 bg-blue-500 rounded-r-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
+                            <motion.div layoutId="active-bar" className="absolute left-0 top-2 bottom-2 w-1 bg-blue-500 rounded-r-full" />
                         )}
                     </div>
                 </div>
@@ -177,15 +179,15 @@ function StudioSimulation({ isInView }: { isInView: boolean }) {
                             <div className="p-5 border-b border-white/5">
                                 <div className="flex items-center gap-2 mb-1">
                                     <Sparkles className="w-4 h-4 text-blue-500" />
-                                    <h3 className="text-white font-semibold text-sm tracking-wide">AI Generator</h3>
+                                    <h3 className="text-white font-semibold text-sm tracking-wide">{t('editor.aiPanel.title')}</h3>
                                 </div>
-                                <p className="text-gray-500 text-[11px]">Turn your imagination into reality.</p>
+                                <p className="text-gray-500 text-[11px]">{t('editor.aiPanel.description')}</p>
                             </div>
                             <div className="p-5 space-y-5">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Prompt</label>
-                                    <div className="w-full h-36 bg-black/40 rounded-xl border border-white/10 p-4 text-sm text-gray-300 font-medium leading-relaxed focus-within:border-blue-500/50 transition-colors shadow-inner">
-                                        {phase >= 3 && <TypingText text="Purple and orange t-shirt with abstract geometric shapes all over it kind of bold and patterned...." startDelay={480} />}
+                                    <label className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{t('editor.aiPanel.prompt')}</label>
+                                    <div className="w-full h-36 bg-black/40 rounded-md border border-white/10 p-4 text-sm text-gray-300 font-medium leading-relaxed focus-within:border-blue-500/50 transition-colors">
+                                        {phase >= 3 && <TypingText text={t('editor.aiPanel.typingText')} startDelay={480} />}
                                         <motion.span
                                             animate={{ opacity: [1, 0] }}
                                             transition={{ duration: 0.8, repeat: Infinity }}
@@ -195,20 +197,20 @@ function StudioSimulation({ isInView }: { isInView: boolean }) {
                                 </div>
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <label className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Style</label>
-                                        <span className="text-[10px] text-blue-500 font-bold cursor-pointer hover:text-blue-400 transition-colors">View All</span>
+                                        <label className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{t('editor.aiPanel.style')}</label>
+                                        <span className="text-[10px] text-blue-500 font-bold cursor-pointer hover:text-blue-400 transition-colors">{t('editor.aiPanel.viewAll')}</span>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2.5">
                                         {[
-                                            { name: "Geometric", image: "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=200&h=120&auto=format&fit=crop" },
-                                            { name: "3D Render", image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=200&h=120&auto=format&fit=crop" },
-                                            { name: "Anime", image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=200&h=120&auto=format&fit=crop" },
-                                            { name: "Digital Art", image: "https://images.unsplash.com/photo-1549490349-8643362247b5?q=80&w=200&h=120&auto=format&fit=crop" }
+                                            { name: t('editor.aiPanel.styles.geometric'), image: "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=200&h=120&auto=format&fit=crop" },
+                                            { name: t('editor.aiPanel.styles.3dRender'), image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=200&h=120&auto=format&fit=crop" },
+                                            { name: t('editor.aiPanel.styles.anime'), image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=200&h=120&auto=format&fit=crop" },
+                                            { name: t('editor.aiPanel.styles.digitalArt'), image: "https://images.unsplash.com/photo-1549490349-8643362247b5?q=80&w=200&h=120&auto=format&fit=crop" }
                                         ].map((style, i) => (
                                             <div
                                                 key={style.name}
                                                 className={cn(
-                                                    "group relative aspect-[3/2] rounded-xl overflow-hidden border border-white/10 cursor-pointer transition-all hover:border-blue-500/50 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)]",
+                                                    "group relative aspect-[3/2] rounded-md overflow-hidden border border-white/10 cursor-pointer transition-all hover:border-blue-500/50",
                                                     i === 0 ? "ring-1 ring-blue-500 ring-offset-1 ring-offset-[#141415]" : ""
                                                 )}
                                             >
@@ -223,7 +225,7 @@ function StudioSimulation({ isInView }: { isInView: boolean }) {
 
                                                 {/* Selected indicator (simulated) */}
                                                 {i === 0 && (
-                                                    <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,1)] z-10" />
+                                                    <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-blue-500 z-10" />
                                                 )}
                                             </div>
                                         ))}
@@ -233,16 +235,16 @@ function StudioSimulation({ isInView }: { isInView: boolean }) {
                                 <motion.button
                                     whileTap={{ scale: 0.98 }}
                                     className={cn(
-                                        "w-full py-3.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all mt-6 shadow-lg",
+                                        "w-full py-3.5 rounded-md font-bold text-xs flex items-center justify-center gap-2 transition-all mt-6",
                                         phase >= 5
                                             ? "bg-gradient-to-r from-blue-900/50 to-indigo-900/50 text-blue-200/50 cursor-not-allowed border border-blue-500/20"
-                                            : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-500/25 hover:shadow-blue-500/40"
+                                            : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white"
                                     )}
                                 >
                                     {phase >= 5 ? (
-                                        <><Zap className="w-4 h-4 animate-pulse" /> Generating...</>
+                                        <><Zap className="w-4 h-4 animate-pulse" /> {t('editor.aiPanel.btnGenerating')}</>
                                     ) : (
-                                        <><Wand2 className="w-4 h-4" /> Generate Image</>
+                                        <><Wand2 className="w-4 h-4" /> {t('editor.aiPanel.btnGenerate')}</>
                                     )}
                                 </motion.button>
                             </div>
@@ -288,25 +290,29 @@ function StudioSimulation({ isInView }: { isInView: boolean }) {
                             }}
                             transition={{ duration: 0.8 }}
                         >
-                            <img
+                            <Image
                                 src={ASSETS.plain}
-                                className="w-full h-full object-contain filter drop-shadow-2xl"
+                                fill
+                                className="w-full h-full object-contain"
                                 alt="Shirt Mockup"
+                                priority
                                 loading="eager"
+                                sizes="500px"
                             />
 
                             {/* RESULT OVERLAY */}
                             <motion.div
-                                className="absolute inset-0 w-full h-full z-10 will-change-transform"
+                                className="absolute inset-0 w-full h-full z-10 will-change-transform transform-gpu"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: phase >= 6 ? 1 : 0 }}
                                 transition={{ duration: 0.5 }} // Quicker fade in after blur
                             >
-                                <img
+                                <Image
                                     src={ASSETS.result}
-                                    className="w-full h-full object-contain filter drop-shadow-2xl will-change-transform"
+                                    fill
+                                    className="w-full h-full object-contain will-change-transform transform-gpu"
                                     alt="Design"
-                                    loading="lazy"
+                                    sizes="500px"
                                 />
                             </motion.div>
                         </motion.div>
@@ -319,7 +325,7 @@ function StudioSimulation({ isInView }: { isInView: boolean }) {
             </div>
         </div>
     )
-}
+})
 
 function Cursor({ phase }: { phase: number }) {
     // Cursor Positions (%)
@@ -376,7 +382,7 @@ function Cursor({ phase }: { phase: number }) {
             <div className="relative">
                 <MousePointer2
                     className={cn(
-                        "w-6 h-6 text-white fill-black stroke-[1.5px] drop-shadow-xl transition-transform duration-150",
+                        "w-6 h-6 text-white fill-black stroke-[1.5px] transition-transform duration-150",
                         isClicking ? "scale-90" : "scale-100"
                     )}
                 />
@@ -388,7 +394,7 @@ function Cursor({ phase }: { phase: number }) {
                         className="absolute -top-2 -left-2 w-10 h-10 bg-white/50 rounded-full"
                     />
                 )}
-                <div className="absolute left-6 top-4 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg whitespace-nowrap">
+                <div className="absolute left-6 top-4 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
                     You
                 </div>
             </div>
@@ -405,7 +411,7 @@ function SidebarIcon({ icon: Icon, label, active, className }: { icon: any, labe
     )
 }
 
-function TypingText({ text, startDelay = 0 }: { text: string, startDelay?: number }) {
+const TypingText = memo(({ text, startDelay = 0 }: { text: string, startDelay?: number }) => {
     const [display, setDisplay] = useState("")
 
     useEffect(() => {
@@ -418,14 +424,14 @@ function TypingText({ text, startDelay = 0 }: { text: string, startDelay?: numbe
                 } else {
                     clearInterval(interval)
                 }
-            }, 50) // Typing speed
+            }, 55) // Slightly slower for performance
             return () => clearInterval(interval)
         }, startDelay)
 
         return () => clearTimeout(timeout)
     }, [text, startDelay])
 
-    return <span>{display}</span>
-}
+    return <span className="will-change-[contents]">{display}</span>
+})
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))

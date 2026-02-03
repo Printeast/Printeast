@@ -1,0 +1,383 @@
+{
+    "Navbar": {
+        "tabs": {
+            "seller": "Hub vendeur",
+            "personal": "Commandes perso",
+            "artist": "Hub artiste"
+        },
+        "links": {
+            "products": "Produits",
+            "marketplace": "Marché",
+            "aiStudio": "Studio AI",
+            "pricing": "Tarifs",
+            "howItWorks": "Fonctionnement",
+            "learn": "Apprendre",
+            "solutions": "Solutions",
+            "support": "Support",
+            "stories": "Histoires"
+        },
+        "selectRegion": "Choisir région",
+        "startNow": "Commencer"
+    },
+    "Hero": {
+        "title": "Créez Personnalisez <blue>Imprimez Vendez</blue>",
+        "subtitle": "La plateforme Print-on-Demand la plus intelligente alimentée par l'IA. Zéro stock, expédition mondiale et qualité de confiance.",
+        "badges": {
+            "noCreditCard": "Sans carte bancaire",
+            "freeForever": "Gratuit à vie"
+        },
+        "buttons": {
+            "createFree": "Créer gratuitement",
+            "startSelling": "Vendre maintenant"
+        }
+    },
+    "FeatureShowcase": {
+        "title": "Comment ça <blue>marche</blue>",
+        "subtitle": "Vous êtes à quelques étapes de créer votre marque rentable. Production, logistique et support — gérés par nous.",
+        "items": {
+            "1": {
+                "title": "Créer",
+                "description": "Téléchargez vos designs ou utilisez notre Studio AI."
+            },
+            "2": {
+                "title": "Personnaliser",
+                "description": "Mockups sur 500+ produits premium."
+            },
+            "3": {
+                "title": "Vendre",
+                "description": "Connectez-vous à Shopify, Etsy ou TikTok Shop."
+            },
+            "4": {
+                "title": "Évoluer",
+                "description": "On gère l'impression, l'emballage et l'envoi."
+            },
+            "5": {
+                "title": "Gagner",
+                "description": "Gardez 100 % de vos profits, on s'occupe de tout."
+            }
+        }
+    },
+    "GlobalReach": {
+        "title": {
+            "line1": "Nous travaillons",
+            "line1Blue": "non-stop.",
+            "line2": "Nous livrons dans",
+            "line2Blue": "le monde entier."
+        },
+        "description": "Printeast opère sur une infrastructure sans frontières. Nos centres logistiques 24/7 garantissent que vos produits arrivent plus vite partout dans le monde.",
+        "stats": {
+            "activeHubs": "Hubs actifs",
+            "countries": "Pays",
+            "uptime": "Disponibilité"
+        },
+        "hotspots": {
+            "regionalHub": "Hub régional",
+            "asiaPacific": "Asie-Pacifique",
+            "autonomousRouting": "Routage autonome actif.",
+            "hqNode": "Nœud HQ",
+            "globalControl": "Contrôle global",
+            "infrastructureScaling": "Évolutivité en direct."
+        }
+    },
+    "AiStudio": {
+        "title": "Créez comme un pro <blue>via l'IA</blue>",
+        "description": "L'éditeur le plus avancé au monde, intégré à Printeast. Vivez une création fluide et cinématographique avec des mockups intelligents.",
+        "editor": {
+            "untitled": "Projet sans titre",
+            "export": "Exporter",
+            "share": "Partager",
+            "zoom": "100%",
+            "sidebar": {
+                "templates": "Modèles",
+                "text": "Texte",
+                "uploads": "Imports",
+                "elements": "Éléments",
+                "aiGen": "Générateur IA"
+            },
+            "aiPanel": {
+                "title": "Générateur IA",
+                "description": "Transformez votre imagination en réalité.",
+                "prompt": "Prompt",
+                "style": "Style",
+                "viewAll": "Voir tout",
+                "btnGenerate": "Générer image",
+                "btnGenerating": "Génération...",
+                "typingText": "T-shirt violet et orange avec des formes géométriques abstraites partout, audacieux et à motifs....",
+                "styles": {
+                    "geometric": "Géométrique",
+                    "3dRender": "Rendu 3D",
+                    "anime": "Animé",
+                    "digitalArt": "Art Numérique"
+                }
+            }
+        }
+    },
+    "FeaturesGrid": {
+        "studio": "Studio IA",
+        "createCustom": "Créez votre <br /> T-shirt personnalisé",
+        "startsFrom": "À partir de",
+        "startDesigning": "Commencer le design",
+        "newDrop": "Nouveau Drop",
+        "smartMockup": "Mockup intelligent.",
+        "artistHub": "Hub artiste",
+        "monetize": "Monétisez vos actifs."
+    },
+    "ProcessShowcase": {
+        "phases": {
+            "catalog": {
+                "label": "Catalogue Premium",
+                "description": "Choisissez parmi 900+ produits haut de gamme"
+            },
+            "design": {
+                "label": "Creative AI Studio",
+                "description": "L'IA transforme vos idées en chef-d'œuvre"
+            },
+            "sync": {
+                "label": "Distribution Globale",
+                "description": "Synchro en un clic vers les marketplaces"
+            },
+            "profit": {
+                "label": "Revenu Instantané",
+                "description": "Fulfillment automatisé, pur profit"
+            }
+        },
+        "cursor": {
+            "selectTemplate": "Choisir modèle",
+            "triggerAi": "Lancer Studio AI",
+            "marketplaceSync": "Sync Marketplace",
+            "claimRevenue": "Encaisser revenus"
+        },
+        "scenes": {
+            "catalog": {
+                "liveSync": "Sync inventaire en direct"
+            },
+            "design": {
+                "studio": "Studio AI",
+                "prompt": "Pmt",
+                "renderingComplete": "Rendu terminé",
+                "processing": "Traitement..."
+            },
+            "sync": {
+                "connected": "Connecté"
+            },
+            "earn": {
+                "netWorth": "Valeur nette totale",
+                "velocity": "Vitesse de croissance",
+                "weeklySales": "Ventes hebdo",
+                "fulfilled": "Commandes traitées auto"
+            }
+        }
+    },
+    "ReadyToStart": {
+        "title": "Lancez votre <blue>marque aujourd'hui</blue>",
+        "subtitle": "Qu'attendez-vous ? Lancez votre marque mondiale aujourd'hui sans aucun risque.",
+        "handledByUs": "Production, logistique et support — gérés par nous.",
+        "buttons": {
+            "initialize": "Initialiser maintenant",
+            "contactEnterprise": "Contacter Entreprise"
+        }
+    },
+    "Testimonials": {
+        "title": "Paroles de <blue>Vrais Créateurs</blue>",
+        "rating": "Évaluation",
+        "reviews": {
+            "1": {
+                "name": "Marcus Chen",
+                "role": "Artiste Digital & Vendeur",
+                "quote": "Honnêtement, j'étais sceptique. Mais la qualité d'impression sur les t-shirts en coton premium ? Incroyable. Mes retours ont chuté à presque zéro.",
+                "tags": [
+                    "Qualité d'impression",
+                    "Art"
+                ]
+            },
+            "2": {
+                "name": "Sarah Jenkins",
+                "role": "Fondatrice d'Éco-Marque",
+                "quote": "Les affirmations sur la durabilité sont réelles. J'ai d'abord commandé des échantillons — la texture organique est parfaite. La livraison en Europe a pris un jour de plus, mais ça valait le coup.",
+                "tags": [
+                    "Éco-Responsable",
+                    "Qualité"
+                ]
+            },
+            "3": {
+                "name": "David Miller",
+                "role": "Créateur de Contenu",
+                "quote": "Je ne suis pas un pro de la tech, donc le tableau de bord m'a sauvé la vie. J'ai lancé ma ligne de merch en une après-midi. Un petit souci de graphisme a été réglé en 10 min par le support.",
+                "tags": [
+                    "Install Simple",
+                    "Support"
+                ]
+            },
+            "4": {
+                "name": "Elena Rodriguez",
+                "role": "Dropshipper",
+                "quote": "Les marges de profit ici sont tout simplement meilleures. J'ai essayé quatre autres plateformes, mais Printeast est la seule où je ne perds pas d'argent sur des frais de port 'surprises'. C'est stable.",
+                "tags": [
+                    "Profits",
+                    "Fiabilité"
+                ]
+            }
+        }
+    },
+    "ProfitCalculator": {
+        "title": "Voyez combien vous pouvez gagner avec votre <word />",
+        "words": [
+            "Marque",
+            "Hobby",
+            "Side Hustle",
+            "Business"
+        ],
+        "subtitle": "Notre infrastructure premium garantit des marges élevées. Ajustez les valeurs pour estimer vos revenus mensuels potentiels.",
+        "modelSeries": "Série Modèle",
+        "selectProduct": "Choisir Produit",
+        "productCost": "Coût produit",
+        "sellingPrice": "Prix de vente",
+        "dailySales": "Ventes quotidiennes",
+        "perDay": "/ jour",
+        "oneSale": "1 vente",
+        "hundredSales": "100 ventes",
+        "yourCountry": "Votre pays",
+        "viewEarnings": "Voir revenus",
+        "aiSuggestion": "L'IA suggère un prix de <price /> pour convertir mieux",
+        "estimatedProfit": "Profit {period} estimé",
+        "startEarning": "Gagner maintenant",
+        "perMonth": "Par mois",
+        "perYear": "Par an",
+        "monthly": "Mensuel",
+        "yearly": "Annuel",
+        "estimates": "*Estimations basées sur le volume de ventes",
+        "categories": {
+            "Apparel": "Vêtements",
+            "Drinkware": "Mug & Verre",
+            "Home & Living": "Maison & Vie",
+            "Accessories": "Accessoires"
+        }
+    },
+    "Footer": {
+        "columns": {
+            "about": "À propos",
+            "explore": "Explorer",
+            "connect": "Connecter",
+            "startSelling": "Vendre",
+            "learn": "Apprendre"
+        },
+        "links": {
+            "ourStory": "Notre histoire",
+            "careers": "Carrières",
+            "press": "Presse",
+            "contact": "Contact",
+            "globalNetwork": "Réseau global",
+            "products": "Produits",
+            "pricing": "Tarifs",
+            "showcase": "Showcase",
+            "apiDocs": "Docs API",
+            "shopifyApp": "App Shopify",
+            "etsyConnect": "Etsy Connect",
+            "customSolutions": "Solutions sur mesure",
+            "creatorStudio": "Creator Studio",
+            "merchantPortal": "Portail marchand",
+            "sampleKits": "Kits d'échantillons",
+            "shippingInfo": "Infos livraison",
+            "blog": "Blog",
+            "academy": "Académie",
+            "helpCenter": "Centre d'aide",
+            "community": "Communauté"
+        },
+        "legal": {
+            "rights": "Tous droits réservés.",
+            "privacyPolicy": "Politique de confidentialité",
+            "termsOfService": "Conditions d'utilisation"
+        }
+    },
+    "IdeasInspiration": {
+        "title": "Inspiration <blue>& Idées</blue>",
+        "subtitle": "Besoin d'idées pour votre prochain best-seller ? Explorez les niches tendances, les styles de design populaires et les concepts éprouvés.",
+        "startDesigning": "Commencer le design",
+        "startsFrom": "À partir de",
+        "items": {
+            "phoneCases": {
+                "title": "Coques de téléphone",
+                "category": "Accessoires Tech",
+                "hotspots": {
+                    "toughCase": "Coque Tough",
+                    "cozySweater": "Pull Confort"
+                },
+                "hotspotCategories": {
+                    "mobile": "Accessoires Mobiles",
+                    "apparel": "Vêtements"
+                }
+            },
+            "familyGroup": {
+                "title": "Personnalisés pour toute la famille",
+                "category": "Vêtements & Maison",
+                "hotspots": {
+                    "cap": "Casquette Custom",
+                    "apron": "Tablier Designer",
+                    "mug": "Mug Céramique",
+                    "jumpsuit": "Combinaison Enfant"
+                },
+                "hotspotCategories": {
+                    "apparel": "Vêtements",
+                    "home": "Maison & Vie",
+                    "drinkware": "Mug & Verre",
+                    "kids": "Enfants"
+                }
+            },
+            "petAccessories": {
+                "title": "Accessoires Animaux",
+                "category": "Animaux",
+                "hotspots": {
+                    "jacket": "Veste de Chien"
+                },
+                "hotspotCategories": {
+                    "wear": "Vêtements Animaux"
+                }
+            },
+            "ecoBags": {
+                "title": "Sacs Éco-Responsables",
+                "category": "Accessoires",
+                "hotspots": {
+                    "bag": "Sac de courses"
+                },
+                "hotspotCategories": {
+                    "bags": "Sacs"
+                }
+            }
+        }
+    },
+    "CustomizableProducts": {
+        "title": "Produits <blue>Personnalisables</blue>",
+        "subtitle": "Choisissez les best-sellers parmi les vêtements, le lifestyle et les accessoires. Mixez, matchez et publiez en quelques minutes.",
+        "explore": "Explorer",
+        "items": {
+            "apparel": {
+                "title": "Vêtements",
+                "description": "Coton premium & mélanges."
+            },
+            "drinkware": {
+                "title": "Mug & Verre",
+                "description": "Céramiques & mugs de voyage."
+            },
+            "tech": {
+                "title": "Accessoires Tech",
+                "description": "Coques & housses."
+            },
+            "wallArt": {
+                "title": "Art Mural",
+                "description": "Posters & toiles."
+            },
+            "accessories": {
+                "title": "Accessoires",
+                "description": "Sacs & lifestyle."
+            },
+            "stationery": {
+                "title": "Papeterie",
+                "description": "Autocollants & carnets."
+            }
+        }
+    },
+    "Logos": {
+        "title": "Connecter <blue>Boutique</blue>",
+        "subtitle": "Intégrez votre boutique existante ou créez-en une nouvelle. Nous supportons toutes les plateformes majeures avec une synchronisation transparente."
+    }
+}

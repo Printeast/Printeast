@@ -1,3 +1,7 @@
+const withNextIntl = require('next-intl/plugin')(
+    './src/i18n/request.ts'
+);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     // === MONOREPO SUPPORT ===
@@ -5,6 +9,8 @@ const nextConfig = {
 
     // === IMAGE OPTIMIZATION ===
     images: {
+        // Disable optimization in development to bypass private IP checks
+        unoptimized: process.env.NODE_ENV === 'development',
         remotePatterns: [
             { protocol: 'https', hostname: '**.supabase.co' },
             { protocol: 'https', hostname: '**.cloudflare.com' },
@@ -57,4 +63,4 @@ const nextConfig = {
     },
 }
 
-module.exports = nextConfig
+module.exports = withNextIntl(nextConfig)

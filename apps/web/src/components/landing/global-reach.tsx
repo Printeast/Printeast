@@ -1,19 +1,24 @@
 "use client"
 
-import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useRef } from "react"
+import { motion, AnimatePresence, useInView } from "framer-motion"
 import RotatingEarth from "@/components/ui/wireframe-dotted-globe"
 import { Globe2, Crosshair } from "lucide-react"
 import { StarsBackground } from "@/components/ui/stars"
+import { useTranslations } from "next-intl"
 
 export function GlobalReach() {
+    const t = useTranslations('GlobalReach');
     const [hotspots, setHotspots] = useState<{ id: string; x: number; y: number; visible: boolean; name: string }[]>([])
 
-    return (
-        <section className="relative w-full min-h-screen bg-transparent py-24 px-4 flex flex-col items-center justify-center">
+    const containerRef = useRef(null)
+    const isInView = useInView(containerRef, { margin: "0px 0px -20% 0px", once: false })
 
-            {/* CARD CONTAINER for Cosmic Theme */}
-            <div className="relative w-full max-w-[95vw] 2xl:max-w-[1800px] mx-auto rounded-[48px] overflow-hidden border border-white/5 shadow-2xl my-12">
+    return (
+        <section ref={containerRef} className="relative w-full min-h-screen bg-[#030712] py-12 flex flex-col items-center justify-center overflow-hidden">
+
+            {/* CARD CONTAINER for Cosmic Theme - Truly Full Width but with Curved Visuals */}
+            <div className="relative w-full mx-0 rounded-[64px] sm:rounded-[80px] overflow-hidden border-t border-b border-white/5 shadow-2xl">
 
                 {/* StarsWrapper: Wraps content to capture mouse movement for parallax effect */}
                 <StarsBackground
@@ -36,33 +41,32 @@ export function GlobalReach() {
                         {/* Left: Text Content - Updated for Dark Theme */}
                         <div className="order-2 lg:order-1 flex flex-col justify-center space-y-8 lg:-ml-8">
                             <motion.div
-                                initial={{ opacity: 0, x: -30 }}
-                                whileInView={{ opacity: 1, x: 0 }}
+                                animate={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 1, ease: "easeOut" }}
                                 className="space-y-6"
                             >
-                                <h2 className="text-4xl lg:text-7xl font-black tracking-tighter uppercase leading-[0.9] text-white">
-                                    <span className="whitespace-nowrap">WE WORK ROUND</span> <br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 whitespace-nowrap">THE CLOCK.</span>
+                                <h2 className="text-4xl lg:text-7xl font-black tracking-tighter leading-[0.9] text-white">
+                                    <span className="whitespace-nowrap">{t('title.line1')}</span> <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 whitespace-nowrap">{t('title.line1Blue')}</span>
                                     <br />
                                     <br />
-                                    <span className="text-white whitespace-nowrap">WE DELIVER ROUND</span> <br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 whitespace-nowrap">THE GLOBE.</span>
+                                    <span className="text-white whitespace-nowrap">{t('title.line2')}</span> <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 whitespace-nowrap">{t('title.line2Blue')}</span>
                                 </h2>
 
                                 <p className="text-lg md:text-xl text-slate-400 max-w-xl font-medium leading-relaxed mt-4">
-                                    Printeast operates on a truly borderless infrastructure. Our 24/7 autonomous fulfillment centers ensure your products move faster, reaching customers across every continent.
+                                    {t('description')}
                                 </p>
 
                                 <div className="flex flex-wrap gap-12 pt-4">
                                     {[
-                                        { label: 'Active Hubs', value: '45+' },
-                                        { label: 'Countries', value: '180+' },
-                                        { label: 'Uptime', value: '99.9%' }
+                                        { label: t('stats.activeHubs'), value: '45+' },
+                                        { label: t('stats.countries'), value: '180+' },
+                                        { label: t('stats.uptime'), value: '99.9%' }
                                     ].map((stat) => (
                                         <div key={stat.label} className="flex flex-col">
                                             <span className="text-3xl font-black text-white tracking-tight">{stat.value}</span>
-                                            <span className="text-xs uppercase tracking-widest text-slate-500 font-bold">{stat.label}</span>
+                                            <span className="text-xs tracking-widest text-slate-500 font-bold">{stat.label}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -72,8 +76,7 @@ export function GlobalReach() {
                         {/* Right: Globe Visualization - Cosmic Style */}
                         <div className="order-1 lg:order-2 relative h-[500px] lg:h-[700px] flex items-center justify-center">
                             <motion.div
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
+                                animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 1.5, ease: [0.19, 1, 0.22, 1] }}
                                 className="relative h-full aspect-square flex items-center justify-center w-full max-w-[650px]"
                             >
@@ -85,6 +88,7 @@ export function GlobalReach() {
                                         <RotatingEarth
                                             className="w-full h-full"
                                             onHotspotsUpdate={setHotspots}
+                                            isInView={isInView}
                                         />
                                     </div>
                                 </div>
@@ -106,37 +110,37 @@ export function GlobalReach() {
                                                 className="absolute left-0 top-0 z-20 pointer-events-none will-change-transform"
                                                 transition={{ type: "spring", damping: 20, stiffness: 120, mass: 0.5 }}
                                             >
-                                                <div className="relative bg-[#0F172A]/80 backdrop-blur-2xl rounded-2xl p-4 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.7)] border border-blue-500/30 min-w-[200px] group overflow-hidden">
+                                                <div className="relative bg-[#0F172A]/80 backdrop-blur-2xl rounded-lg p-4 border border-blue-500/30 min-w-[200px] group overflow-hidden">
                                                     {/* Interior Nebula Glow */}
-                                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/10 via-transparent to-transparent opacity-50" />
+                                                    <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-blue-500/10 via-transparent to-transparent opacity-50" />
 
                                                     {hotspot.id === 'india' ? (
                                                         <div className="relative flex flex-col gap-2">
                                                             <div className="flex items-center gap-2 mb-0.5">
                                                                 <Crosshair className="w-4 h-4 text-cyan-400 animate-[spin_4s_linear_infinite]" />
-                                                                <span className="text-[10px] font-mono text-slate-400 uppercase tracking-[0.2em]">Regional Hub</span>
+                                                                <span className="text-[10px] font-mono text-slate-400 tracking-[0.2em]">{t('hotspots.regionalHub')}</span>
                                                             </div>
                                                             <div className="text-sm font-medium text-white leading-tight">
-                                                                <span className="text-cyan-400 block font-black text-base">ASIA-PACIFIC</span>
-                                                                Autonomous Routing Active.
+                                                                <span className="text-cyan-400 block font-black text-base">{t('hotspots.asiaPacific')}</span>
+                                                                {t('hotspots.autonomousRouting')}
                                                             </div>
                                                         </div>
                                                     ) : (
                                                         <div className="relative flex flex-col gap-2">
                                                             <div className="flex items-center gap-2 mb-0.5">
                                                                 <Globe2 className="w-4 h-4 text-blue-400 animate-pulse" />
-                                                                <span className="text-[10px] font-mono text-slate-400 uppercase tracking-[0.2em]">HQ Node</span>
+                                                                <span className="text-[10px] font-mono text-slate-400 tracking-[0.2em]">{t('hotspots.hqNode')}</span>
                                                             </div>
                                                             <div className="text-sm font-medium text-white leading-tight">
-                                                                <span className="text-blue-400 block font-black text-base">GLOBAL CONTROL</span>
-                                                                Infrastructure Scaling Live.
+                                                                <span className="text-blue-400 block font-black text-base">{t('hotspots.globalControl')}</span>
+                                                                {t('hotspots.infrastructureScaling')}
                                                             </div>
                                                         </div>
                                                     )}
 
                                                     <div className="absolute left-1/2 -bottom-8 -translate-x-1/2 flex flex-col items-center">
                                                         <div className="w-[1px] h-8 bg-gradient-to-b from-blue-500/50 to-transparent" />
-                                                        <div className="w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_15px_rgba(59,130,246,1)]" />
+                                                        <div className="w-2 h-2 rounded-full bg-blue-400" />
                                                     </div>
                                                 </div>
                                             </motion.div>

@@ -1,21 +1,37 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
+import createMiddleware from 'next-intl/middleware';
+import { routing } from '@/i18n/routing';
+
+const intlMiddleware = createMiddleware(routing);
 
 export default async function proxy(request: NextRequest) {
+    // 1. Run next-intl middleware for localization
+    const intlResponse = intlMiddleware(request);
+
+    // If next-intl wants to redirect (e.g., from / to /en), return it immediately
+    if (intlResponse.status === 307 || intlResponse.status === 308) {
+        return intlResponse;
+    }
+
+    // 2. Run Supabase session update
     const { supabaseResponse, user } = await updateSession(request);
 
     const path = request.nextUrl.pathname;
-    const isAuthRoute = path.startsWith('/login') || path.startsWith('/signup');
+
+    // Check if it's an auth or protected route
+    // We check for inclusions since they might be prefixed with /[locale]
+    const isAuthRoute = path.includes('/login') || path.includes('/signup');
     const isProtectedRoute =
-        path.startsWith('/dashboard') ||
-        path.startsWith('/onboarding') ||
-        path.startsWith('/seller') ||
-        path.startsWith('/creator');
+        path.includes('/dashboard') ||
+        path.includes('/onboarding') ||
+        path.includes('/seller') ||
+        path.includes('/creator');
 
     if (isProtectedRoute && !user) {
         const url = new URL("/login", request.url);
         const redirectResponse = NextResponse.redirect(url);
-        // Copy cookies from refreshed session response to the redirect response
+        // Ensure cookies are preserved for the login redirect
         supabaseResponse.cookies.getAll().forEach(cookie => {
             redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
         });
@@ -25,24 +41,35 @@ export default async function proxy(request: NextRequest) {
     if (isAuthRoute && user) {
         const url = new URL("/dashboard", request.url);
         const redirectResponse = NextResponse.redirect(url);
-        // Copy cookies from refreshed session response to the redirect response
         supabaseResponse.cookies.getAll().forEach(cookie => {
             redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
         });
         return redirectResponse;
     }
 
+    // Combine responses: 
+    // We want the headers/locale logic from intlResponse 
+    // but the session/cookies from supabaseResponse.
+
+    // Note: intlResponse is usually a NextResponse.next() with some headers.
+    // We can copy headers from intlResponse to supabaseResponse.
+    intlResponse.headers.forEach((value, key) => {
+        supabaseResponse.headers.set(key, value);
+    });
+
     return supabaseResponse;
 }
 
 export const config = {
     matcher: [
-        "/dashboard/:path*",
-        "/onboarding/:path*",
-        "/seller/:path*",
-        "/creator/:path*",
-        "/login",
-        "/signup",
-        "/auth/callback"
+        /*
+         * Match all request paths except for the ones starting with:
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         * - API routes (/api)
+         * - static assets (.svg, .png, etc)
+         */
+        "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
     ],
 };

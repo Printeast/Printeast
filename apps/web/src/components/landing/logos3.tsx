@@ -2,7 +2,7 @@
 
 import ScrollVelocity from "@/components/ui/scroll-velocity";
 import Image from "next/image";
-
+import { useTranslations } from "next-intl";
 
 interface Logo {
     id: string;
@@ -13,13 +13,11 @@ interface Logo {
 }
 
 interface Logos3Props {
-    heading?: string;
     logos?: Logo[];
     className?: string;
 }
 
 const Logos3 = ({
-    heading: _heading = "connectStore",
     logos = [
         {
             id: "shopify",
@@ -170,14 +168,18 @@ const Logos3 = ({
         },
     ],
 }: Logos3Props) => {
+    const t = useTranslations('Logos');
+
     return (
         <section className="py-32 bg-transparent relative overflow-hidden">
             <div className="container mx-auto px-6 lg:px-16 mb-16">
-                <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase leading-[0.95] text-slate-900 mb-6">
-                    CONNECT <span className="text-blue-600">STORE</span>
+                <h2 className="text-4xl lg:text-6xl font-black tracking-tighter leading-[0.95] text-slate-900 mb-6">
+                    {t.rich('title', {
+                        blue: (chunks) => <span className="text-blue-600">{chunks}</span>
+                    })}
                 </h2>
                 <p className="text-sm md:text-base text-slate-500 max-w-2xl font-medium leading-relaxed mt-4">
-                    Integrate with your existing store or create a new one. We support all major platforms with seamless synchronization.
+                    {t('subtitle')}
                 </p>
             </div>
 

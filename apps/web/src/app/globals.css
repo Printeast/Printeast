@@ -90,7 +90,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  scroll-behavior: smooth;
+  /* scroll-behavior: smooth; -- REMOVED: Conflicts with Lenis */
 }
 
 /* GPU-accelerated animations */
@@ -100,10 +100,11 @@ html {
 }
 
 /* Reduce layout thrashing for off-screen content */
-section {
-  content-visibility: auto;
+/* Reduce layout thrashing for off-screen content */
+/* section {
+  content-visibility: auto; -- REMOVED: Causes flickering/jumping during rapid scroll
   contain-intrinsic-size: auto 600px;
-}
+} */
 
 /* Smooth image loading */
 img {

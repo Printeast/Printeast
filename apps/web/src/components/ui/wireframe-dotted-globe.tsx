@@ -29,6 +29,7 @@ interface RotatingEarthProps {
     className?: string
     onHotspotUpdate?: (pos: { x: number; y: number; visible: boolean } | null) => void // Deprecated
     onHotspotsUpdate?: (hotspots: { id: string; x: number; y: number; visible: boolean; name: string }[]) => void
+    isInView?: boolean
 }
 
 export default function RotatingEarth({
@@ -36,9 +37,15 @@ export default function RotatingEarth({
     height = 600,
     className = "",
     onHotspotUpdate,
-    onHotspotsUpdate
+    onHotspotsUpdate,
+    isInView = true
 }: RotatingEarthProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null)
+    const isInViewRef = useRef(isInView)
+
+    useEffect(() => {
+        isInViewRef.current = isInView
+    }, [isInView])
 
     // Removed unused isLoading
     const [error, setError] = useState<string | null>(null)
@@ -619,7 +626,7 @@ export default function RotatingEarth({
         const rotationSpeed = 0.5
 
         const rotate = () => {
-            if (autoRotate) {
+            if (autoRotate && isInViewRef.current) {
                 rotation[0] += rotationSpeed
                 projection.rotate(rotation)
                 render()
