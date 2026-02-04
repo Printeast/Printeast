@@ -73,7 +73,7 @@ export function DashboardLayout({ children, user, fullBleed = false }: Dashboard
             <div className="dashboard-shell flex min-h-screen" data-theme={resolvedTheme}>
                 <Sidebar role={user.role} collapsed={collapsed} onToggle={() => setCollapsed((c) => !c)} />
 
-                <div className="flex flex-1 flex-col">
+                <div className={`flex flex-1 flex-col ${collapsed ? "ml-[78px]" : "ml-64"}`}>
                     <header className="flex items-center justify-between border-b dash-border dash-panel px-6 py-4 backdrop-blur" role="banner">
                         <div className="flex items-center gap-3">
                             <Tooltip>
@@ -102,8 +102,9 @@ export function DashboardLayout({ children, user, fullBleed = false }: Dashboard
                             <button
                                 type="button"
                                 onClick={toggleTheme}
-                                className="flex items-center gap-2 rounded-2xl border dash-border dash-panel px-3 py-2 text-sm font-semibold dash-text hover:bg-[var(--dash-panel-strong)] transition"
+                                className="flex h-10 w-10 items-center justify-center rounded-2xl border dash-border dash-panel text-sm font-semibold dash-text hover:bg-[var(--dash-panel-strong)] transition"
                                 aria-pressed={resolvedTheme === "dark"}
+                                aria-label="Toggle dark mode"
                             >
                                 <span className="text-[color:var(--dash-text)]">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
@@ -111,7 +112,6 @@ export function DashboardLayout({ children, user, fullBleed = false }: Dashboard
                                         <path d="M12 3a9 9 0 0 1 0 18V3z" fill="currentColor" stroke="none" />
                                     </svg>
                                 </span>
-                                <span>Dark mode</span>
                             </button>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>

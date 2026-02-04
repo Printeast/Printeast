@@ -1,14 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import Link from "next/link";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { createClient } from "@/utils/supabase/browser";
-import { IconBoxes, IconDownload, IconPlus, IconWarning } from "@/components/ui/icons";
+import { LayoutGrid, List, RefreshCw, Search } from "lucide-react";
 
 type InventoryItem = {
     id: string;
@@ -24,227 +19,171 @@ interface Props {
     initialInventory: InventoryItem[];
 }
 
-export function SellerInventoryClient({ userEmail, tenantId, initialInventory }: Props) {
-    const [inventory, setInventory] = useState<InventoryItem[]>(initialInventory);
-    const [form, setForm] = useState({ name: "", sku: "", price: "", quantity: "0" });
-    const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const supabase = createClient();
+const categories = [
+    "New Arrivals",
+    "Bestsellers",
+    "Holiday season",
+    "Elevated Apparel",
+    "Men's clothing",
+    "Women's clothing",
+    "Kids & baby clothing",
+    "Tote Bags",
+    "Wall art",
+    "Calendars",
+    "Cards",
+    "Photo books",
+    "Hats",
+    "Phone cases",
+    "Mugs & Bottle",
+    "Stationery & Business",
+];
 
-    const lowStock = inventory.filter((i) => i.quantity < 20);
+export function SellerInventoryClient({ userEmail, initialInventory }: Props) {
+    const [activeCategory, setActiveCategory] = useState("Men's clothing");
 
-    const handleAdd = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!tenantId) return;
-        setLoading(true);
-        setMessage(null);
-        setError(null);
-        try {
-            const { data: productRes, error: productErr } = await supabase
-                .from("products")
-                .insert({
-                    tenant_id: tenantId,
-                    name: form.name,
-                    sku: form.sku,
-                    base_price: form.price ? Number(form.price) : null,
-                })
-                .select("id, name, sku, base_price")
-                .single();
-
-            if (productErr || !productRes) throw productErr;
-
-            await supabase.from("inventory").insert({
-                product_id: productRes.id,
-                quantity: Number(form.quantity || 0),
-            });
-
-            setInventory((prev) => [
-                {
-                    id: productRes.id,
-                    name: productRes.name,
-                    sku: productRes.sku,
-                    base_price: productRes.base_price ? Number(productRes.base_price) : undefined,
-                    quantity: Number(form.quantity || 0),
-                },
-                ...prev,
-            ]);
-
-            setForm({ name: "", sku: "", price: "", quantity: "0" });
-            setMessage("SKU added successfully.");
-        } catch (err) {
-            console.error("Add SKU error", err);
-            setError("Could not add SKU. Check Supabase RLS or credentials.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleExport = () => {
-        const header = "name,sku,quantity,base_price";
-        const rows = inventory.map((i) => `${csv(i.name)},${csv(i.sku)},${i.quantity},${i.base_price ?? ""}`);
-        const csvContent = [header, ...rows].join("\n");
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "inventory.csv";
-        link.click();
-        URL.revokeObjectURL(url);
-    };
+    const products = useMemo(
+        () =>
+            initialInventory.map((item) => ({
+                id: item.id,
+                name: item.name || "Untitled product",
+                sku: item.sku,
+                price: item.base_price,
+            })),
+        [initialInventory]
+    );
 
     return (
-        <DashboardLayout user={{ email: userEmail || "seller", role: "SELLER" }}>
-            <div className="flex flex-col gap-8 dash-text">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                    <div>
-                        <p className="text-xs uppercase tracking-[0.25em] dash-muted">Inventory</p>
-                        <h1 className="text-3xl font-black dash-text">Supply & Reorder</h1>
-                        <p className="dash-muted mt-1">Manage SKUs, stock, and exports directly from Supabase.</p>
+        <DashboardLayout user={{ email: userEmail || "seller", role: "SELLER" }} fullBleed>
+            <div className="flex flex-col gap-6 dash-text">
+                <header className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <h1 className="text-2xl font-bold">Product Catalogue</h1>
+                        <Link
+                            href="/seller/inventory"
+                            className="h-9 w-9 rounded-lg border dash-border dash-panel flex items-center justify-center hover:dash-panel-strong"
+                            aria-label="Refresh"
+                        >
+                            <RefreshCw className="h-4 w-4 dash-muted" />
+                        </Link>
                     </div>
-                    <div className="flex gap-3">
-                        <Button type="button" variant="outline" onClick={handleExport} disabled={!inventory.length}>
-                            <IconDownload className="h-4 w-4 mr-2" /> Export CSV
-                        </Button>
-                    </div>
-                </div>
+                </header>
 
-                {(message || error) && (
-                    <div className={`rounded-xl border px-4 py-3 ${error ? "border-red-500/40 bg-red-500/10 text-[color:var(--dash-text)]" : "border-emerald-500/30 bg-emerald-500/10 text-[color:var(--dash-text)]"}`}>
-                        {error || message}
-                    </div>
-                )}
+                <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-6">
+                    <aside className="space-y-2">
+                        {categories.map((item) => (
+                            <button
+                                key={item}
+                                type="button"
+                                onClick={() => setActiveCategory(item)}
+                                className={`w-full text-left rounded-lg px-3 py-2 text-sm font-medium transition ${
+                                    activeCategory === item
+                                        ? "bg-blue-50 text-blue-700"
+                                        : "text-slate-500 hover:bg-slate-50"
+                                }`}
+                            >
+                                {item}
+                            </button>
+                        ))}
+                    </aside>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>New SKU</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleAdd} className="grid grid-cols-1 md:grid-cols-5 gap-3">
-                    <Input
-                        placeholder="Name"
-                        value={form.name}
-                        onChange={(e) => setForm({ ...form, name: e.target.value })}
-                        required
-                    />
-                    <Input
-                        placeholder="SKU"
-                        value={form.sku}
-                        onChange={(e) => setForm({ ...form, sku: e.target.value })}
-                        required
-                    />
-                    <Input
-                        placeholder="Base price"
-                        type="number"
-                        step="0.01"
-                        value={form.price}
-                        onChange={(e) => setForm({ ...form, price: e.target.value })}
-                    />
-                    <Input
-                        placeholder="Quantity"
-                        type="number"
-                        value={form.quantity}
-                        onChange={(e) => setForm({ ...form, quantity: e.target.value })}
-                    />
-                            <Button type="submit" disabled={loading || !tenantId} className="w-full">
-                                <IconPlus className="h-4 w-4 mr-2" /> Add SKU
-                            </Button>
-                        </form>
-                    </CardContent>
-                </Card>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <Card className="lg:col-span-2">
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <CardTitle>Stock levels</CardTitle>
-                                <Badge>{inventory.length} SKUs</Badge>
+                    <section className="space-y-5">
+                        <div className="rounded-lg border dash-border dash-panel p-4 space-y-3">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                                <input
+                                    placeholder="Which product are you looking for?"
+                                    className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#2563eb]/20"
+                                />
                             </div>
-                        </CardHeader>
-                        <CardContent>
-                            {inventory.length === 0 ? (
-                                <EmptyState title="No products yet" subtitle="Add a SKU to start tracking inventory." />
-                            ) : (
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Name</TableHead>
-                                            <TableHead>SKU</TableHead>
-                                            <TableHead>Stock</TableHead>
-                                            <TableHead>Base price</TableHead>
-                                            <TableHead className="text-right">Status</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {inventory.map((row) => (
-                                            <TableRow key={row.id}>
-                                                <TableCell className="font-semibold">{row.name}</TableCell>
-                                                <TableCell className="dash-muted">{row.sku}</TableCell>
-                                                <TableCell>{row.quantity}</TableCell>
-                                                <TableCell>{row.base_price ? currency(row.base_price) : "-"}</TableCell>
-                                                <TableCell className="text-right">
-                                                    <Badge tone={row.quantity < 20 ? "warning" : "neutral"}>{row.quantity < 20 ? "Low" : "OK"}</Badge>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Stock alerts</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center gap-2 text-[color:var(--dash-accent-start)]">
-                                <IconWarning className="h-4 w-4" />
-                                <p className="text-sm">Low stock threshold set to 20 units.</p>
-                            </div>
-                            <div className="flex items-center gap-2 dash-muted-strong">
-                                <IconBoxes className="h-4 w-4" />
-                                <p className="text-sm">Use “Add SKU” to create products and seed stock.</p>
-                            </div>
-                            {lowStock.length === 0 ? (
-                                <EmptyState title="No low stock" subtitle="All SKUs are above threshold." compact />
-                            ) : (
-                                <div className="space-y-3">
-                                    {lowStock.map((item) => (
-                                        <div key={item.id} className="rounded-xl border dash-border dash-panel p-3 flex items-center justify-between">
-                                            <div>
-                                                <p className="font-semibold text-sm dash-text">{item.name}</p>
-                                                <p className="text-[11px] dash-muted">{item.sku}</p>
-                                            </div>
-                                            <Badge tone="warning">{`${item.quantity} left`}</Badge>
-                                        </div>
-                                    ))}
+                            <div className="flex flex-wrap items-center gap-2">
+                                <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-600">
+                                    <option>Category</option>
+                                </select>
+                                <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-600">
+                                    <option>Technology</option>
+                                </select>
+                                <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-600">
+                                    <option>Brand</option>
+                                </select>
+                                <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-600">
+                                    <option>Color</option>
+                                </select>
+                                <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-600">
+                                    <option>Size</option>
+                                </select>
+                                <div className="ml-auto flex items-center gap-2">
+                                    <button className="h-9 w-9 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50" aria-label="Grid view">
+                                        <LayoutGrid className="mx-auto h-4 w-4" />
+                                    </button>
+                                    <button className="h-9 w-9 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50" aria-label="List view">
+                                        <List className="mx-auto h-4 w-4" />
+                                    </button>
                                 </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600">
+                            <div className="flex items-center gap-2">
+                                <span className="text-slate-500">Shipping region:</span>
+                                <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-600">
+                                    <option>United States</option>
+                                </select>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-slate-500">Currency:</span>
+                                <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-600">
+                                    <option>USD</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="rounded-lg p-6 text-white" style={{ background: "#1f3a8a" }}>
+                                <h3 className="text-lg font-semibold">New Arrivals</h3>
+                                <p className="text-sm text-white/80 mt-1">Latest additions to our catalog</p>
+                            </div>
+                            <div className="rounded-lg p-6 text-white" style={{ background: "#2563eb" }}>
+                                <h3 className="text-lg font-semibold">Bestsellers</h3>
+                                <p className="text-sm text-white/80 mt-1">Most popular items</p>
+                            </div>
+                            <div className="rounded-lg p-6 border border-blue-100 bg-blue-50 text-blue-700">
+                                <h3 className="text-lg font-semibold">Holiday season</h3>
+                                <p className="text-sm text-blue-500 mt-1">Seasonal favorites</p>
+                            </div>
+                        </div>
+
+                        {products.length === 0 ? (
+                            <div className="rounded-lg border border-dashed dash-border dash-panel p-8 text-center">
+                                <p className="text-sm font-semibold text-slate-700">No products yet</p>
+                                <p className="text-xs text-slate-500 mt-1">Add products to populate the catalogue.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                {products.map((item) => (
+                                    <div key={item.id} className="rounded-lg border dash-border dash-panel overflow-hidden">
+                                        <div className="h-32 bg-slate-100 flex items-center justify-center">
+                                            <div className="h-12 w-12 rounded-md bg-slate-300" />
+                                        </div>
+                                        <div className="p-4">
+                                            <p className="text-sm font-semibold text-slate-900">{item.name}</p>
+                                            <p className="text-xs text-slate-500">SKU: {item.sku || "-"}</p>
+                                            <p className="mt-3 text-sm font-semibold text-blue-600">
+                                                {item.price !== undefined && item.price !== null
+                                                    ? formatCurrency(item.price)
+                                                    : "Price on request"}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </section>
                 </div>
             </div>
         </DashboardLayout>
     );
 }
 
-function EmptyState({ title, subtitle, compact }: { title: string; subtitle: string; compact?: boolean }) {
-    return (
-        <div className={`rounded-2xl border border-dashed dash-border dash-panel ${compact ? "p-4" : "p-6"}`}>
-            <p className="font-semibold">{title}</p>
-            <p className="text-sm dash-muted">{subtitle}</p>
-        </div>
-    );
-}
-
-function currency(amount: number) {
-    return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(amount || 0);
-}
-
-function csv(value: string) {
-    if (value.includes(",") || value.includes("\"")) {
-        return `"${value.replace(/"/g, '""')}"`;
-    }
-    return value;
+function formatCurrency(value: number) {
+    return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
 }

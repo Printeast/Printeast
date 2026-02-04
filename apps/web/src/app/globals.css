@@ -170,3 +170,12 @@ body {
 button {
   cursor: pointer;
 }
+
+.integration-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.integration-scroll::-webkit-scrollbar {
+  display: none;
+}

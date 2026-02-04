@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { createClient } from "@/utils/supabase/server";
 import { resolveTenantId } from "../_data";
-import { ArrowUpRight, CheckCircle2, Clock, Sparkles } from "lucide-react";
+import { ArrowUpRight, CheckCircle2, Clock, RefreshCw, Sparkles } from "lucide-react";
 
 type OrderRow = {
     id: string;
@@ -63,27 +63,29 @@ export default async function SellerAnalyticsPage() {
     const paidPct = totalPayments ? Math.round((paid / totalPayments) * 100) : 0;
 
     return (
-        <DashboardLayout user={{ email: userEmail, role: "SELLER" }}>
+        <DashboardLayout user={{ email: userEmail, role: "SELLER" }} fullBleed>
             <div className="flex flex-col gap-6 dash-text">
                 <header className="flex flex-wrap items-center justify-between gap-4">
-                    <div className="space-y-1">
-                        <div className="flex items-center gap-2 text-xs uppercase tracking-[0.25em] dash-muted">
-                            Analytics
-                            <Badge tone="info">Live</Badge>
-                        </div>
-                        <h1 className="text-3xl font-black">Commerce Command</h1>
-                        <p className="dash-muted">Signals from orders, payments, and fulfillment velocity.</p>
+                    <div className="flex items-center gap-3">
+                        <h1 className="text-2xl font-bold">Analytics</h1>
+                        <a
+                            href="/seller/analytics"
+                            className="h-9 w-9 rounded-lg border dash-border dash-panel flex items-center justify-center hover:dash-panel-strong"
+                            aria-label="Refresh"
+                        >
+                            <RefreshCw className="h-4 w-4 dash-muted" />
+                        </a>
                     </div>
                     <div className="flex items-center gap-2">
                         <Button
                             type="button"
-                            className="h-10 rounded-full px-5 border dash-border dash-panel-strong text-sm font-semibold text-[color:var(--dash-text)]"
+                            className="h-10 rounded-lg px-5 border dash-border dash-panel-strong text-sm font-semibold text-[color:var(--dash-text)]"
                         >
                             Export
                         </Button>
                         <Button
                             type="button"
-                            className="h-10 rounded-full px-5 bg-[linear-gradient(135deg,var(--dash-accent-start),var(--dash-accent-end))] text-sm font-semibold text-white"
+                            className="h-10 rounded-lg px-5 bg-[linear-gradient(135deg,var(--dash-accent-start),var(--dash-accent-end))] text-sm font-semibold text-white"
                         >
                             Generate report
                         </Button>
@@ -94,11 +96,11 @@ export default async function SellerAnalyticsPage() {
                     <Metric label="GMV" value={formatCurrency(gmv)} helper="Gross merchandise volume" />
                     <Metric label="Orders" value={orderCount} helper="Total orders" />
                     <Metric label="Paid" value={formatCurrency(paid)} helper="Captured payments" tone="positive" />
-                    <Metric label="Pending" value={formatCurrency(pending)} helper="Awaiting capture" tone="warning" />
+                    <Metric label="Pending" value={formatCurrency(pending)} helper="Awaiting capture" tone="info" />
                 </section>
 
                 <section className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-4">
-                    <Card>
+                    <Card className="rounded-lg">
                         <CardHeader>
                             <div className="flex items-center justify-between">
                                 <CardTitle>Orders (7d)</CardTitle>
@@ -115,7 +117,7 @@ export default async function SellerAnalyticsPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="dash-panel-strong">
+                    <Card className="dash-panel-strong rounded-lg">
                         <CardHeader>
                             <CardTitle>Payment mix</CardTitle>
                             <p className="text-sm dash-muted">Paid vs pending capture.</p>
@@ -140,7 +142,7 @@ export default async function SellerAnalyticsPage() {
 
                             <div className="space-y-3 text-sm">
                                 <SignalRow icon={<CheckCircle2 className="h-4 w-4" />} label="Paid payments" value={formatCurrency(paid)} tone="positive" />
-                                <SignalRow icon={<Clock className="h-4 w-4" />} label="Pending capture" value={formatCurrency(pending)} tone="warning" />
+                                <SignalRow icon={<Clock className="h-4 w-4" />} label="Pending capture" value={formatCurrency(pending)} tone="info" />
                                 <SignalRow icon={<Sparkles className="h-4 w-4" />} label="Weekly GMV" value={formatCurrency(last7.reduce((s, d) => s + d.value, 0))} tone="info" />
                             </div>
                         </CardContent>
@@ -148,7 +150,7 @@ export default async function SellerAnalyticsPage() {
                 </section>
 
                 <section className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-4">
-                    <Card>
+                    <Card className="rounded-lg">
                         <CardHeader>
                             <div className="flex items-center justify-between">
                                 <CardTitle>Recent orders</CardTitle>
@@ -192,7 +194,7 @@ export default async function SellerAnalyticsPage() {
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="rounded-lg">
                         <CardHeader>
                             <CardTitle>Payment activity</CardTitle>
                             <p className="text-sm dash-muted">Latest payment events.</p>
@@ -202,7 +204,7 @@ export default async function SellerAnalyticsPage() {
                                 <EmptyPanel title="No payments yet" subtitle="Payments will surface here when available." />
                             ) : (
                                 recentPayments.map((payment) => (
-                                    <div key={`${payment.order_id}-${payment.created_at}`} className="rounded-xl border dash-border dash-panel p-3 flex items-center justify-between">
+                                    <div key={`${payment.order_id}-${payment.created_at}`} className="rounded-lg border dash-border dash-panel p-3 flex items-center justify-between">
                                         <div>
                                             <div className="text-sm font-semibold">{payment.order_id || "Order"}</div>
                                             <div className="text-xs dash-muted">{formatDate(payment.created_at)}</div>
@@ -234,7 +236,7 @@ function Metric({
     tone?: "warning" | "positive" | "info";
 }) {
     return (
-        <Card className="dash-panel-strong">
+        <Card className="dash-panel-strong rounded-lg">
             <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                     <div className="text-[11px] uppercase tracking-[0.25em] dash-muted">{label}</div>
@@ -261,7 +263,7 @@ function SignalRow({
     tone: "warning" | "positive" | "info";
 }) {
     return (
-        <div className="flex items-center justify-between rounded-xl border dash-border dash-panel px-3 py-2">
+        <div className="flex items-center justify-between rounded-lg border dash-border dash-panel px-3 py-2">
             <div className="flex items-center gap-2 text-sm">
                 <span className="dash-muted-strong">{icon}</span>
                 <span>{label}</span>
@@ -273,7 +275,7 @@ function SignalRow({
 
 function EmptyPanel({ title, subtitle }: { title: string; subtitle: string }) {
     return (
-        <div className="rounded-2xl border border-dashed dash-border dash-panel p-6 text-center">
+        <div className="rounded-lg border border-dashed dash-border dash-panel p-6 text-center">
             <p className="text-sm font-semibold">{title}</p>
             <p className="text-xs dash-muted mt-1">{subtitle}</p>
         </div>

@@ -1,133 +1,95 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
-import { resolveTenantId } from "../_data";
-
-type TenantRow = { name: string; slug: string; metadata?: Record<string, unknown> | null };
-type ProductRow = { id: string; name: string; sku: string; mockup_template_url?: string | null; metadata?: Record<string, unknown> | null };
-type CategoryRow = { id: string; name: string; parent_id: string | null };
+import { RefreshCw } from "lucide-react";
 
 export default async function SellerBrandingPage() {
     const supabase = await createClient();
     const { data: userRes } = await supabase.auth.getUser();
     const userEmail = userRes.user?.email || "seller";
-    const tenantId = await resolveTenantId(supabase);
-
-    const { data: tenantData } = tenantId
-        ? await supabase.from("tenants").select("name,slug,metadata").eq("id", tenantId).single()
-        : { data: null };
-
-    const { data: products = [] } = tenantId
-        ? await supabase
-              .from("products")
-              .select("id,name,sku,mockup_template_url,metadata")
-              .eq("tenant_id", tenantId)
-              .limit(24)
-        : { data: [] };
-
-    const { data: categories = [] } = tenantId
-        ? await supabase.from("categories").select("id,name,parent_id").eq("tenant_id", tenantId).limit(24)
-        : { data: [] };
-
-    const brandColors = (tenantData?.metadata as { colors?: string[] } | undefined)?.colors || [];
+    const cards = [
+        {
+            title: "Packing Inserts",
+            body: "Add a custom insert card to show off your brand identity and leave a meaningful personal message for your customers with every order.",
+            cta: "Set up inserts",
+            image: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80",
+        },
+        {
+            title: "Neck Labels",
+            body: "Personalize your garments with custom printed neck labels that promote your brand authority and delight your customers with premium finishing.",
+            cta: "Explore neck labels",
+            image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80",
+        },
+        {
+            title: "Gift Messages",
+            body: "Create a gift message template using your logo and customized fonts to match the unique look and feel of your online store.",
+            cta: "Configure messages",
+            image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80",
+        },
+        {
+            title: "Branded Labels",
+            body: "Enhance your brand recognition with high-quality adhesive labels, perfect for adding a professional touch to your external product packaging.",
+            cta: "Customize labels",
+            image: "https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=900&q=80",
+        },
+    ];
 
     return (
-        <DashboardLayout user={{ email: userEmail, role: "SELLER" }}>
+        <DashboardLayout user={{ email: userEmail, role: "SELLER" }} fullBleed>
             <div className="flex flex-col gap-6 dash-text">
                 <header className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        <p className="text-xs uppercase tracking-[0.25em] dash-muted">Branding</p>
-                        <h1 className="text-3xl font-black">Brand &amp; Identity</h1>
-                        <p className="dash-muted mt-1">Tenant, product branding, and taxonomy from Supabase.</p>
+                        <div className="flex items-center gap-3">
+                            <h1 className="text-2xl font-bold">Seller Branding and Packaging Services</h1>
+                            <Link
+                                href="/seller/branding"
+                                className="h-9 w-9 rounded-lg border dash-border dash-panel flex items-center justify-center hover:dash-panel-strong"
+                                aria-label="Refresh"
+                            >
+                                <RefreshCw className="h-4 w-4 dash-muted" />
+                            </Link>
+                        </div>
+                        <p className="dash-muted mt-1">Unlock the power of unforgettable branding to resonate with your audience and elevate your business to new heights.</p>
                     </div>
-                    <Badge tone="info">{products.length} Products</Badge>
                 </header>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    <Card className="lg:col-span-2">
-                        <CardHeader>
-                            <CardTitle>Brand kit</CardTitle>
-                            <p className="text-sm dash-muted">From tenants table (name, slug, metadata.colors).</p>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            <div className="flex flex-wrap items-center gap-3">
-                                <div className="rounded-xl border dash-border dash-panel px-4 py-3">
-                                    <p className="text-xs dash-muted">Name</p>
-                                    <p className="text-lg font-semibold dash-text">{tenantData?.name || "Tenant"}</p>
-                                </div>
-                                <div className="rounded-xl border dash-border dash-panel px-4 py-3">
-                                    <p className="text-xs dash-muted">Slug</p>
-                                    <p className="text-lg font-semibold dash-text">{tenantData?.slug || "-"}</p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    {brandColors.length === 0 ? (
-                                        <p className="text-sm dash-muted">Add colors in tenant metadata.colors</p>
-                                    ) : (
-                                        brandColors.map((c) => (
-                                            <span key={c} className="h-9 w-9 rounded-xl border dash-border" style={{ background: c }} />
-                                        ))
-                                    )}
-                                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {cards.map((card) => (
+                        <div key={card.title} className="rounded-lg border dash-border dash-panel p-4 space-y-3">
+                            <div className="min-h-[120px]">
+                                <h3 className="text-xl font-semibold">{card.title}</h3>
+                                <p className="mt-2 text-base dash-muted">{card.body}</p>
                             </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Categories</CardTitle>
-                            <p className="text-sm dash-muted">From categories table.</p>
-                        </CardHeader>
-                        <CardContent>
-                            {categories.length === 0 ? (
-                                <div className="rounded-xl border border-dashed dash-border dash-panel p-4">
-                                    <p className="font-semibold dash-text">No categories</p>
-                                    <p className="text-sm dash-muted">Add rows in categories to see them here.</p>
-                                </div>
-                            ) : (
-                                <ul className="space-y-2 text-sm">
-                                    {categories.map((c) => (
-                                        <li key={c.id} className="flex items-center gap-2">
-                                            <span className="h-1.5 w-1.5 rounded-full bg-[var(--dash-accent-start)]" />
-                                            <span>{c.name}</span>
-                                            {c.parent_id && <span className="text-[11px] dash-muted">Child of {c.parent_id.slice(0, 6)}</span>}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </CardContent>
-                    </Card>
+                            <div className="overflow-hidden rounded-lg border border-slate-200 w-full h-[420px] mx-auto">
+                                <img src={card.image} alt={card.title} className="h-full w-full object-cover" />
+                            </div>
+                            <div className="flex items-center justify-between text-sm text-slate-500">
+                                <span className="inline-flex items-center gap-2">
+                                    <span className="h-2 w-2 rounded-full bg-[#2563eb]" />
+                                    Availability: All stores and providers
+                                </span>
+                            </div>
+                            <button className="h-12 w-full rounded-lg bg-[#2563eb] text-base font-semibold text-white">
+                                {card.cta}
+                            </button>
+                        </div>
+                    ))}
                 </div>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Product branding</CardTitle>
-                        <p className="text-sm dash-muted">Products with SKU and mockup templates.</p>
-                    </CardHeader>
-                    <CardContent>
-                        {products.length === 0 ? (
-                            <div className="rounded-2xl border border-dashed dash-border dash-panel p-6">
-                                <p className="font-semibold dash-text">No products</p>
-                                <p className="text-sm dash-muted">Create products to manage branding assets.</p>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                {products.map((p) => (
-                                    <div key={p.id} className="rounded-xl border dash-border dash-panel p-3 space-y-2">
-                                        <div className="flex items-center justify-between text-xs dash-muted">
-                                            <span>{p.sku}</span>
-                                            <Badge tone={p.mockup_template_url ? "info" : "neutral"}>{p.mockup_template_url ? "Template" : "Missing"}</Badge>
-                                        </div>
-                                        <div className="text-sm font-semibold dash-text line-clamp-2">{p.name}</div>
-                                        <div className="text-[11px] dash-muted break-all">
-                                            {p.mockup_template_url || "Add mockup_template_url in products"}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 pt-4 text-xs text-slate-500">
+                    <div>
+                        <p className="font-semibold text-slate-700">Need help getting started?</p>
+                        <p>Learn how to make the most of our branding features.</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <Link href="#" className="inline-flex items-center gap-1 text-blue-600 font-semibold">
+                            Video Tutorial
+                        </Link>
+                        <Link href="#" className="inline-flex items-center gap-1 text-blue-600 font-semibold">
+                            Read Article
+                        </Link>
+                    </div>
+                </div>
             </div>
         </DashboardLayout>
     );

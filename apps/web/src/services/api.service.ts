@@ -40,7 +40,20 @@ class ApiClient {
         return { success: true, data: null as T };
       }
 
-      const result: ApiResponse<T> = await response.json();
+      const text = await response.text();
+      let result: ApiResponse<T>;
+      try {
+        result = text
+          ? (JSON.parse(text) as ApiResponse<T>)
+          : { success: response.ok, data: null as T };
+      } catch (parseError) {
+        console.error(`[API Client Error] Invalid JSON from ${endpoint}:`, parseError);
+        result = {
+          success: false,
+          error: "INVALID_JSON",
+          message: "Invalid JSON response",
+        } as ApiResponse<T>;
+      }
 
       if (!response.ok) {
         throw new Error(result.message || `API Error: ${response.status}`);

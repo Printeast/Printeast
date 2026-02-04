@@ -77,7 +77,7 @@ export function Sidebar({ role, collapsed }: SidebarProps) {
             title: "Creation",
             items: [
                 { label: "Products", href: "/seller/inventory", icon: IconBoxes },
-                { label: "My Store", href: "/seller/storefront", icon: IconStore },
+                { label: "Stores", href: "/seller/storefront", icon: IconStore },
                 { label: "My Templates", href: "/seller/templates", icon: IconTemplates },
                 { label: "AI & Design Studio", href: "/seller/design", icon: IconSpark },
             ],
@@ -95,7 +95,7 @@ export function Sidebar({ role, collapsed }: SidebarProps) {
 
     return (
         <aside
-            className={`border-r dash-border dash-panel px-3 py-6 shadow-sm transition-all duration-200 ${collapsed ? "w-[78px]" : "w-64"}`}
+            className={`border-r dash-border dash-panel px-3 py-6 shadow-sm transition-all duration-200 fixed top-0 left-0 h-screen overflow-y-auto z-20 ${collapsed ? "w-[78px]" : "w-64"}`}
             aria-label="Role navigation"
         >
             <div className={`mb-8 flex items-center gap-3 px-2 ${collapsed ? "justify-center" : "justify-start"}`}>
@@ -105,7 +105,9 @@ export function Sidebar({ role, collapsed }: SidebarProps) {
                 {!collapsed && (
                     <div>
                         <div className="text-lg font-black dash-text">Printeast</div>
-                        <div className="text-[10px] font-bold uppercase tracking-[0.2em] dash-muted">{role.replace("_", " ")}</div>
+                        <div className="text-[10px] font-bold uppercase tracking-[0.2em] dash-muted">
+                            {role === "SELLER" ? "DASHBOARD" : role.replace("_", " ")}
+                        </div>
                     </div>
                 )}
             </div>
