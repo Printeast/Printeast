@@ -146,7 +146,7 @@ function ProcessShowcaseComponent() {
                         )}
                     />
                 </AnimatePresence>
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.1] mix-blend-overlay pointer-events-none" />
+                <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.1] mix-blend-overlay pointer-events-none" />
             </div>
 
             {/* Content Stage */}

@@ -41,7 +41,7 @@ export function ReadyToStart() {
                             />
 
                             {/* Noise Texture Overlay */}
-                            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.07] mix-blend-overlay" />
+                            <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.07] mix-blend-overlay" />
 
                             {/* Inner Shine/Gloss */}
                             <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />

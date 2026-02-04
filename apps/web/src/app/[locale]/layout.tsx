@@ -99,6 +99,10 @@ export const metadata: Metadata = {
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
 import { PreconnectOptimizer } from "@/components/providers/preconnect-optimizer";
 
+import { ThemeProvider } from "@/components/providers/theme-provider";
+
+// ... existing imports
+
 export default async function LocaleLayout({
   children,
   params
@@ -111,65 +115,26 @@ export default async function LocaleLayout({
   // Validate that the incoming `locale` parameter is valid
   if (!locales.includes(locale as any)) notFound();
 
-  // Providing all messages to the client
-  // side is the easiest way to get started
   const messages = await getMessages();
 
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
-        {/* Structured Data for Organization */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              name: "Printeast",
-              url: "https://printeast.com",
-              logo: "https://printeast.com/logo.png",
-              sameAs: [
-                "https://twitter.com/printeast",
-                "https://linkedin.com/company/printeast",
-                "https://instagram.com/printeast",
-              ],
-              contactPoint: {
-                "@type": "ContactPoint",
-                telephone: "+91-XXXXXXXXXX",
-                contactType: "customer service",
-                availableLanguage: ["English", "Hindi"],
-              },
-            }),
-          }}
-        />
-        {/* Structured Data for WebSite with SearchAction */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              url: "https://printeast.com",
-              name: "Printeast",
-              description: "AI-powered Print-on-Demand platform",
-              potentialAction: {
-                "@type": "SearchAction",
-                target: {
-                  "@type": "EntryPoint",
-                  urlTemplate: "https://printeast.com/search?q={search_term_string}",
-                },
-                "query-input": "required name=search_term_string",
-              },
-            }),
-          }}
-        />
+        {/* ... existing head scripts ... */}
       </head>
-      <body className={`${wixDisplay.variable} ${wixText.variable} font-sans antialiased`}>
+      <body className={`${wixDisplay.variable} ${wixText.variable} font-sans antialiased relative`}>
         <NextIntlClientProvider messages={messages}>
-          <SmoothScrollProvider>
-            <PreconnectOptimizer />
-            {children}
-          </SmoothScrollProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <SmoothScrollProvider>
+              <PreconnectOptimizer />
+              {children}
+            </SmoothScrollProvider>
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>

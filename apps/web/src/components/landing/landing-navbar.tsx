@@ -4,6 +4,7 @@ import { useState, useTransition, useMemo } from "react"
 import { Search, Globe, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import NextImage from "next/image"
 import { m, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion"
 import { useLocale } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/routing';
@@ -89,7 +90,19 @@ export function LandingNavbar({ }: LandingNavbarProps) {
             )}
         >
             <div className="flex items-center gap-12 flex-shrink-0">
-                <Link href="/" className="text-2xl font-black tracking-tighter text-[#111827]">PRINTEAST</Link>
+                <Link href="/" className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-slate-100 shadow-sm p-1 leading-none">
+                        <NextImage
+                            src="/assets/printeast_logo.png"
+                            alt="Printeast"
+                            width={20}
+                            height={20}
+                            priority
+                            className="h-auto w-auto object-contain"
+                        />
+                    </div>
+                    <span className="text-2xl font-black tracking-tighter text-[#111827]">PRINTEAST</span>
+                </Link>
             </div>
 
             <div className="hidden lg:flex items-center gap-1 text-sm font-medium text-slate-600 flex-1 justify-center px-8">

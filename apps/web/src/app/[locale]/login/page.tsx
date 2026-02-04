@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AuthService } from "@/services/auth.service";
 import { Loader2, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import NextImage from "next/image";
 import { AuthLayout } from "@/components/auth/auth-layout";
 import { AuthInput } from "@/components/auth/auth-input";
 import { SocialButtons, OrDivider } from "@/components/auth/social-buttons";
@@ -26,11 +27,21 @@ export default function LoginPage() {
     return (
         <AuthLayout title="Create without limits." subtitle="The world's first AI-Native Print on Demand Operating System.">
             <div className="mb-6 w-full">
-                <div className="flex items-center gap-2 mb-6 justify-center lg:justify-start">
-                    <div className="w-9 h-9 bg-black rounded-xl flex items-center justify-center">
-                        <span className="text-white font-bold text-lg font-poppins">P</span>
+                <div className="flex items-center gap-3.5 mb-8 justify-center lg:justify-start">
+                    <div className="w-12 h-12 bg-white rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-slate-100 flex items-center justify-center p-2.5 animate-in fade-in slide-in-from-left-4 duration-700">
+                        <NextImage
+                            src="/assets/printeast_logo.png"
+                            alt="Printeast"
+                            width={32}
+                            height={32}
+                            priority
+                            className="h-auto w-auto object-contain"
+                        />
                     </div>
-                    <span className="text-xl font-bold font-poppins text-slate-900 tracking-tight">Printeast</span>
+                    <div className="flex flex-col animate-in fade-in slide-in-from-left-4 duration-700 delay-100">
+                        <span className="text-[22px] font-black text-[#111827] tracking-tight leading-none">Printeast</span>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2 leading-none">PLATFORM</span>
+                    </div>
                 </div>
                 <h1 className="text-3xl lg:text-[36px] font-bold text-neutral-900 tracking-tight font-poppins mb-2 text-center lg:text-left">Welcome back</h1>
             </div>

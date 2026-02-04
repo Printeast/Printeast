@@ -19,9 +19,26 @@ export async function createClient() {
                         );
                     } catch {
                         // The `setAll` method was called from a Server Component.
-                        // This can be ignored if you have middleware refreshing
-                        // user sessions.
                     }
+                },
+            },
+            global: {
+                fetch: async (url, options) => {
+                    let retries = 3;
+                    while (retries > 0) {
+                        try {
+                            const res = await fetch(url, { ...options, next: { revalidate: 0 } });
+                            return res;
+                        } catch (err: any) {
+                            if (err?.cause?.code === 'UND_ERR_CONNECT_TIMEOUT' && retries > 1) {
+                                retries--;
+                                await new Promise((r) => setTimeout(r, 500));
+                                continue;
+                            }
+                            throw err;
+                        }
+                    }
+                    return fetch(url, options); // Should not reach here
                 },
             },
         }

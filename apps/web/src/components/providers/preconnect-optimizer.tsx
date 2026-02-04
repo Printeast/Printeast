@@ -34,8 +34,6 @@ export function PreconnectOptimizer() {
         // Asset delivery networks
         ReactDOM.prefetchDNS("https://asset.brandfetch.io")
 
-        // Grainy gradients (noise textures)
-        ReactDOM.prefetchDNS("https://grainy-gradients.vercel.app")
 
     }, [])
 

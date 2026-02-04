@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import NextImage from "next/image";
 import { usePathname } from "next/navigation";
 import { Role } from "@repo/types";
 
@@ -8,69 +9,117 @@ interface SidebarProps {
     role: Role;
 }
 
-const SIDEBAR_LINKS: Record<Role, { label: string; href: string }[]> = {
-    SUPER_ADMIN: [
-        { label: "Tenants", href: "/dashboard/tenants" },
-        { label: "Platform Stats", href: "/dashboard/stats" },
-    ],
-    TENANT_ADMIN: [
-        { label: "Overview", href: "/dashboard" },
-        { label: "Team", href: "/dashboard/team" },
-        { label: "Settings", href: "/dashboard/settings" },
-    ],
-    CREATOR: [
-        { label: "My Designs", href: "/dashboard/designs" },
-        { label: "Studio", href: "/dashboard/studio" },
-        { label: "Earnings", href: "/dashboard/earnings" },
-    ],
-    SELLER: [
-        { label: "Storefront", href: "/dashboard/store" },
-        { label: "Products", href: "/dashboard/products" },
-        { label: "Orders", href: "/dashboard/orders" },
-    ],
-    VENDOR: [
-        { label: "Production", href: "/dashboard/production" },
-        { label: "Inventory", href: "/dashboard/inventory" },
-    ],
-    AFFILIATE: [
-        { label: "Links", href: "/dashboard/links" },
-        { label: "Payouts", href: "/dashboard/payouts" },
-    ],
-    CUSTOMER: [
-        { label: "My Orders", href: "/dashboard/orders" },
-        { label: "Profile", href: "/dashboard/profile" },
-    ],
-};
+import {
+    LayoutGrid,
+    ClipboardList,
+    Box,
+    Store,
+    LayoutTemplate,
+    Sparkles,
+    BarChart3,
+    Palette,
+    BookOpen,
+    HeadphonesIcon
+} from "lucide-react";
+
+type SideLink = { label: string; href: string; icon: React.ElementType };
+type SidebarSection = { title?: string; items: SideLink[] };
+
+const SELLER_LINKS: SidebarSection[] = [
+    {
+        title: "MAIN",
+        items: [
+            { label: "Home", href: "/seller", icon: LayoutGrid },
+            { label: "Orders", href: "/seller/orders", icon: ClipboardList },
+        ]
+    },
+    {
+        title: "CREATION",
+        items: [
+            { label: "Products", href: "/seller/inventory", icon: Box },
+            { label: "My Store", href: "/seller/storefront", icon: Store },
+            { label: "My Templates", href: "/seller/templates", icon: LayoutTemplate },
+            { label: "AI & Design Studio", href: "/seller/design", icon: Sparkles },
+        ]
+    },
+    {
+        title: "SUPPORT",
+        items: [
+            { label: "Analytics & Insights", href: "/seller/analytics", icon: BarChart3 },
+            { label: "Branding", href: "/seller/branding", icon: Palette },
+            { label: "Resources", href: "/seller/resources", icon: BookOpen },
+            { label: "24/7 Support", href: "/seller/support", icon: HeadphonesIcon },
+        ]
+    }
+];
 
 export function Sidebar({ role }: SidebarProps) {
     const pathname = usePathname();
-    const links = SIDEBAR_LINKS[role] || [];
+
+    let sections: SidebarSection[] = [];
+    if (role === "SELLER") {
+        sections = SELLER_LINKS;
+    } else {
+        sections = [{ items: [] }];
+    }
 
     return (
-        <aside className="w-64 border-r border-base-border bg-white px-4 py-8">
-            <div className="mb-10 px-4">
-                <span className="bg-printeast-gradient bg-clip-text text-2xl font-black text-transparent italic">
-                    Printeast
-                </span>
-                <div className="mt-1 text-[10px] font-bold uppercase tracking-widest text-text-muted">
-                    {role.replace("_", " ")}
-                </div>
+        <aside className="w-[260px] flex-shrink-0 border-r border-sidebar-border flex flex-col h-screen sticky top-0 font-inter text-sidebar-foreground transition-all duration-300 relative" style={{
+            background: 'linear-gradient(180deg, var(--background) 0%, var(--sidebar) 40%, var(--card) 100%)'
+        }}>
+            <div className="p-6 pb-2">
+                <Link href="/" className="flex items-center gap-3 mb-1">
+                    <div className="w-9 h-9 bg-sidebar-accent rounded-xl flex items-center justify-center border border-sidebar-border shadow-sm p-1.5 flex-shrink-0 leading-none">
+                        <NextImage
+                            src="/assets/printeast_logo.png"
+                            alt="Printeast"
+                            width={24}
+                            height={24}
+                            priority
+                            className="h-auto w-auto object-contain"
+                        />
+                    </div>
+                    <div>
+                        <h1 className="font-bold text-lg leading-tight text-sidebar-foreground tracking-tight">Printeast</h1>
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block leading-none">DASHBOARD</span>
+                    </div>
+                </Link>
             </div>
 
-            <nav className="space-y-1">
-                {links.map((link) => (
-                    <Link
-                        key={link.href}
-                        href={link.href}
-                        className={`flex items-center rounded-xl px-4 py-3 text-sm font-bold transition-all ${pathname === link.href
-                                ? "bg-base-bg text-text-main"
-                                : "text-text-secondary hover:bg-base-bg hover:text-text-main"
-                            }`}
-                    >
-                        {link.label}
-                    </Link>
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-8">
+                {sections.map((section, idx) => (
+                    <div key={idx}>
+                        {section.title && (
+                            <h3 className="px-3 mb-4 text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em]">
+                                {section.title}
+                            </h3>
+                        )}
+                        <nav className="space-y-0.5">
+                            {section.items.map((link) => {
+                                const Icon = link.icon;
+                                const isActive = pathname === link.href;
+                                return (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13.5px] font-semibold transition-all duration-200 relative ${isActive
+                                            ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-[3px] border-blue-500"
+                                            : "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/40"
+                                            }`}
+                                    >
+                                        {/* SUPER thick left border accent for active state */}
+                                        {isActive && (
+                                            <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-blue-500 rounded-l-lg" />
+                                        )}
+                                        <Icon className={`w-[18px] h-[18px] transition-colors ${isActive ? "text-blue-500" : "text-muted-foreground group-hover:text-sidebar-foreground"}`} />
+                                        <span>{link.label}</span>
+                                    </Link>
+                                );
+                            })}
+                        </nav>
+                    </div>
                 ))}
-            </nav>
+            </div>
         </aside>
     );
 }

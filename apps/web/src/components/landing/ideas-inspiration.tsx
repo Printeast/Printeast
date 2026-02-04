@@ -37,9 +37,7 @@ export function IdeasInspiration() {
             id: "phone-cases",
             title: t('items.phoneCases.title'),
             category: t('items.phoneCases.category'),
-            image: "https://gkscoxpxoiggeeoegyac.supabase.co/storage/v1/object/sign/creator-assets/phone-case.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV84ZGZhMmNiMC0xZDY5LTQyNmItYTdjZi1kNjZhZGE0MGY0MDUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmVhdG9yLWFzc2V0cy9waG9uZS1jYXNlLnBuZyIsImlhdCI6MTc2OTI4NjI3OCwiZXhwIjoxNzY5Mjg2ODc4fQ.X_9Y6p_Gz_Y_Y_Y_Y_Y_Y_Y_Y_Y_Y_Y_Y_Y_Y_Y_Y_Y", // shortened token for code clarity as it is probably expired anyway or unique per session
-            // Re-using the original long URL from previous view_file
-            image_: "https://gkscoxpxoiggeeoegyac.supabase.co/storage/v1/object/sign/creator-assets/phone-case.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV84ZGZhMmNiMC0xZDY5LTQyNmItYTdjZi1kNjZhZGE0MGY0MDUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmVhdG9yLWFzc2V0cy9waG9uZS1jYXNlLnBuZyIsImlhdCI6MTc2OTI4NjI3OCwiZXhwIjoxNzcxODc4Mjc4fQ.AK95hgaCYDZ1nm_nG98uLU4O7qlLdSWL8OrgOmRcFYY",
+            image: "https://gkscoxpxoiggeeoegyac.supabase.co/storage/v1/object/sign/creator-assets/phone-case.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV84ZGZhMmNiMC0xZDY5LTQyNmItYTdjZi1kNjZhZGE0MGY0MDUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmVhdG9yLWFzc2V0cy9waG9uZS1jYXNlLnBuZyIsImlhdCI6MTc3MDIxMjIyMywiZXhwIjoxNzcyODA0MjIzfQ.-Guwqq590D3o2lSN2Wo-3j2Fy1Fc7WsHM7R2l1tHBTM",
             colSpan: "col-span-12 md:col-span-4",
             rowSpan: "row-span-1 md:row-span-2",
             hotspots: [

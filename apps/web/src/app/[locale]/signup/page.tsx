@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { AuthService } from "@/services/auth.service";
 import { Loader2, CheckCircle2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import NextImage from "next/image";
 import { AuthLayout } from "@/components/auth/auth-layout";
 import { AuthInput } from "@/components/auth/auth-input";
 import { SocialButtons, OrDivider } from "@/components/auth/social-buttons";
@@ -38,11 +39,21 @@ export default function SignupPage() {
                 {view === "options" ? (
                     <motion.div key="options" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                         <div className="mb-6">
-                            <div className="flex items-center gap-2 mb-6 justify-center lg:justify-start">
-                                <div className="w-9 h-9 bg-black rounded-xl flex items-center justify-center">
-                                    <span className="text-white font-bold text-lg font-poppins">P</span>
+                            <div className="flex items-center gap-3.5 mb-8 justify-center lg:justify-start">
+                                <div className="w-12 h-12 bg-white rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-slate-100 flex items-center justify-center p-2.5">
+                                    <NextImage
+                                        src="/assets/printeast_logo.png"
+                                        alt="Printeast"
+                                        width={32}
+                                        height={32}
+                                        priority
+                                        className="h-auto w-auto object-contain"
+                                    />
                                 </div>
-                                <span className="text-xl font-bold font-poppins text-slate-900 tracking-tight">Printeast</span>
+                                <div className="flex flex-col">
+                                    <span className="text-[22px] font-black text-[#111827] tracking-tight leading-none">Printeast</span>
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2 leading-none">PLATFORM</span>
+                                </div>
                             </div>
                             <h1 className="text-3xl lg:text-[38px] font-bold text-neutral-900 tracking-tight font-poppins mb-3 text-center lg:text-left">Let's get started</h1>
                             <p className="text-[#626262] text-[15px] leading-snug text-center lg:text-left font-medium">Create an account and explore products and tools to help you sell.</p>

@@ -56,8 +56,12 @@ class ApiClient {
       }
 
       return result;
-    } catch (error: unknown) {
-      console.error(`[API Error] ${endpoint}:`, error);
+    } catch (error: any) {
+      if (error?.cause?.code === 'UND_ERR_CONNECT_TIMEOUT' || error?.message?.includes('fetch failed')) {
+        console.warn(`[API Timeout] ${endpoint}: (handled)`);
+      } else {
+        console.error(`[API Error] ${endpoint}:`, error);
+      }
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
       return {
