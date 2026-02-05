@@ -80,8 +80,9 @@ export function CustomizableProducts() {
                                 blue: (chunks) => <span className="text-blue-600">{chunks}</span>
                             })}
                         </h2>
-                        <p className="text-sm md:text-base text-slate-500 max-w-2xl font-medium leading-relaxed mt-4">
-                            {t('subtitle')}
+                        <p className="text-sm md:text-base text-slate-500 font-medium leading-relaxed mt-4 max-w-none">
+                            Handpick best-sellers across apparel, lifestyle, and accessories. <br className="hidden md:block" />
+                            Mix, match, and publish in minutes with on-brand mockups.
                         </p>
                     </motion.div>
                 </div>

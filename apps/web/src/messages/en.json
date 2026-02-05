@@ -64,7 +64,7 @@
             "line2": "We deliver round",
             "line2Blue": "The Globe."
         },
-        "description": "Printeast operates on a truly borderless infrastructure. Our 24/7 autonomous fulfillment centers ensure your products move faster, reaching customers across every continent.",
+        "description": "Printeast operates on a truly borderless infrastructure. <secondary>Our 24/7 autonomous fulfillment centers ensure your products move faster, reaching customers across every continent.</secondary>",
         "stats": {
             "activeHubs": "Active Hubs",
             "countries": "Countries",
@@ -81,7 +81,7 @@
     },
     "AiStudio": {
         "title": "Design Like A Pro <blue>Powered By AI</blue>",
-        "description": "The world's most advanced design editor, built directly into Printeast. Experience fluid, cinematic creation with smart mockups.",
+        "description": "The world's most advanced design editor, built directly into Printeast. <secondary>Experience fluid, cinematic creation with smart mockups.</secondary>",
         "editor": {
             "untitled": "Untitled Project",
             "export": "Export",
@@ -222,7 +222,7 @@
         }
     },
     "ProfitCalculator": {
-        "title": "See How Much You Can Make From Your <word />",
+        "title": "See How Much You Can Make From Your <word></word>",
         "words": [
             "Brand",
             "Hobby",
@@ -240,7 +240,7 @@
         "hundredSales": "100 sales",
         "yourCountry": "Your country",
         "viewEarnings": "View earnings",
-        "aiSuggestion": "AI suggests pricing at <price /> for best conversion",
+        "aiSuggestion": "AI suggests pricing at <price></price> for best conversion",
         "estimatedProfit": "Estimated {period} Profit",
         "startEarning": "Start Earning Now",
         "perMonth": "Per Month",

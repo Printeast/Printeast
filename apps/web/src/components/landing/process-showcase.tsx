@@ -23,10 +23,10 @@ const CATALOG_PRODUCTS = [
 ]
 
 const PHASES_CONFIG = [
-    { id: "catalog", gradient: "from-blue-500 via-indigo-500 to-indigo-600", duration: 5000 },
-    { id: "design", gradient: "from-violet-500 via-purple-500 to-fuchsia-600", duration: 8500 },
-    { id: "sync", gradient: "from-emerald-400 via-teal-500 to-emerald-600", duration: 5000 },
-    { id: "profit", gradient: "from-amber-400 via-orange-500 to-rose-500", duration: 5000 }
+    { id: "catalog", gradient: "from-blue-500 via-indigo-500 to-indigo-600", duration: 3500 },
+    { id: "design", gradient: "from-violet-500 via-purple-500 to-fuchsia-600", duration: 6000 },
+    { id: "sync", gradient: "from-emerald-400 via-teal-500 to-emerald-600", duration: 3500 },
+    { id: "profit", gradient: "from-amber-400 via-orange-500 to-rose-500", duration: 3500 }
 ] as const
 
 // --- MAIN COMPONENT ---
@@ -51,36 +51,36 @@ function ProcessShowcaseComponent() {
             phase: 0, // Catalog
             start: { x: 80, y: 40, label: "" },
             actions: [
-                { x: 30, y: 28, label: t('cursor.selectTemplate'), delay: 850 },
-                { clicking: true, delay: 2050 },
-                { clicking: false, delay: 2250 }
+                { x: 30, y: 28, label: t('cursor.selectTemplate'), delay: 600 },
+                { clicking: true, delay: 1400 },
+                { clicking: false, delay: 1600 }
             ]
         },
         {
             phase: 1, // Design
             start: { x: 10, y: 60, label: "" },
             actions: [
-                { x: 28, y: 68, label: t('cursor.triggerAi'), delay: 800 },
-                { clicking: true, delay: 2200 },
-                { clicking: false, delay: 2500 },
-                { x: 85, y: 70, label: "", delay: 3500 } // Move away to observe
+                { x: 28, y: 68, label: t('cursor.triggerAi'), delay: 600 },
+                { clicking: true, delay: 1600 },
+                { clicking: false, delay: 1800 },
+                { x: 85, y: 70, label: "", delay: 2500 } // Move away to observe
             ]
         },
         {
             phase: 2, // Sync
             start: { x: 45, y: 30, label: "" },
             actions: [
-                { x: 74, y: 35, label: t('cursor.marketplaceSync'), delay: 700 },
-                { y: 58, delay: 2800 }
+                { x: 74, y: 35, label: t('cursor.marketplaceSync'), delay: 500 },
+                { y: 58, delay: 2000 }
             ]
         },
         {
             phase: 3, // Profit
             start: { x: 80, y: 30, label: "" },
             actions: [
-                { x: 58, y: 62, label: t('cursor.claimRevenue'), delay: 800 },
-                { clicking: true, delay: 1950 },
-                { clicking: false, delay: 2250 }
+                { x: 58, y: 62, label: t('cursor.claimRevenue'), delay: 600 },
+                { clicking: true, delay: 1400 },
+                { clicking: false, delay: 1600 }
             ]
         }
     ], [t]);
@@ -139,7 +139,7 @@ function ProcessShowcaseComponent() {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1.2 }}
                         exit={{ opacity: 0, scale: 1.4 }}
-                        transition={{ duration: 1.5, ease: "easeInOut" }}
+                        transition={{ duration: 0.6, ease: "easeInOut" }}
                         className={cn(
                             "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full blur-[160px] opacity-[0.2]",
                             "bg-gradient-to-br", currentPhase.gradient
@@ -156,7 +156,7 @@ function ProcessShowcaseComponent() {
                         key={phase}
                         animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
                         exit={{ opacity: 0, scale: 1.1, y: -30, filter: "blur(20px)" }}
-                        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                         className="w-full h-full flex flex-col items-center justify-center perspective-1000"
                     >
                         {phase === 0 && <CatalogScene />}
@@ -204,9 +204,9 @@ function ProcessShowcaseComponent() {
                     opacity: showCursor ? 1 : 0
                 }}
                 transition={{
-                    left: { type: "spring", damping: 30, stiffness: 150, mass: 0.8 },
-                    top: { type: "spring", damping: 30, stiffness: 150, mass: 0.8 },
-                    scale: { duration: 0.4, ease: "backOut" },
+                    left: { type: "spring", damping: 25, stiffness: 250, mass: 0.6 },
+                    top: { type: "spring", damping: 25, stiffness: 250, mass: 0.6 },
+                    scale: { duration: 0.3, ease: "backOut" },
                     opacity: { duration: 0.2 }
                 }}
             >
@@ -267,7 +267,7 @@ const CatalogScene = memo(function CatalogSceneComponent() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setSelectedIdx(0)
-        }, 900)
+        }, 300) // Faster selection
         return () => clearTimeout(timer)
     }, [])
 
@@ -347,16 +347,16 @@ const DesignScene = memo(function DesignSceneComponent() {
             let p = 0
             const interval = setInterval(() => {
                 let increment = 0
-                if (p < 30) increment = 4.0
-                else if (p < 80) increment = 1.5
-                else increment = 5.0
+                if (p < 30) increment = 6.0 // Increased from 4
+                else if (p < 80) increment = 2.5 // Increased from 1.5
+                else increment = 8.0 // Increased from 5
                 increment += (Math.random() - 0.5) * 1.5
                 p = Math.min(p + increment, 100)
                 setProgress(p)
                 if (p >= 100) clearInterval(interval)
-            }, 40)
+            }, 30) // Faster interval from 40ms
             return () => clearInterval(interval)
-        }, 2200)
+        }, 600) // Lowered from 2200ms
         return () => clearTimeout(startDelay)
     }, [])
 
@@ -447,7 +447,7 @@ const SyncScene = memo(function SyncSceneComponent() {
     ]
 
     useEffect(() => {
-        const timer = setTimeout(() => setStarted(true), 1200)
+        const timer = setTimeout(() => setStarted(true), 400) // Lowered from 1200ms
         return () => clearTimeout(timer)
     }, [])
 
@@ -520,8 +520,8 @@ const EarnScene = memo(function EarnSceneComponent() {
     useEffect(() => {
         if (!started) return
         const interval = setInterval(() => {
-            setCount(prev => (prev >= 42850 ? 42850 : prev + 857))
-        }, 30)
+            setCount(prev => (prev >= 42850 ? 42850 : prev + 1248)) // Increased step
+        }, 15) // Faster interval
         return () => clearInterval(interval)
     }, [started])
 

@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl"
 
 const ProcessShowcase = dynamic(() => import("./process-showcase").then((mod) => mod.ProcessShowcase), {
     ssr: false,
-    loading: () => <div className="w-full h-full bg-slate-50/50 animate-pulse rounded-md" />
+    loading: () => <div className="w-full h-full bg-slate-50/50 rounded-md" />
 })
 
 
@@ -52,7 +52,7 @@ const TypingText = memo(({ text }: { text: string }) => {
             } else {
                 clearInterval(interval)
             }
-        }, 60)
+        }, 30) // Faster typing
         return () => clearInterval(interval)
     }, [text])
 
@@ -74,7 +74,7 @@ const AiProductWidget = memo(({ t }: { t: any }) => {
 
         const interval = setInterval(() => {
             setCurrentIndex((prev) => (prev + 1) % AI_DEMOS.length)
-        }, 4000)
+        }, 3000) // Faster rotation
         return () => clearInterval(interval)
     }, [isInView])
 
@@ -99,7 +99,7 @@ const AiProductWidget = memo(({ t }: { t: any }) => {
                             initial={{ opacity: 0, scale: 1.05 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.8 }}
+                            transition={{ duration: 0.4 }} // Faster fade
                             className="absolute inset-0 w-full h-full transform-gpu"
                         >
                             <Image
@@ -312,15 +312,9 @@ export const FeaturesGrid = memo(function FeaturesGrid() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 auto-rows-[auto] items-center">
 
                 {/* LEFT: Product Widget */}
-                <motion.div
-                    initial={{ opacity: 0, x: -50 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8 }}
-                    className="lg:col-span-3 lg:col-start-1 lg:row-start-1 relative z-30 lg:-mr-16 flex justify-center transform-gpu"
-                >
+                <div className="lg:col-span-3 lg:col-start-1 lg:row-start-1 relative z-30 lg:-mr-16 flex justify-center transform-gpu">
                     <AiProductWidget t={t} />
-                </motion.div>
+                </div>
 
 
                 {/* CENTER: Process Animation */}

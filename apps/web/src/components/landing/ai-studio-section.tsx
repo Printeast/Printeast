@@ -22,7 +22,7 @@ export function AiStudioSection() {
     const isInView = useInView(containerRef, { margin: "0px 0px -20% 0px", once: false })
 
     return (
-        <section ref={containerRef} className="py-24 bg-transparent text-slate-900 relative overflow-hidden transform-gpu">
+        <section ref={containerRef} className="py-32 bg-transparent text-slate-900 relative overflow-hidden transform-gpu">
             {/* Background Elements */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-400/10 rounded-full blur-[120px]" />
@@ -49,7 +49,9 @@ export function AiStudioSection() {
                         transition={{ duration: 0.6, delay: 0.2 }}
                         className="text-slate-500 text-lg leading-relaxed"
                     >
-                        {t('description')}
+                        {t.rich('description', {
+                            secondary: (chunks) => <span className="block">{chunks}</span>
+                        })}
                     </motion.p>
                 </div>
 

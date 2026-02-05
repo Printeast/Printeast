@@ -34,9 +34,9 @@ const PRODUCTS: Product[] = [
         id: "tshirt-premium",
         name: "Premium Cotton T-Shirt",
         category: "Apparel",
-        baseCost: 9.50,
+        baseCost: 12.00,
         defaultPrice: 28.00,
-        suggestedPrice: 24.00,
+        suggestedPrice: 35.00,
         image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=800&auto=format&fit=crop",
         color: "#E5E7EB"
     },
@@ -44,9 +44,9 @@ const PRODUCTS: Product[] = [
         id: "hoodie-fleece",
         name: "Heavyweight Fleece Hoodie",
         category: "Apparel",
-        baseCost: 22.00,
-        defaultPrice: 55.00,
-        suggestedPrice: 49.00,
+        baseCost: 24.50,
+        defaultPrice: 59.00,
+        suggestedPrice: 75.00,
         image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?q=80&w=800&auto=format&fit=crop",
         color: "#374151"
     },
@@ -54,9 +54,9 @@ const PRODUCTS: Product[] = [
         id: "ceramic-mug",
         name: "Ceramic Mug (11oz)",
         category: "Drinkware",
-        baseCost: 5.50,
-        defaultPrice: 16.00,
-        suggestedPrice: 14.00,
+        baseCost: 6.25,
+        defaultPrice: 18.00,
+        suggestedPrice: 22.00,
         image: "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?q=80&w=800&auto=format&fit=crop",
         color: "#1F2937"
     },
@@ -64,9 +64,9 @@ const PRODUCTS: Product[] = [
         id: "travel-tumbler",
         name: "Steel Travel Tumbler",
         category: "Drinkware",
-        baseCost: 12.00,
-        defaultPrice: 32.00,
-        suggestedPrice: 29.00,
+        baseCost: 14.50,
+        defaultPrice: 38.00,
+        suggestedPrice: 45.00,
         image: "https://images.unsplash.com/photo-1576615278798-2340caa95eab?q=80&w=800&auto=format&fit=crop",
         color: "#4B5563"
     },
@@ -74,9 +74,9 @@ const PRODUCTS: Product[] = [
         id: "canvas-print",
         name: "Stretched Canvas Print",
         category: "Home & Living",
-        baseCost: 18.00,
-        defaultPrice: 48.00,
-        suggestedPrice: 45.00,
+        baseCost: 28.00,
+        defaultPrice: 75.00,
+        suggestedPrice: 95.00,
         image: "https://plus.unsplash.com/premium_photo-1706152482956-ab99f887763f?q=80&w=687&auto=format&fit=crop",
         color: "#57534E"
     },
@@ -84,9 +84,9 @@ const PRODUCTS: Product[] = [
         id: "tote-bag",
         name: "Eco Tote Bag",
         category: "Accessories",
-        baseCost: 7.00,
-        defaultPrice: 22.00,
-        suggestedPrice: 19.00,
+        baseCost: 8.50,
+        defaultPrice: 24.00,
+        suggestedPrice: 32.00,
         image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=800&auto=format&fit=crop",
         color: "#44403C"
     }
@@ -100,18 +100,31 @@ export function ProfitCalculator() {
     const [sellingPrice, setSellingPrice] = useState(PRODUCTS[0]!.defaultPrice)
     const [dailySales, setDailySales] = useState(5)
 
-    // New States for functional dropdowns
-    const [selectedCountry, setSelectedCountry] = useState("United States ($)")
     const [selectedPeriod, setSelectedPeriod] = useState(t('perMonth'))
+    const [selectedRegion, setSelectedRegion] = useState("India")
+
+    const REGION_DATA: Record<string, { symbol: string, rate: number, label: string }> = {
+        "India": { symbol: "₹", rate: 83, label: "India (₹)" },
+        "USA": { symbol: "$", rate: 1, label: "United States ($)" },
+        "Europe": { symbol: "€", rate: 0.92, label: "Europe (€)" },
+        "UK": { symbol: "£", rate: 0.79, label: "United Kingdom (£)" },
+        "Canada": { symbol: "CA$", rate: 1.36, label: "Canada (CA$)" },
+        "Global": { symbol: "$", rate: 1, label: "Global ($)" }
+    }
+
+    const currentRegion = REGION_DATA[selectedRegion] || REGION_DATA["India"]!
 
     // Reset defaults when product changes
     useEffect(() => {
         setSellingPrice(selectedProduct.defaultPrice)
     }, [selectedProduct])
 
+    const formatValue = (val: number) => Math.round(val * currentRegion.rate)
+
     const profitPerUnit = sellingPrice - selectedProduct.baseCost
     // Calculate profit based on selected period
-    const estimatedProfit = profitPerUnit * dailySales * (selectedPeriod === t('perYear') ? 365 : 30)
+    const rawProfit = profitPerUnit * dailySales * (selectedPeriod === t('perYear') ? 365 : 30)
+    const estimatedProfit = formatValue(rawProfit)
 
     // Dynamic Header Text Animation
     const words = t.raw('words') as string[];
@@ -127,211 +140,208 @@ export function ProfitCalculator() {
         return () => clearInterval(interval)
     }, [words])
 
-    const aiSuggestedPrice = selectedProduct.suggestedPrice;
+    const REGIONS = Object.keys(REGION_DATA)
+
+    const aiSuggestedPrice = selectedProduct.suggestedPrice
 
     return (
-        <section className="py-24 bg-transparent relative overflow-hidden transform-gpu">
+        <section className="py-32 bg-transparent relative overflow-hidden transform-gpu">
             {/* Background Decor */}
             <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-600/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-400/5 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3" />
 
-            <div className="container mx-auto px-6 lg:px-16 relative z-10">
+            <div className="max-w-[1440px] mx-auto px-6 lg:px-12 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-[0.5fr,2.5fr] gap-12 lg:gap-16 items-center">
 
-                {/* Section Header */}
-                <div className="text-left mb-16">
-                    <h2 className="text-4xl lg:text-6xl font-black tracking-tighter leading-[0.95] text-slate-900 transform-gpu">
-                        {t.rich('title', {
-                            word: () => (
-                                <span className="relative inline-block min-w-[12ch] text-left">
-                                    <AnimatePresence mode="wait">
-                                        <motion.span
-                                            key={headerWord}
-                                            initial={{ y: 20, opacity: 0 }}
-                                            animate={{ y: 0, opacity: 1 }}
-                                            exit={{ y: -20, opacity: 0 }}
-                                            transition={{ duration: 0.3 }}
-                                            className="absolute left-0 text-blue-600 whitespace-nowrap"
-                                        >
-                                            {headerWord}
-                                        </motion.span>
-                                    </AnimatePresence>
-                                    <span className="invisible text-blue-600">Side Hustle</span>
-                                </span>
-                            )
-                        })}
-                    </h2>
-                    <p className="text-sm md:text-base text-slate-500 max-w-2xl font-medium leading-relaxed mt-4">
-                        {t('subtitle')}
-                    </p>
-                </div>
+                    {/* LEFT: Text Content */}
+                    <div className="flex flex-col space-y-6 lg:translate-y-[-10%]">
+                        <h2 className="text-4xl lg:text-7xl font-black tracking-tighter leading-[0.9] text-slate-900 transform-gpu mb-4">
+                            {t.rich('title', {
+                                word: () => (
+                                    <span className="relative inline-flex min-w-[10ch] h-[1.1em] items-center text-blue-600 ml-2">
+                                        <AnimatePresence mode="wait">
+                                            <motion.span
+                                                key={headerWord}
+                                                initial={{ y: 20, opacity: 0 }}
+                                                animate={{ y: 0, opacity: 1 }}
+                                                exit={{ y: -20, opacity: 0 }}
+                                                transition={{ duration: 0.3 }}
+                                                className="absolute left-0"
+                                            >
+                                                {headerWord}
+                                            </motion.span>
+                                        </AnimatePresence>
+                                        <span className="invisible">Side Hustle</span>
+                                    </span>
+                                )
+                            })}
+                        </h2>
+                        <p className="text-lg md:text-xl text-slate-500 font-medium leading-relaxed max-w-xl">
+                            {t('subtitle')}
+                        </p>
+                    </div>
 
-                <div className="bg-white rounded-md border border-gray-100 p-4 lg:p-6 flex flex-col lg:flex-row gap-6 items-center max-w-5xl mx-auto ring-1 ring-black/5">
+                    {/* RIGHT: Calculator Interactive Card */}
+                    <div className="w-full">
+                        <div className="bg-white rounded-3xl border border-gray-100 p-5 lg:p-6 flex flex-col lg:flex-row gap-8 items-center w-full shadow-[0_25px_60px_rgba(0,0,0,0.06)] relative z-10 transition-all duration-500">
 
-                    {/* LEFT: Product Preview */}
-                    <motion.div
-                        layout
-                        className="w-full lg:w-[55%] aspect-[4/5] relative rounded-md overflow-hidden bg-[#0B0F17] group will-change-transform transform-gpu"
-                    >
-                        <Image
-                            src={selectedProduct.image}
-                            alt={selectedProduct.name}
-                            fill
-                            className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 will-change-transform"
-                            sizes="(max-width: 1024px) 100vw, 600px"
-                            loading="lazy"
-                        />
-
-                        {/* Dramatic Bottom Fade (Reference Style) */}
-                        <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-
-                        {/* Floating Model Series Label (Reference Style) */}
-                        <div className="absolute bottom-6 left-6 z-20">
-                            <p className="text-[10px] font-black text-white/70 uppercase tracking-[0.2em] mb-2">{t('modelSeries')}</p>
-                            <p className="text-white font-extrabold text-2xl leading-tight max-w-[90%]">{selectedProduct.name}</p>
-                        </div>
-
-
-                    </motion.div>
-
-
-                    {/* RIGHT: Calculator Controls */}
-                    <div className="w-full lg:w-[45%] space-y-6 pr-2 lg:pr-6">
-
-                        {/* Product Selector */}
-                        <div className="space-y-3">
-                            <div className="flex items-center justify-between px-1">
-                                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('selectProduct')}</label>
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                    {t('productCost')} <span className="text-gray-900 font-bold text-sm">${selectedProduct.baseCost.toFixed(2)}</span>
-                                </span>
-                            </div>
-                            <ProductSelector
-                                products={PRODUCTS}
-                                selected={selectedProduct}
-                                onSelect={setSelectedProduct}
-                                t={t}
-                            />
-                        </div>
-
-                        {/* Sliders */}
-                        <div className="space-y-4">
-
-                            {/* Sell Price Slider */}
-                            <div className="space-y-2">
-                                <div className="flex justify-between items-end">
-                                    <label className="text-xs font-black text-gray-900 uppercase tracking-wider">{t('sellingPrice')}</label>
-                                    <div className="flex items-center gap-1 bg-gray-50 px-3 py-1 rounded-md border border-gray-200">
-                                        <span className="text-gray-400 font-bold text-sm">$</span>
-                                        <input
-                                            type="number"
-                                            value={sellingPrice}
-                                            onChange={(e) => setSellingPrice(Number(e.target.value))}
-                                            className="w-16 bg-transparent font-bold text-lg text-right outline-none text-gray-900"
-                                        />
-                                    </div>
-                                </div>
-                                <CustomSlider
-                                    value={sellingPrice}
-                                    min={selectedProduct.baseCost + 1}
-                                    max={150}
-                                    onChange={setSellingPrice}
-                                    formatLabel={(v) => `$${v}`}
-                                />
-                                <div className="flex justify-between text-[10px] font-bold text-gray-400">
-                                    <span>${(selectedProduct.baseCost + 1).toFixed(0)}</span>
-                                    <span>$150</span>
-                                </div>
-                            </div>
-
-                            {/* Volume Slider */}
-                            <div className="space-y-2">
-                                <div className="flex justify-between items-end">
-                                    <label className="text-xs font-black text-gray-900 uppercase tracking-wider">{t('dailySales')}</label>
-                                    <div className="flex items-center gap-1 bg-gray-50 px-3 py-1 rounded-md border border-gray-200">
-                                        <input
-                                            type="number"
-                                            value={dailySales}
-                                            onChange={(e) => setDailySales(Number(e.target.value))}
-                                            className="w-12 bg-transparent font-bold text-lg text-right outline-none text-gray-900"
-                                        />
-                                        <span className="text-gray-400 font-bold text-xs">{t('perDay')}</span>
-                                    </div>
-                                </div>
-                                <CustomSlider
-                                    value={dailySales}
-                                    min={1}
-                                    max={100}
-                                    onChange={setDailySales}
-                                    formatLabel={(v) => v.toString()}
-                                />
-                                <div className="flex justify-between text-[10px] font-bold text-gray-400">
-                                    <span>{t('oneSale')}</span>
-                                    <span>{t('hundredSales')}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Result Card */}
-                        <div className="space-y-3">
-
-                            {/* Intermediate Selectors */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">{t('yourCountry')}</label>
-                                    <SimpleDropdown
-                                        options={["United States ($)", "United Kingdom (£)", "Canada (CAD)", "Europe (€)", "India (₹)"]}
-                                        selected={selectedCountry}
-                                        onSelect={setSelectedCountry}
-                                    />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">{t('viewEarnings')}</label>
-                                    <SimpleDropdown
-                                        options={[t('perMonth'), t('perYear')]}
-                                        selected={selectedPeriod}
-                                        onSelect={setSelectedPeriod}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* AI Suggestion Banner */}
-                            <button
-                                onClick={() => setSellingPrice(aiSuggestedPrice)}
-                                className="w-full text-left bg-blue-50 hover:bg-blue-100 border border-blue-100 rounded-md p-3 flex items-center gap-2.5 transition-colors group/ai"
+                            {/* LEFT: Product Preview */}
+                            <motion.div
+                                layout
+                                className="w-full lg:w-[50%] aspect-[2/3] relative rounded-2xl overflow-hidden bg-[#0B0F17] group will-change-transform transform-gpu shadow-xl"
                             >
-                                <Sparkles className="w-4 h-4 text-blue-600 shrink-0 group-hover/ai:scale-110 transition-transform" />
-                                <div className="text-xs font-bold text-blue-700">
-                                    {t.rich('aiSuggestion', {
-                                        price: () => <span className="text-blue-600 underline decoration-blue-300 decoration-2 underline-offset-2">${aiSuggestedPrice}</span>
-                                    })}
+                                <Image
+                                    src={selectedProduct.image}
+                                    alt={selectedProduct.name}
+                                    fill
+                                    className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 will-change-transform"
+                                    sizes="(max-width: 1024px) 100vw, 600px"
+                                    loading="lazy"
+                                />
+                                <div className="absolute inset-x-0 bottom-0 h-1/2 z-10 bg-gradient-to-t from-black/95 to-transparent" />
+                                <div className="absolute bottom-12 left-12 z-20">
+                                    <p className="text-[11px] font-black text-white/50 uppercase tracking-[0.25em] mb-3">{t('modelSeries')}</p>
+                                    <p className="text-white font-black text-4xl lg:text-5xl leading-[1.1] max-w-[90%]">{selectedProduct.name}</p>
                                 </div>
-                            </button>
+                            </motion.div>
 
-                            <div className="bg-[#0B0F17] rounded-md p-6 text-white relative overflow-hidden group transform-gpu">
-                                {/* Blue Glow Effect */}
-                                <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/20 blur-[60px] rounded-full translate-x-1/2 -translate-y-1/2 group-hover:bg-blue-500/30 transition-colors duration-500" />
+                            {/* RIGHT: Calculator Controls */}
+                            <div className="w-full lg:w-[50%] space-y-2.5 pr-2">
+                                {/* Product Selector */}
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between px-1">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">{t('selectProduct')}</label>
+                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em] flex items-center gap-1.5">
+                                            {t('productCost')} <span className="text-gray-900 font-black text-sm">{currentRegion.symbol}{formatValue(selectedProduct.baseCost).toLocaleString()}</span>
+                                        </span>
+                                    </div>
+                                    <ProductSelector
+                                        products={PRODUCTS}
+                                        selected={selectedProduct}
+                                        onSelect={setSelectedProduct}
+                                        t={t}
+                                    />
+                                </div>
 
-                                <div className="relative z-10 flex flex-col gap-4">
-                                    <div>
-                                        <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mb-1">
-                                            {t('estimatedProfit', { period: selectedPeriod === t('perMonth') ? t('monthly') : t('yearly') })}
-                                        </p>
-                                        <div className="flex items-baseline gap-1">
-                                            <span className="text-4xl lg:text-5xl font-black tracking-tight text-white">
-                                                <AnimatedNumber value={estimatedProfit} />
-                                            </span>
+                                {/* Sliders */}
+                                <div className="space-y-4">
+                                    <div className="space-y-2.5">
+                                        <div className="flex justify-between items-end">
+                                            <label className="text-[11px] font-black text-gray-900 uppercase tracking-widest leading-none">{t('sellingPrice')}</label>
+                                            <div className="flex items-center gap-2 bg-[#F8FAFC] px-4 py-1.5 rounded-lg border border-gray-100">
+                                                <span className="text-gray-400 font-bold text-sm">{currentRegion.symbol}</span>
+                                                <input
+                                                    type="number"
+                                                    value={formatValue(sellingPrice)}
+                                                    onChange={(e) => setSellingPrice(Number(e.target.value) / currentRegion.rate)}
+                                                    className="w-16 bg-transparent font-black text-xl text-right outline-none text-gray-900 tabular-nums"
+                                                />
+                                            </div>
+                                        </div>
+                                        <CustomSlider
+                                            value={sellingPrice}
+                                            min={0}
+                                            max={selectedProduct.suggestedPrice * 2}
+                                            onChange={setSellingPrice}
+                                            formatLabel={(v) => `${currentRegion.symbol}${formatValue(v)}`}
+                                            minLabel={`${currentRegion.symbol}${formatValue(0)}`}
+                                            maxLabel={`${currentRegion.symbol}${formatValue(selectedProduct.suggestedPrice * 2)}`}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2.5">
+                                        <div className="flex justify-between items-end">
+                                            <label className="text-[11px] font-black text-gray-900 uppercase tracking-widest leading-none">{t('dailySales')}</label>
+                                            <div className="flex items-center gap-2 bg-[#F8FAFC] px-4 py-1.5 rounded-lg border border-gray-100">
+                                                <input
+                                                    type="number"
+                                                    value={dailySales}
+                                                    onChange={(e) => setDailySales(Number(e.target.value))}
+                                                    className="w-12 bg-transparent font-black text-xl text-right outline-none text-gray-900 tabular-nums"
+                                                />
+                                                <span className="text-gray-400 font-bold text-xs">/ day</span>
+                                            </div>
+                                        </div>
+                                        <CustomSlider
+                                            value={dailySales}
+                                            min={1}
+                                            max={100}
+                                            onChange={setDailySales}
+                                            formatLabel={(v) => v.toString()}
+                                            minLabel="1 sale"
+                                            maxLabel="100 sales"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Region & Period - Dropdown Style */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em] px-1">{t('yourCountry')}</label>
+                                        <div className="relative group/sel">
+                                            <button className="w-full flex items-center justify-between bg-white border border-gray-200 px-4 py-2.5 rounded-xl hover:border-blue-400 transition-colors">
+                                                <span className="text-sm font-bold text-gray-900">{currentRegion.label}</span>
+                                                <ChevronDown className="w-4 h-4 text-gray-400 transition-transform group-hover/sel:translate-y-0.5" />
+                                            </button>
+                                            <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-gray-100 rounded-xl shadow-xl opacity-0 invisible group-hover/sel:opacity-100 group-hover/sel:visible transition-all z-40 p-1">
+                                                {REGIONS.map(r => (
+                                                    <button
+                                                        key={r}
+                                                        onClick={() => setSelectedRegion(r)}
+                                                        className={cn("w-full text-left px-4 py-2 text-xs font-bold rounded-lg transition-colors hover:bg-gray-50", selectedRegion === r ? "text-blue-600 bg-blue-50/50" : "text-gray-600")}
+                                                    >
+                                                        {REGION_DATA[r]?.label}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em] px-1">VIEW EARNINGS</label>
+                                        <button
+                                            onClick={() => setSelectedPeriod(selectedPeriod === t('perMonth') ? t('perYear') : t('perMonth'))}
+                                            className="w-full flex items-center justify-between bg-white border border-gray-200 px-4 py-2.5 rounded-xl hover:border-blue-400 transition-colors group/period"
+                                        >
+                                            <span className="text-sm font-bold text-gray-900">{selectedPeriod === t('perMonth') ? t('monthly') : t('yearly')}</span>
+                                            <ChevronDown className="w-4 h-4 text-gray-400 transition-transform group-hover/period:translate-y-0.5" />
+                                        </button>
+                                    </div>
+                                </div>
 
-                                    <button className="w-full py-3 bg-white text-black hover:bg-gray-100 rounded-md font-bold text-base transition-all active:scale-[0.98]">
-                                        {t('startEarning')}
+                                {/* Results Area */}
+                                <div className="space-y-3">
+                                    <button
+                                        onClick={() => setSellingPrice(aiSuggestedPrice)}
+                                        className="w-full text-left bg-blue-50/50 hover:bg-blue-50/80 border border-blue-100/50 rounded-xl p-3 flex items-center gap-3 transition-colors group/ai"
+                                    >
+                                        <Sparkles className="w-4 h-4 text-blue-600 shrink-0" />
+                                        <div className="text-xs font-bold text-blue-600">
+                                            {t.rich('aiSuggestion', {
+                                                price: () => <span className="text-blue-700 underline decoration-blue-300 decoration-2 underline-offset-2 font-black">{currentRegion.symbol}{formatValue(aiSuggestedPrice)}</span>
+                                            })}
+                                        </div>
                                     </button>
+
+                                    <div className="bg-[#0B0F17] rounded-2xl p-6 text-white relative overflow-hidden group transform-gpu shadow-xl">
+                                        <div className="relative z-10 flex flex-col gap-5">
+                                            <div className="space-y-1">
+                                                <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px]">
+                                                    ESTIMATED {selectedPeriod === t('perMonth') ? 'MONTHLY' : 'YEARLY'} PROFIT
+                                                </p>
+                                                <div className="text-5xl lg:text-7xl font-black tracking-tighter text-white flex items-baseline gap-2">
+                                                    <span className="text-2xl lg:text-3xl text-gray-400">{currentRegion.symbol}</span>
+                                                    <AnimatedNumber value={estimatedProfit} />
+                                                </div>
+                                            </div>
+                                            <button className="w-full py-4.5 bg-white text-black hover:bg-gray-100 rounded-xl font-black text-lg transition-all active:scale-[0.98] shadow-lg">
+                                                {t('startEarning')}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p className="text-[10px] font-bold text-gray-400/60 px-1 text-center">{t('estimates')}</p>
                                 </div>
                             </div>
-
-                            <p className="text-[10px] font-bold text-gray-300 pl-1">{t('estimates')}</p>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -381,21 +391,19 @@ const ProductSelector = memo(({ products, selected, onSelect, t }: { products: P
         <div className="relative z-30">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between bg-white hover:bg-gray-50 border-2 border-gray-100 hover:border-blue-100 px-4 py-4 rounded-md transition-all duration-300 group"
+                className="w-full flex items-center justify-between bg-white border border-gray-100 px-4 py-4 rounded-xl hover:border-blue-200 shadow-sm transition-all duration-300 group"
             >
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-md overflow-hidden relative bg-gray-100 border border-gray-100 group-hover:scale-105 transition-transform">
+                    <div className="w-12 h-12 rounded-xl overflow-hidden relative bg-gray-100 border border-gray-100 group-hover:scale-105 transition-transform">
                         <Image src={selected.image} alt={selected.name} fill className="object-cover" sizes="48px" />
                     </div>
                     <div className="text-left">
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                            <span className="text-[10px] text-gray-400 font-extrabold uppercase tracking-wider">{t(`categories.${selected.category}`)}</span>
-                        </div>
-                        <p className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{selected.name}</p>
+                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-wider mb-0.5">{selected.category}</p>
+                        <p className="text-base font-black text-gray-900">{selected.name}</p>
                     </div>
                 </div>
-                <div className={cn("w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center transition-colors group-hover:bg-blue-50", isOpen && "bg-blue-100 text-blue-600")}>
-                    <ChevronDown className={cn("w-4 h-4 text-gray-400 transition-transform duration-300", isOpen && "rotate-180 text-blue-600")} />
+                <div className={cn("w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center transition-all group-hover:bg-blue-50", isOpen && "bg-blue-600 text-white")}>
+                    <ChevronDown className={cn("w-5 h-5 text-gray-400 transition-transform duration-300", isOpen && "rotate-180 text-white")} />
                 </div>
             </button>
 
@@ -493,45 +501,55 @@ const ProductSelector = memo(({ products, selected, onSelect, t }: { products: P
     )
 })
 
-const CustomSlider = memo(({ value, min, max, onChange, formatLabel }: {
+const CustomSlider = memo(({ value, min, max, onChange, formatLabel, minLabel, maxLabel }: {
     value: number,
     min: number,
     max: number,
     onChange: (val: number) => void,
-    formatLabel: (val: number) => string
+    formatLabel: (val: number) => string,
+    minLabel?: string,
+    maxLabel?: string
 }) => {
     // Calculate percentage for background fill
     const percentage = ((value - min) / (max - min)) * 100
 
     return (
-        <div className="relative h-5 group cursor-pointer flex items-center" >
-            {/* Track Background */}
-            <div className="absolute top-1/2 left-0 w-full h-1.5 bg-gray-100 rounded-full -translate-y-1/2 overflow-hidden">
-                {/* Fill - Blue Gradient */}
-                <div
-                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full"
-                    style={{ width: `${percentage}%` }}
+        <div className="space-y-3">
+            <div className="relative h-6 group cursor-pointer flex items-center" >
+                {/* Track Background */}
+                <div className="absolute top-1/2 left-0 w-full h-1.5 bg-gray-100 rounded-full -translate-y-1/2 overflow-hidden">
+                    {/* Fill - Blue Gradient */}
+                    <div
+                        className="absolute top-0 left-0 h-full bg-blue-500 rounded-full"
+                        style={{ width: `${percentage}%` }}
+                    />
+                </div>
+
+                {/* Hidden Native Slider for accessibility & functionality */}
+                <input
+                    type="range"
+                    min={min}
+                    max={max}
+                    value={value}
+                    onChange={(e) => onChange(Number(e.target.value))}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                    aria-label={formatLabel(value)}
                 />
-            </div>
 
-            {/* Hidden Native Slider for accessibility & functionality */}
-            <input
-                type="range"
-                min={min}
-                max={max}
-                value={value}
-                onChange={(e) => onChange(Number(e.target.value))}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
-                aria-label={formatLabel(value)}
-            />
-
-            {/* Custom Thumb - Positioned via left% */}
-            <div
-                className="absolute top-1/2 w-5 h-5 bg-white border-2 border-blue-500 rounded-full z-10 pointer-events-none transition-transform duration-100 ease-out group-hover:scale-125 -translate-y-1/2 -translate-x-1/2 flex items-center justify-center"
-                style={{ left: `${percentage}%` }}
-            >
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+                {/* Custom Thumb - Positioned via left% */}
+                <div
+                    className="absolute top-1/2 w-6 h-6 bg-white border-[3px] border-blue-600 rounded-full z-10 pointer-events-none transition-transform duration-100 ease-out group-hover:scale-110 -translate-y-1/2 -translate-x-1/2 flex items-center justify-center shadow-md shadow-blue-200"
+                    style={{ left: `${percentage}%` }}
+                >
+                    <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
+                </div>
             </div>
+            {(minLabel || maxLabel) && (
+                <div className="flex justify-between px-0.5">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{minLabel}</span>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{maxLabel}</span>
+                </div>
+            )}
         </div>
     )
 })
@@ -564,56 +582,8 @@ const AnimatedNumber = memo(({ value }: { value: number }) => {
 
     return (
         <span className="tabular-nums will-change-[contents]">
-            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(displayValue)}
+            {new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(displayValue)}
         </span>
     )
 })
 
-const SimpleDropdown = memo(({ options, selected, onSelect }: { options: string[], selected: string, onSelect: (val: string) => void }) => {
-    const [isOpen, setIsOpen] = useState(false)
-
-    return (
-        <div className="relative z-20">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between text-left text-sm font-bold text-gray-900 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-4 py-2.5 rounded-md transition-all active:scale-95"
-            >
-                <div className="flex items-center gap-2 truncate">
-                    <span className="truncate">{selected}</span>
-                </div>
-                <ChevronDown className={cn("w-4 h-4 text-gray-400 transition-transform duration-200", isOpen && "rotate-180")} />
-            </button>
-
-            <AnimatePresence>
-                {isOpen && (
-                    <>
-                        <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-                        <motion.div
-                            initial={{ opacity: 0, y: 4, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                            transition={{ duration: 0.1 }}
-                            className="absolute top-full left-0 right-0 mt-2 bg-white rounded-md border border-gray-100 p-1 z-20 overflow-hidden"
-                        >
-                            {options.map((option) => (
-                                <button
-                                    key={option}
-                                    onClick={() => {
-                                        onSelect(option)
-                                        setIsOpen(false)
-                                    }}
-                                    className={cn(
-                                        "w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-gray-50",
-                                        selected === option ? "text-blue-600 bg-blue-50" : "text-gray-600"
-                                    )}
-                                >
-                                    {option}
-                                </button>
-                            ))}
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
-        </div>
-    )
-})

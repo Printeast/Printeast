@@ -123,8 +123,9 @@ export function IdeasInspiration() {
                                 blue: (chunks) => <span className="text-blue-600">{chunks}</span>
                             })}
                         </h2>
-                        <p className="text-sm md:text-base text-slate-500 max-w-2xl font-medium leading-relaxed mx-auto mt-4">
-                            {t('subtitle')}
+                        <p className="text-sm md:text-base text-slate-500 font-medium leading-relaxed mx-auto mt-4 max-w-none">
+                            Need ideas for your next bestseller? <br className="hidden md:block" />
+                            Explore trending niches, popular design styles, and proven concepts that drive sales.
                         </p>
                     </motion.div>
                 </div>

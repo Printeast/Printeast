@@ -4,6 +4,7 @@ import dynamic from "next/dynamic"
 import { ImageCarouselHero } from "@/components/landing/hero"
 import { SectionSkeleton } from "@/components/ui/section-skeleton"
 import { SectionErrorBoundary } from "@/components/ui/error-boundary"
+import { LandingNavbar } from "@/components/landing/landing-navbar"
 // ScrollReveal removed for performance optimization
 
 // --- Dynamic Imports with SSR disabled ONLY for heavy interactive islands ---
@@ -45,13 +46,19 @@ const Footer = dynamic(() => import("@/components/landing/footer").then(mod => m
 export default function Home() {
   return (
     <main className="min-h-screen relative bg-white selection:bg-blue-100 selection:text-blue-900">
-      {/* GLOBAL FLOW BACKGROUND SYSTEM - OPTIMIZED */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none bg-[#f8fafc]"> {/* Consistent Off-White */}
-        {/* Removed all complex gradients and textures to eliminate banding lines */}
+      {/* GLOBAL ATMOSPHERIC SYSTEM */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute inset-0 bg-[#f8fafc]" />
+        {/* Subtle Noise Texture for Premium Feel */}
+        <div className="absolute inset-0 opacity-[0.015] mix-blend-multiply pointer-events-none"
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+        />
       </div>
 
+      <LandingNavbar />
+
       {/* Page Content */}
-      <div className="relative z-10 font-sans transform-gpu">
+      <div className="relative z-10 font-sans">
         <ImageCarouselHero />
 
         <div id="how-it-works" className="scroll-mt-24">

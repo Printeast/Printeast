@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl"
 export function ReadyToStart() {
     const t = useTranslations('ReadyToStart');
     return (
-        <section className="relative w-full py-20 lg:py-24 bg-transparent overflow-hidden">
+        <section className="relative w-full py-32 bg-transparent overflow-hidden">
             {/* Background Atmosphere - Connecting from previous section */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-0 left-1/4 w-[1000px] h-[600px] bg-blue-100/40 rounded-full blur-[120px] mix-blend-multiply opacity-50" />

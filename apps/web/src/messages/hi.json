@@ -220,7 +220,7 @@
         }
     },
     "ProfitCalculator": {
-        "title": "देखें कि आप अपने <word /> से कितना कमा सकते हैं",
+        "title": "देखें कि आप अपने <word></word> से कितना कमा सकते हैं",
         "words": [
             "ब्रांड",
             "शौक",
@@ -238,7 +238,7 @@
         "hundredSales": "100 बिक्री",
         "yourCountry": "आपका देश",
         "viewEarnings": "कमाई देखें",
-        "aiSuggestion": "AI सर्वोत्तम रूपांतरण के लिए <price /> पर मूल्य निर्धारण का सुझाव देता है",
+        "aiSuggestion": "AI सर्वोत्तम रूपांतरण के लिए <price/> पर मूल्य निर्धारण का सुझाव देता है",
         "estimatedProfit": "अनुमानित {period} लाभ",
         "startEarning": "अभी कमाई शुरू करें",
         "perMonth": "प्रति माह",

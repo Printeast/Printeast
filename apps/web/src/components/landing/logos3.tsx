@@ -178,8 +178,9 @@ const Logos3 = ({
                         blue: (chunks) => <span className="text-blue-600">{chunks}</span>
                     })}
                 </h2>
-                <p className="text-sm md:text-base text-slate-500 max-w-2xl font-medium leading-relaxed mt-4">
-                    {t('subtitle')}
+                <p className="text-sm md:text-base text-slate-500 font-medium leading-relaxed mt-4 max-w-none">
+                    Integrate with your existing store or create a new one. <br className="hidden md:block" />
+                    We support all major platforms with seamless synchronization.
                 </p>
             </div>
 

@@ -71,8 +71,9 @@ export function FeatureShowcase() {
                                 blue: (chunks) => <span className="text-blue-600">{chunks}</span>
                             })}
                         </h2>
-                        <p className="text-sm md:text-base text-slate-500 max-w-2xl font-medium leading-relaxed mt-4">
-                            {t('subtitle')}
+                        <p className="text-sm md:text-base text-slate-500 font-medium leading-relaxed mt-4 max-w-none">
+                            You are few steps away from creating your profitable brand. <br className="hidden md:block" />
+                            Production, Logistics, and Support — handled by us.
                         </p>
                     </motion.div>
                 </div>

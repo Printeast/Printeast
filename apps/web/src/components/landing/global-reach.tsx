@@ -15,10 +15,10 @@ export function GlobalReach() {
     const isInView = useInView(containerRef, { margin: "0px 0px -20% 0px", once: false })
 
     return (
-        <section ref={containerRef} className="relative w-full min-h-screen bg-[#030712] py-12 flex flex-col items-center justify-center overflow-hidden">
+        <section ref={containerRef} className="relative w-full bg-transparent py-32 flex flex-col items-center justify-center overflow-hidden">
 
             {/* CARD CONTAINER for Cosmic Theme - Truly Full Width but with Curved Visuals */}
-            <div className="relative w-full mx-0 rounded-[64px] sm:rounded-[80px] overflow-hidden border-t border-b border-white/5 shadow-2xl">
+            <div className="relative w-full mx-0 rounded-[48px] sm:rounded-[64px] overflow-hidden border-t border-b border-white/5 shadow-2xl">
 
                 {/* StarsWrapper: Wraps content to capture mouse movement for parallax effect */}
                 <StarsBackground
@@ -55,7 +55,9 @@ export function GlobalReach() {
                                 </h2>
 
                                 <p className="text-lg md:text-xl text-slate-400 max-w-xl font-medium leading-relaxed mt-4">
-                                    {t('description')}
+                                    {t.rich('description', {
+                                        secondary: (chunks) => <span className="block">{chunks}</span>
+                                    })}
                                 </p>
 
                                 <div className="flex flex-wrap gap-12 pt-4">
