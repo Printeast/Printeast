@@ -1,82 +1,46 @@
+import React from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { createClient } from "@/utils/supabase/server";
-import { resolveTenantId } from "../_data";
 import { ArrowUpRight, BarChart3, CheckCircle2, Clock, CreditCard, RefreshCw, Sparkles, TrendingUp } from "lucide-react";
 import Link from "next/link";
-
-type OrderRow = {
-    id: string;
-    status: string;
-    total_amount: number;
-    created_at: string;
-    buyer?: Array<{ email: string | null }> | null;
-};
-
-type PaymentRow = {
-    amount: number | null;
-    status: string | null;
-    created_at: string | null;
-    order_id: string | null;
-};
+import { api } from "@/services/api.service";
 
 export default async function SellerAnalyticsPage() {
     const supabase = await createClient();
+    const { data: { session } } = await supabase.auth.getSession();
     const { data: userRes } = await supabase.auth.getUser();
-    const userEmail = userRes.user?.email || "seller";
-    const tenantId = await resolveTenantId(supabase);
+    const userEmail = userRes.user?.email || session?.user?.email || "seller";
 
-    const { data: ordersData = [] } = tenantId
-        ? await supabase
-            .from("orders")
-            .select("id,status,total_amount,created_at,buyer:users!orders_buyer_id_fkey(email)")
-            .eq("tenant_id", tenantId)
-            .order("created_at", { ascending: false })
-            .limit(200)
-        : { data: [] };
+    // Fetch from high-performance backend
+    const res = await api.get<any>("/analytics/stats", session?.access_token);
+    const stats = res.data || { summary: {}, recentOrders: [], recentPayments: [] };
 
-    const { data: paymentsData = [] } = tenantId
-        ? await supabase
-            .from("payments")
-            .select("amount,status,created_at,order_id,orders!inner(tenant_id)")
-            .eq("orders.tenant_id", tenantId)
-            .order("created_at", { ascending: false })
-            .limit(200)
-        : { data: [] };
+    const gmv = stats.summary.revenue || 0;
+    const orderCount = stats.summary.orders || 0;
+    const paid = stats.summary.paidAmount || 0;
+    const pending = stats.summary.pendingAmount || 0;
+    const aov = stats.summary.aov || 0;
 
-    const orders = ordersData as OrderRow[];
-    const payments = paymentsData as PaymentRow[];
-
-    const gmv = orders.reduce((sum, o) => sum + Number(o.total_amount ?? 0), 0);
-    const orderCount = orders.length;
-    const paid = payments.filter((p) => (p.status || "").toUpperCase() === "PAID").reduce((s, p) => s + Number(p.amount ?? 0), 0);
-    const pending = payments.filter((p) => (p.status || "").toUpperCase() !== "PAID").reduce((s, p) => s + Number(p.amount ?? 0), 0);
-    const aov = orderCount ? gmv / orderCount : 0;
-
-    const recentOrders = orders.slice(0, 6);
-    const recentPayments = payments.slice(0, 6);
+    const recentOrders = stats.recentOrders || [];
+    const recentPayments = stats.recentPayments || [];
     const totalPayments = paid + pending;
     const paidPct = totalPayments ? Math.round((paid / totalPayments) * 100) : 0;
 
+    const bgSoft = "#F9F8F6";
+
     return (
         <DashboardLayout user={{ email: userEmail, role: "SELLER" }} fullBleed>
-            {/* Full page with gradient background */}
-            <div className="min-h-full w-full" style={{
-                background: 'linear-gradient(135deg, #e8f0fe 0%, #f0f4f8 25%, #f5f7fa 50%, #f8f9fb 100%)'
-            }}>
-                {/* Gradient mesh overlays */}
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full opacity-40"
-                        style={{ background: 'radial-gradient(circle, rgba(147,197,253,0.5) 0%, transparent 70%)' }} />
-                    <div className="absolute top-0 right-0 w-[300px] h-[300px] rounded-full opacity-20"
-                        style={{ background: 'radial-gradient(circle, rgba(196,181,253,0.4) 0%, transparent 70%)' }} />
-                </div>
-
+            <div
+                className="min-h-full w-full"
+                style={{
+                    background: `radial-gradient(circle at top left, rgba(37,99,235,0.06), transparent 35%), radial-gradient(circle at 80% 20%, rgba(15,23,42,0.05), transparent 35%), ${bgSoft}`,
+                }}
+            >
                 <div className="relative z-10 px-10 py-8">
                     {/* Page Header */}
                     <div className="flex items-center justify-between mb-8">
                         <div>
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500 mb-1">Analytics</p>
-                            <h1 className="text-[28px] font-bold text-slate-900 leading-tight">Commerce Command</h1>
+                            <h1 className="text-[28px] font-bold text-slate-900 leading-tight">Analytics</h1>
                             <p className="text-sm text-slate-500 mt-1">Signals from orders, payments, and fulfillment velocity.</p>
                         </div>
                         <div className="flex items-center gap-2">
@@ -111,7 +75,6 @@ export default async function SellerAnalyticsPage() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <h2 className="text-base font-semibold text-slate-900">Orders (7d)</h2>
-                                        <p className="text-xs text-slate-500 mt-0.5">Daily order totals from orders.total_amount.</p>
                                     </div>
                                     <span className="px-2.5 py-1 bg-blue-50 text-blue-600 text-xs font-semibold rounded-full">
                                         AOV {formatCurrency(aov)}
@@ -196,16 +159,16 @@ export default async function SellerAnalyticsPage() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {recentOrders.map((order) => (
+                                            {recentOrders.map((order: any) => (
                                                 <tr key={order.id} className="border-b border-slate-50 last:border-0">
                                                     <td className="py-3 text-sm font-medium text-slate-800">#{order.id.slice(0, 8)}</td>
-                                                    <td className="py-3 text-sm text-slate-600">{order.buyer?.[0]?.email || "Unknown"}</td>
+                                                    <td className="py-3 text-sm text-slate-600">{order.buyerEmail || "Unknown"}</td>
                                                     <td className="py-3">
                                                         <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${statusStyle(order.status)}`}>
                                                             {formatStatus(order.status)}
                                                         </span>
                                                     </td>
-                                                    <td className="py-3 text-sm font-semibold text-slate-800 text-right">{formatCurrency(order.total_amount)}</td>
+                                                    <td className="py-3 text-sm font-semibold text-slate-800 text-right">{formatCurrency(order.totalAmount)}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
@@ -230,11 +193,11 @@ export default async function SellerAnalyticsPage() {
                                         <p className="text-xs text-slate-500">Payments will surface here when available.</p>
                                     </div>
                                 ) : (
-                                    recentPayments.map((payment) => (
-                                        <div key={`${payment.order_id}-${payment.created_at}`} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                                    recentPayments.map((payment: any) => (
+                                        <div key={payment.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                                             <div>
-                                                <p className="text-sm font-medium text-slate-800">#{(payment.order_id || "").slice(0, 8)}</p>
-                                                <p className="text-xs text-slate-500">{formatDate(payment.created_at)}</p>
+                                                <p className="text-sm font-medium text-slate-800">#{(payment.orderId || "").slice(0, 8)}</p>
+                                                <p className="text-xs text-slate-500">{formatDate(payment.createdAt)}</p>
                                             </div>
                                             <div className="text-right">
                                                 <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${paymentStyle(payment.status)}`}>

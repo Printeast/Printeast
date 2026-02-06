@@ -17,10 +17,15 @@ class ApiClient {
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
+    externalToken?: string
   ): Promise<ApiResponse<T>> {
     try {
-      const { data: { session } } = await this.supabase.auth.getSession();
-      const token = session?.access_token;
+      let token = externalToken;
+
+      if (!token) {
+        const { data: { session } } = await this.supabase.auth.getSession();
+        token = session?.access_token;
+      }
 
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -38,8 +43,6 @@ class ApiClient {
 
       // Handle 204 No Content or 304 Not Modified (No body transitions)
       if (response.status === 204 || response.status === 304) {
-        // We return success but null data, or we'd need a cache. 
-        // For /auth/me, we really want the data, so we'll force no-cache if needed.
         return { success: true, data: null as any };
       }
 
@@ -72,30 +75,30 @@ class ApiClient {
     }
   }
 
-  get<T>(endpoint: string) {
+  get<T>(endpoint: string, token?: string) {
     return this.request<T>(endpoint, {
       method: "GET",
       // Force reload for auth checks to avoid 304 empty body issues
       cache: endpoint.includes('auth') ? 'no-cache' : 'default'
-    });
+    }, token);
   }
 
-  post<T>(endpoint: string, body: unknown) {
+  post<T>(endpoint: string, body: unknown, token?: string) {
     return this.request<T>(endpoint, {
       method: "POST",
       body: JSON.stringify(body),
-    });
+    }, token);
   }
 
-  put<T>(endpoint: string, body: unknown) {
+  put<T>(endpoint: string, body: unknown, token?: string) {
     return this.request<T>(endpoint, {
       method: "PUT",
       body: JSON.stringify(body),
-    });
+    }, token);
   }
 
-  delete<T>(endpoint: string) {
-    return this.request<T>(endpoint, { method: "DELETE" });
+  delete<T>(endpoint: string, token?: string) {
+    return this.request<T>(endpoint, { method: "DELETE" }, token);
   }
 }
 

@@ -19,22 +19,37 @@ const DISCOVERY_OPTIONS = [
     { id: "other", label: "Other", icon: MoreHorizontal, hasInput: true, placeholder: "Where did you hear about us?" },
 ];
 
+const POPULAR_SOCIALS = [
+    { id: "youtube", label: "YouTube" },
+    { id: "instagram", label: "Instagram" },
+    { id: "tiktok", label: "TikTok" },
+    { id: "facebook", label: "Facebook" },
+    { id: "twitter", label: "Twitter / X" },
+    { id: "reddit", label: "Reddit" },
+    { id: "pinterest", label: "Pinterest" },
+];
+
 export function DiscoveryChannelStep() {
     const { nextStep, setAnswer } = useOnboardingStore();
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [detail, setDetail] = useState("");
+    const [selectedSocial, setSelectedSocial] = useState<string | null>(null);
 
     const handleSelect = (option: typeof DISCOVERY_OPTIONS[0]) => {
         if (!option.hasInput) {
-            // Auto advance for simple options
             setAnswer("discoveryChannel", option.label);
             setAnswer("discoveryDetail", "");
             nextStep();
         } else {
-            // Show input for complex options
             setSelectedId(option.id);
-            setDetail(""); // Clear previous detail if switching
+            setDetail("");
+            setSelectedSocial(null);
         }
+    };
+
+    const handleSocialSelect = (label: string) => {
+        setSelectedSocial(label);
+        setDetail(label);
     };
 
     const handleFinish = () => {
@@ -42,7 +57,7 @@ export function DiscoveryChannelStep() {
         const option = DISCOVERY_OPTIONS.find(o => o.id === selectedId);
         if (option) {
             setAnswer("discoveryChannel", option.label);
-            setAnswer("discoveryDetail", detail);
+            setAnswer("discoveryDetail", detail || selectedSocial || "");
             nextStep();
         }
     };
@@ -70,11 +85,7 @@ export function DiscoveryChannelStep() {
                         ? "grid grid-cols-2 md:grid-cols-4 gap-3"
                         : "flex flex-col gap-3"
                 )}>
-                    {/* Options List */}
                     <AnimatePresence mode="popLayout">
-                        {/* If an option needing input is selected, hide others or keep them? 
-                            Let's keep the list but highlight the selected one and show input below it.
-                        */}
                         {DISCOVERY_OPTIONS.map((opt, index) => {
                             const isSelected = selectedId === opt.id;
 
@@ -92,28 +103,26 @@ export function DiscoveryChannelStep() {
                                             "group w-full bg-white border border-neutral-200 rounded-xl hover:border-black hover:shadow-md transition-all duration-200",
                                             isSelected && "border-black shadow-md ring-1 ring-black/5",
                                             DISCOVERY_OPTIONS.length > 7
-                                                ? "flex flex-col items-center justify-center p-4 h-40 text-center gap-3"
+                                                ? "flex flex-col items-center justify-center p-4 h-32 md:h-40 text-center gap-3"
                                                 : "p-4 md:p-5 flex items-center justify-between text-left"
                                         )}
                                     >
                                         {DISCOVERY_OPTIONS.length > 7 ? (
-                                            // Grid Content
                                             <>
                                                 <div className={cn(
-                                                    "w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200",
+                                                    "w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-colors duration-200",
                                                     isSelected ? "bg-black text-white" : "bg-neutral-100 text-neutral-600 group-hover:bg-black group-hover:text-white"
                                                 )}>
-                                                    <opt.icon className="w-6 h-6" strokeWidth={1.5} />
+                                                    <opt.icon className="w-5 h-5 md:w-6 md:h-6" strokeWidth={1.5} />
                                                 </div>
                                                 <span className={cn(
-                                                    "font-bold text-sm leading-snug transition-colors",
+                                                    "font-bold text-xs md:text-sm leading-snug transition-colors",
                                                     isSelected ? "text-black" : "text-neutral-800 group-hover:text-black"
                                                 )}>
                                                     {opt.label}
                                                 </span>
                                             </>
                                         ) : (
-                                            // List Content
                                             <>
                                                 <div className="flex items-center gap-4">
                                                     <div className={cn(
@@ -139,6 +148,32 @@ export function DiscoveryChannelStep() {
                                         )}
                                     </button>
 
+                                    {/* List Mode Social Sub-options */}
+                                    {DISCOVERY_OPTIONS.length <= 7 && isSelected && opt.id === "social-media" && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: "auto" }}
+                                            className="mt-4 px-2"
+                                        >
+                                            <div className="flex flex-wrap gap-2 mb-4">
+                                                {POPULAR_SOCIALS.map(social => (
+                                                    <button
+                                                        key={social.id}
+                                                        onClick={() => handleSocialSelect(social.label)}
+                                                        className={cn(
+                                                            "px-3 py-1.5 rounded-full text-xs font-semibold border transition-all",
+                                                            selectedSocial === social.label
+                                                                ? "bg-black text-white border-black"
+                                                                : "bg-white text-neutral-600 border-neutral-200 hover:border-black hover:text-black"
+                                                        )}
+                                                    >
+                                                        {social.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </motion.div>
+                                    )}
+
                                     {/* List Mode Input (Inline) */}
                                     {DISCOVERY_OPTIONS.length <= 7 && isSelected && opt.hasInput && (
                                         <motion.div
@@ -147,12 +182,14 @@ export function DiscoveryChannelStep() {
                                             exit={{ opacity: 0, height: 0, marginTop: 0 }}
                                             className="overflow-hidden bg-neutral-50 p-4 rounded-xl border border-neutral-100"
                                         >
-                                            {/* Input content reusable */}
                                             <div className="flex gap-2">
                                                 <Input
                                                     autoFocus
                                                     value={detail}
-                                                    onChange={(e) => setDetail(e.target.value)}
+                                                    onChange={(e) => {
+                                                        setDetail(e.target.value);
+                                                        setSelectedSocial(null);
+                                                    }}
                                                     placeholder={opt.placeholder}
                                                     className="h-12 bg-white border-neutral-300 focus:border-black text-base shadow-sm"
                                                     onKeyDown={(e) => {
@@ -161,7 +198,7 @@ export function DiscoveryChannelStep() {
                                                 />
                                                 <button
                                                     onClick={handleFinish}
-                                                    disabled={!detail.trim()}
+                                                    disabled={!detail.trim() && !selectedSocial}
                                                     className="h-12 px-6 bg-black text-white rounded-lg font-medium text-sm hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 whitespace-nowrap shadow-sm"
                                                 >
                                                     Next <ArrowRight className="w-4 h-4" />
@@ -175,41 +212,82 @@ export function DiscoveryChannelStep() {
                     </AnimatePresence>
                 </div>
 
-                {/* Grid Mode Input (Bottom Block) */}
+                {/* Grid Mode Selection/Input (Floating Popout) */}
                 <AnimatePresence>
                     {DISCOVERY_OPTIONS.length > 7 && selectedOption && selectedOption.hasInput && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 10 }}
-                            className="w-full bg-neutral-50 p-6 rounded-xl border border-neutral-200 mt-2"
-                        >
-                            <h3 className="text-sm font-semibold text-neutral-900 mb-3 ml-1">
-                                Please specify for "{selectedOption.label}":
-                            </h3>
-                            <div className="flex gap-2">
-                                <Input
-                                    autoFocus
-                                    value={detail}
-                                    onChange={(e) => setDetail(e.target.value)}
-                                    placeholder={selectedOption.placeholder}
-                                    className="h-12 bg-white border-neutral-300 focus:border-black text-base shadow-sm"
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter" && detail.trim()) handleFinish();
-                                    }}
-                                />
-                                <button
-                                    onClick={handleFinish}
-                                    disabled={!detail.trim()}
-                                    className="h-12 px-8 bg-black text-white rounded-lg font-medium text-sm hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 whitespace-nowrap shadow-sm"
-                                >
-                                    Next <ArrowRight className="w-4 h-4" />
-                                </button>
-                            </div>
-                        </motion.div>
+                        <div className="fixed inset-x-0 bottom-6 z-50 flex justify-center px-4 pointer-events-none">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                                transition={{ type: "spring", bounce: 0.3, duration: 0.5 }}
+                                className="w-full max-w-[420px] bg-white/80 backdrop-blur-2xl p-5 rounded-3xl border border-white/50 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)] pointer-events-auto"
+                            >
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-sm font-semibold text-neutral-900 flex items-center gap-2">
+                                        <div className="p-1.5 bg-blue-50 rounded-full text-blue-600">
+                                            <selectedOption.icon className="w-3.5 h-3.5" />
+                                        </div>
+                                        {selectedOption.id === "social-media"
+                                            ? "Which platform?"
+                                            : selectedOption.label}
+                                    </h3>
+                                    <button
+                                        onClick={() => setSelectedId(null)}
+                                        className="text-neutral-400 hover:text-neutral-900 transition-colors"
+                                    >
+                                        <span className="sr-only">Close</span>
+                                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 1L1 13M1 1l12 12" /></svg>
+                                    </button>
+                                </div>
+
+                                {selectedOption.id === "social-media" && (
+                                    <div className="flex flex-wrap gap-1.5 mb-4">
+                                        {POPULAR_SOCIALS.map(social => (
+                                            <button
+                                                key={social.id}
+                                                onClick={() => handleSocialSelect(social.label)}
+                                                className={cn(
+                                                    "px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200",
+                                                    selectedSocial === social.label
+                                                        ? "bg-neutral-900 text-white border-neutral-900 shadow-md"
+                                                        : "bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400 hover:bg-neutral-50"
+                                                )}
+                                            >
+                                                {social.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+
+                                <div className="flex gap-2">
+                                    <Input
+                                        autoFocus
+                                        value={detail}
+                                        onChange={(e) => {
+                                            setDetail(e.target.value);
+                                            setSelectedSocial(null);
+                                        }}
+                                        placeholder="Type here..."
+                                        className="h-11 bg-white/50 border-neutral-200 focus:border-neutral-900 focus:bg-white text-sm rounded-xl shadow-sm transition-all"
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter" && (detail.trim() || selectedSocial)) handleFinish();
+                                        }}
+                                    />
+                                    <button
+                                        onClick={handleFinish}
+                                        disabled={!detail.trim() && !selectedSocial}
+                                        className="h-11 px-5 bg-neutral-900 text-white rounded-xl font-semibold text-sm hover:bg-black disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center gap-2 shadow-lg shadow-neutral-900/20 active:scale-95"
+                                    >
+                                        <ArrowRight className="w-4 h-4 ml-0.5" />
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </div>
                     )}
                 </AnimatePresence>
             </div>
         </div>
     );
 }
+

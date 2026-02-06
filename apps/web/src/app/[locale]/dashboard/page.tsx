@@ -29,8 +29,29 @@ export default function DashboardPage() {
                 return;
             }
 
+            // OPTIMIZATION: Check for cached role cookie to bypass network call
+            const roleMatch = document.cookie.match(/(^| )user_role=([^;]+)/);
+            if (roleMatch) {
+                const role = roleMatch[2];
+                const target = role === 'SELLER' ? 'seller' :
+                    role === 'CREATOR' ? 'creator' :
+                        role === 'ADMIN' ? 'tenant-admin' :
+                            'onboarding';
+
+                setStatusText("Initializing your creative space");
+                router.replace(`/${target}`);
+                return;
+            }
+
             try {
-                setStatusText("Preparing your workspace");
+                const messages = [
+                    "Setting the stage",
+                    "Preparing your workspace",
+                    "Tailoring your experience",
+                    "Almost there"
+                ];
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)] || "Loading";
+                setStatusText(randomMessage);
                 const res = await api.get("/auth/me");
 
                 if (res.success && res.data) {
@@ -50,7 +71,11 @@ export default function DashboardPage() {
                     // Simple rule: Basic customers go to onboarding first.
                     const finalPath = (roleName === "CUSTOMER") ? "onboarding" : target;
 
-                    setTimeout(() => router.push(`/${finalPath}`), 800);
+                    // Set cookie for next time (Fast Path)
+                    document.cookie = `user_role=${roleName}; path=/; max-age=86400; SameSite=Lax`;
+
+                    // Immediate redirection
+                    router.replace(`/${finalPath}`);
                 } else {
                     router.push("/onboarding");
                 }

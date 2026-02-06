@@ -1,8 +1,24 @@
 import type { Metadata, Viewport } from "next";
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
-import { notFound } from "next/navigation";
-import { locales } from "@/i18n/config";
+import { Wix_Madefor_Display, Wix_Madefor_Text } from "next/font/google"; // Corrected import
+import "@/app/globals.css"; // Fixed path using alias
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
+import { notFound } from 'next/navigation';
+import { locales } from '@/i18n/config';
+
+const wixDisplay = Wix_Madefor_Display({
+  subsets: ["latin"],
+  variable: "--font-wix-display",
+  display: "swap",
+  preload: true,
+});
+
+const wixText = Wix_Madefor_Text({
+  subsets: ["latin"],
+  variable: "--font-wix-text",
+  display: "swap",
+  preload: true,
+});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -102,18 +118,25 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <NextIntlClientProvider messages={messages}>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
-        <SmoothScrollProvider>
-          <PreconnectOptimizer />
-          {children}
-        </SmoothScrollProvider>
-      </ThemeProvider>
-    </NextIntlClientProvider>
+    <html lang={locale} suppressHydrationWarning>
+      <head>
+        {/* ... existing head scripts ... */}
+      </head>
+      <body className={`${wixDisplay.variable} ${wixText.variable} font-sans antialiased relative`}>
+        <NextIntlClientProvider messages={messages}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem={false}
+            disableTransitionOnChange
+          >
+            <SmoothScrollProvider>
+              <PreconnectOptimizer />
+              {children}
+            </SmoothScrollProvider>
+          </ThemeProvider>
+        </NextIntlClientProvider>
+      </body>
+    </html>
   );
 }

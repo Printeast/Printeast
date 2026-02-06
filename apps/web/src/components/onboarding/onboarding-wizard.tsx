@@ -80,7 +80,7 @@ export function OnboardingWizard() {
             <div className="w-full max-w-[520px] mx-auto">
                 {/* Navigation Header */}
                 <div className="mb-10 flex items-center justify-between">
-                    {!isFirstStep && (
+                    {!isFirstStep && currentStep !== "PROCESSING" && (
                         <button
                             onClick={prevStep}
                             className="p-2 -ml-2 text-neutral-400 hover:text-neutral-900 transition-colors rounded-full hover:bg-neutral-50"

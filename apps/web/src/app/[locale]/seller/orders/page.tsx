@@ -7,11 +7,11 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { createClient } from "@/utils/supabase/server";
-import { resolveTenantId } from "../_data";
 import { Download, MoreHorizontal, Plus, RefreshCw, Search } from "lucide-react";
 import { OrderAdvancedFilters } from "./OrderAdvancedFilters";
 import { ActiveFilterBadges } from "./ActiveFilterBadges";
@@ -34,62 +34,50 @@ type OrderRow = {
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
+import { api } from "@/services/api.service";
+
 export default async function SellerOrdersPage(props: { searchParams: Promise<SearchParams> }) {
     const searchParams = await props.searchParams;
     const supabase = await createClient();
+    const { data: { session } } = await supabase.auth.getSession();
     const { data: userRes } = await supabase.auth.getUser();
-    const userEmail = userRes.user?.email || "seller";
-    const tenantId = await resolveTenantId(supabase);
+    const userEmail = userRes.user?.email || session?.user?.email || "seller";
 
     const q = readParam(searchParams?.q);
     const status = readParam(searchParams?.status);
     const stores = readParamList(searchParams?.store);
 
     let orders: OrderRow[] = [];
-    if (tenantId) {
-        let query = supabase
-            .from("orders")
-            .select("id,status,total_amount,created_at,buyer:users!orders_buyer_id_fkey(email),order_items(id,price_at_time,product:products(name,mockup_template_url),design:designs(preview_url,image_url,prompt_text))")
-            .eq("tenant_id", tenantId)
-            .order("created_at", { ascending: false })
-            .limit(50);
 
-        if (status && status !== "all") {
-            query = query.eq("status", status);
-        }
+    // Fetch from backend API
+    const res = await api.get<any>(`/orders?q=${q || ""}&status=${status || ""}`, session?.access_token);
 
-        if (q) {
-            const term = q.replace(/[%_]/g, "").trim();
-            if (term) {
-                query = query.or(`id.ilike.%${term}%,users.email.ilike.%${term}%`);
-            }
-        }
-
-        const { data } = await query;
-        // Fix for Supabase type mapping - single join vs many
-        orders = (data ?? []).map((o: any) => ({
-            ...o,
-            buyer: Array.isArray(o.buyer) ? o.buyer[0] : o.buyer,
-            order_items: (o.order_items ?? []).map((item: any) => ({
-                ...item,
-                product: Array.isArray(item.product) ? item.product[0] : item.product,
-                design: Array.isArray(item.design) ? item.design[0] : item.design,
+    if (res.success && res.data) {
+        orders = (res.data.orders || []).map((o: any) => ({
+            id: o.id,
+            status: o.status,
+            total_amount: o.totalAmount,
+            created_at: o.createdAt,
+            buyer: o.buyer,
+            order_items: (o.items || []).map((item: any) => ({
+                id: item.id,
+                price_at_time: item.priceAtTime,
+                product: { name: item.productName, mockup_template_url: item.imageUrl },
+                design: { preview_url: item.imageUrl }
             }))
-        })) as OrderRow[];
+        }));
     }
+
+    const bgSoft = "#F9F8F6";
 
     return (
         <DashboardLayout user={{ email: userEmail, role: "SELLER" }} fullBleed>
-            <div className="min-h-full w-full relative transition-colors duration-300" style={{
-                background: 'linear-gradient(145deg, var(--background) 0%, var(--card) 60%, var(--accent) 100%)'
-            }}>
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-20 dark:opacity-[0.15]"
-                        style={{ background: 'radial-gradient(circle, #3b82f6 0%, transparent 70%)' }} />
-                    <div className="absolute top-1/2 right-0 w-[400px] h-[400px] rounded-full opacity-10 dark:opacity-[0.10]"
-                        style={{ background: 'radial-gradient(circle, #8b5cf6 0%, transparent 70%)' }} />
-                </div>
-
+            <div
+                className="min-h-full w-full"
+                style={{
+                    background: `radial-gradient(circle at top left, rgba(37,99,235,0.06), transparent 35%), radial-gradient(circle at 80% 20%, rgba(15,23,42,0.05), transparent 35%), ${bgSoft}`,
+                }}
+            >
                 <div className="relative z-10 px-10 py-8">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-2">
@@ -109,8 +97,11 @@ export default async function SellerOrdersPage(props: { searchParams: Promise<Se
                                     </button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
+                                    <DropdownMenuItem>Export Account Statement</DropdownMenuItem>
                                     <DropdownMenuItem>Export Invoices</DropdownMenuItem>
-                                    <DropdownMenuItem>Import Orders</DropdownMenuItem>
+                                    <DropdownMenuItem>Export Billing Receipts</DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem>Import orders</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                             <Button className="h-9 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm font-medium text-sm gap-1.5">
@@ -145,7 +136,7 @@ export default async function SellerOrdersPage(props: { searchParams: Promise<Se
 
                     <ActiveFilterBadges />
 
-                    <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+                    <div className="bg-white border border-slate-200/60 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden transition-all duration-500">
                         <Table>
                             <TableHeader>
                                 <TableRow className="hover:bg-transparent border-b border-border">

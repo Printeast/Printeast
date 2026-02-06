@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { SellerDashboardData } from "./_data";
 import Image from "next/image";
@@ -12,11 +13,16 @@ interface Props {
 }
 
 export function SellerDashboardClient({ userEmail, data }: Props) {
-    const newOrders = data.orders.filter((order) => {
-        const createdAt = order.created_at ? new Date(order.created_at) : null;
-        if (!createdAt || Number.isNaN(createdAt.getTime())) return false;
-        return Date.now() - createdAt.getTime() < 24 * 60 * 60 * 1000;
-    }).length;
+    const [newOrders, setNewOrders] = React.useState(0);
+
+    React.useEffect(() => {
+        const count = data.orders.filter((order) => {
+            const createdAt = order.created_at ? new Date(order.created_at) : null;
+            if (!createdAt || Number.isNaN(createdAt.getTime())) return false;
+            return Date.now() - createdAt.getTime() < 24 * 60 * 60 * 1000;
+        }).length;
+        setNewOrders(count);
+    }, [data.orders]);
 
     const steps = [
         {
@@ -90,32 +96,42 @@ export function SellerDashboardClient({ userEmail, data }: Props) {
         },
     ];
 
+    const bgSoft = "#F9F8F6";
+
     return (
         <DashboardLayout user={{ email: userEmail || "seller", role: "SELLER" }} fullBleed>
-            <div className="min-h-full bg-[#F9F8F6] px-8 py-6">
-                <div className="mx-auto max-w-[1200px] space-y-6">
-                    <section className="relative overflow-hidden rounded-2xl bg-[#2563eb] p-7 text-white">
-                        <div className="absolute -top-16 -right-16 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
-                        <div className="absolute bottom-0 left-10 h-56 w-56 rounded-full bg-white/5 blur-3xl" />
-                        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div
+                className="min-h-full w-full"
+                style={{
+                    background: `radial-gradient(circle at top left, rgba(37,99,235,0.06), transparent 35%), radial-gradient(circle at 80% 20%, rgba(15,23,42,0.05), transparent 35%), ${bgSoft}`,
+                }}
+            >
+                <div className="mx-auto max-w-[1240px] px-10 py-8 relative z-10 space-y-10">
+                    <section className="relative overflow-hidden rounded-[24px] bg-[#2563eb] p-8 text-white shadow-md">
+                        <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+                        <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
+                        <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
                             <div className="max-w-2xl">
                                 <h1 className="text-2xl font-semibold">Welcome back!</h1>
                                 <p className="mt-2 text-sm text-white/80">
                                     Your store is growing! You&apos;ve had {newOrders} new orders in the last 24 hours. Keep up the creative momentum.
                                 </p>
                                 <div className="mt-5 flex flex-wrap gap-3">
-                                    <button className="h-9 rounded-xl bg-white px-4 text-sm font-semibold text-[#2563eb] shadow-sm">
+                                    <Link href="/seller/design" className="inline-flex items-center h-9 rounded-xl bg-white px-4 text-sm font-semibold text-[#2563eb] shadow-sm">
                                         Launch New Campaign
-                                    </button>
-                                    <button className="h-9 rounded-xl border border-white/70 px-4 text-sm font-semibold text-white">
+                                    </Link>
+                                    <Link href="/seller/storefront" className="inline-flex items-center h-9 rounded-xl border border-white/70 px-4 text-sm font-semibold text-white">
                                         View Storefront
-                                    </button>
+                                    </Link>
                                 </div>
                             </div>
-                            <div className="w-full max-w-[220px] rounded-2xl border border-white/20 bg-white/10 p-4">
-                                <p className="text-[11px] font-semibold text-white/70">Today&apos;s Earnings</p>
-                                <p className="mt-2 text-3xl font-semibold">$0.00</p>
-                                <p className="mt-1 text-xs text-emerald-200">+0% vs yesterday</p>
+                            <div className="w-full max-w-[220px] rounded-2xl border border-white/30 bg-white/20 backdrop-blur-md p-5 shadow-[0_8px_32px_0_rgba(31,38,135,0.1)]">
+                                <p className="text-[12px] font-extrabold text-white/90 uppercase tracking-wider">Today&apos;s Earnings</p>
+                                <p className="mt-2 text-4xl font-black text-white">$0.00</p>
+                                <p className="mt-1.5 text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                    +0% vs yesterday
+                                </p>
                             </div>
                         </div>
                     </section>
@@ -139,19 +155,19 @@ export function SellerDashboardClient({ userEmail, data }: Props) {
                                 return (
                                     <div
                                         key={step.number}
-                                        className={`rounded-2xl bg-white p-5 shadow-sm border border-black/5 ${step.active ? "border-b-[3px] border-b-[#2563eb]" : ""}`}
+                                        className={`rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-slate-200/50 transition-all duration-300 hover:shadow-[0_12px_40px_rgb(0,0,0,0.06)] ${step.active ? "border-b-[4px] border-b-[#2563eb]" : ""}`}
                                     >
                                         <div className="flex items-start justify-between">
-                                            <div className={`flex h-9 w-9 items-center justify-center rounded-full ${iconStyles}`}>
-                                                <Icon className="h-4 w-4" />
+                                            <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${iconStyles}`}>
+                                                <Icon className="h-5 w-5" strokeWidth={2.5} />
                                             </div>
-                                            <span className="text-2xl font-semibold text-slate-200">{step.number}</span>
+                                            <span className="text-2xl font-black text-slate-100 tracking-tighter">{step.number}</span>
                                         </div>
-                                        <h3 className="mt-4 text-sm font-semibold text-slate-900">{step.title}</h3>
-                                        <p className="mt-1 text-xs text-slate-500">{step.description}</p>
-                                        <Link href={step.href} className={`mt-3 inline-flex items-center gap-2 text-xs font-semibold ${linkStyles}`}>
+                                        <h3 className="mt-5 text-[15px] font-black text-slate-900">{step.title}</h3>
+                                        <p className="mt-1.5 text-sm text-slate-500 leading-relaxed">{step.description}</p>
+                                        <Link href={step.href} className={`mt-4 inline-flex items-center gap-2 text-sm font-black tracking-tight ${linkStyles} hover:underline`}>
                                             {step.cta}
-                                            <ArrowRight className="h-3.5 w-3.5" />
+                                            <ArrowRight className="h-4 w-4" />
                                         </Link>
                                     </div>
                                 );
@@ -162,32 +178,32 @@ export function SellerDashboardClient({ userEmail, data }: Props) {
                     <section className="space-y-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h2 className="text-base font-semibold text-slate-900">Trending Products</h2>
-                                <p className="text-xs text-slate-400">Top picks for your niche this month</p>
+                                <h2 className="text-lg font-black text-slate-900 tracking-tight">Trending Products</h2>
+                                <p className="text-sm text-slate-400">Top picks for your niche this month</p>
                             </div>
                             <div className="flex items-center gap-2">
-                                <button className="flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-white text-slate-500">
-                                    <ChevronLeft className="h-4 w-4" />
+                                <button className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 transition-colors">
+                                    <ChevronLeft className="h-5 w-5" />
                                 </button>
-                                <button className="flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-white text-slate-500">
-                                    <ChevronRight className="h-4 w-4" />
+                                <button className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 transition-colors">
+                                    <ChevronRight className="h-5 w-5" />
                                 </button>
                             </div>
                         </div>
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                             {trendingProducts.map((product) => (
-                                <div key={product.image} className="rounded-2xl bg-white p-4 shadow-sm border border-black/5">
-                                    <div className="relative h-36 overflow-hidden rounded-xl bg-[#F3F4F6]">
-                                        <Image src={product.image} alt={product.name} fill className="object-cover" />
+                                <div key={product.image} className="rounded-2xl bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-slate-200/50 transition-all hover:shadow-[0_12px_40px_rgb(0,0,0,0.06)] group">
+                                    <div className="relative h-44 overflow-hidden rounded-xl bg-slate-100">
+                                        <Image src={product.image} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
                                         {product.label ? (
-                                            <span className="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                                            <span className="absolute left-3 top-3 rounded-full bg-white/95 backdrop-blur-sm px-2.5 py-1 text-[10px] font-black text-slate-700 uppercase tracking-widest shadow-sm">
                                                 {product.label}
                                             </span>
                                         ) : null}
                                     </div>
-                                    <div className="mt-3">
-                                        <p className="text-sm font-semibold text-slate-900">Product Name</p>
-                                        <button className="mt-3 w-full rounded-xl border border-black/10 bg-[#F9F8F6] py-2 text-xs font-semibold text-slate-600">
+                                    <div className="mt-4">
+                                        <p className="text-[15px] font-black text-slate-900">{product.name}</p>
+                                        <button className="mt-4 w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 text-xs font-black text-slate-600 hover:bg-slate-100 transition-colors">
                                             Add to Design
                                         </button>
                                     </div>

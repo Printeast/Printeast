@@ -182,7 +182,11 @@ export function LandingNavbar({ }: LandingNavbarProps) {
                     </div>
 
                     {/* User icon removed as requested */}
-                    <Link href="/dashboard" className="px-6 py-2.5 rounded-md bg-slate-900 text-white font-bold hover:bg-blue-600 hover:shadow-lg transition-all text-sm shadow-md active:scale-95">
+                    <Link
+                        href="/dashboard"
+                        prefetch={true}
+                        className="px-6 py-2.5 rounded-md bg-slate-900 text-white font-bold hover:bg-blue-600 hover:shadow-lg transition-all text-sm shadow-md active:scale-95"
+                    >
                         {t('startNow')}
                     </Link>
                 </div>

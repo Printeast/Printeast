@@ -19,7 +19,7 @@ import {
     BarChart3,
     Palette,
     BookOpen,
-    HeadphonesIcon
+    Headset
 } from "lucide-react";
 
 type SideLink = { label: string; href: string; icon: React.ElementType };
@@ -48,7 +48,7 @@ const SELLER_LINKS: SidebarSection[] = [
             { label: "Analytics & Insights", href: "/seller/analytics", icon: BarChart3 },
             { label: "Branding", href: "/seller/branding", icon: Palette },
             { label: "Resources", href: "/seller/resources", icon: BookOpen },
-            { label: "24/7 Support", href: "/seller/support", icon: HeadphonesIcon },
+            { label: "24/7 Support", href: "/seller/support", icon: Headset },
         ]
     }
 ];
@@ -62,6 +62,8 @@ export function Sidebar({ role }: SidebarProps) {
     } else {
         sections = [{ items: [] }];
     }
+
+    const normalizedPath = pathname.replace(/^\/[a-zA-Z]{2}/, "") || "/";
 
     return (
         <aside className="w-[260px] flex-shrink-0 border-r border-sidebar-border flex flex-col h-screen sticky top-0 font-inter text-sidebar-foreground transition-all duration-300 relative" style={{
@@ -97,21 +99,21 @@ export function Sidebar({ role }: SidebarProps) {
                         <nav className="space-y-0.5">
                             {section.items.map((link) => {
                                 const Icon = link.icon;
-                                const isActive = pathname === link.href;
+                                const isActive = normalizedPath === link.href || pathname === link.href;
                                 return (
                                     <Link
                                         key={link.href}
                                         href={link.href}
                                         className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13.5px] font-semibold transition-all duration-200 relative ${isActive
-                                            ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-[3px] border-blue-500"
-                                            : "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/40"
+                                            ? "bg-blue-50 text-blue-700 shadow-sm"
+                                            : "text-muted-foreground hover:text-sidebar-foreground hover:bg-slate-100/50"
                                             }`}
                                     >
-                                        {/* SUPER thick left border accent for active state */}
+                                        {/* Sleek active indicator */}
                                         {isActive && (
-                                            <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-blue-500 rounded-l-lg" />
+                                            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[60%] w-[4px] bg-blue-600 rounded-r-md" />
                                         )}
-                                        <Icon className={`w-[18px] h-[18px] transition-colors ${isActive ? "text-blue-500" : "text-muted-foreground group-hover:text-sidebar-foreground"}`} />
+                                        <Icon className={`w-[18px] h-[18px] transition-colors ${isActive ? "text-blue-600" : "text-muted-foreground group-hover:text-slate-700"}`} />
                                         <span>{link.label}</span>
                                     </Link>
                                 );

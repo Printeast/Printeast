@@ -34,7 +34,7 @@ export async function updateSession(request: NextRequest) {
         // Use a Promise.race to enforce a 1.5s timeout on the auth call
         const authPromise = supabase.auth.getUser();
         const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('TIMEOUT')), 1500)
+            setTimeout(() => reject(new Error('TIMEOUT')), 3000)
         );
 
         const { data: { user } } = await Promise.race([authPromise, timeoutPromise]) as any;
