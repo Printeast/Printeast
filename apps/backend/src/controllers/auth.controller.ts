@@ -159,8 +159,12 @@ export const onboard: RequestHandler = catchAsync(
 
     const currentRole = currentUser.roles[0]?.role?.name || "CUSTOMER";
 
-    // Only allow onboarding if current role is CUSTOMER
-    if (currentRole !== "CUSTOMER" && currentRole !== "PENDING") {
+    // Allow re-onboarding if they are already the same role (idempotency)
+    // or if they are still a CUSTOMER/PENDING.
+    let skipRoleUpdate = false;
+    if (currentRole === role) {
+      skipRoleUpdate = true;
+    } else if (currentRole !== "CUSTOMER" && currentRole !== "PENDING") {
       return next(new AppError("User already onboarded as " + currentRole, 403));
     }
 
@@ -170,50 +174,66 @@ export const onboard: RequestHandler = catchAsync(
       return next(new AppError("Invalid role selection", 400));
     }
 
-    // 3. Clear existing "CUSTOMER" role and assign new role
+    // 3. Role Assignment
+    if (!skipRoleUpdate) {
+      await prisma.$transaction(async (tx: any) => {
+        await tx.userRole.deleteMany({ where: { userId } });
 
-    await prisma.$transaction(async (tx: any) => {
-      // Use deleteMany on the transaction client
-      await tx.userRole.deleteMany({ where: { userId } });
-
-      await tx.user.update({
-        where: { id: userId },
-        data: {
-          roles: {
-            create: {
-              role: { connect: { name: role } }
-            }
+        await tx.user.update({
+          where: { id: userId },
+          data: {
+            roles: {
+              create: {
+                role: { connect: { name: role } }
+              }
+            },
+            onboardingData: onboardingData || null
           },
-          onboardingData: onboardingData || null
-        },
-        select: { id: true }
+          select: { id: true }
+        });
       });
-    });
+    } else {
+      // Just update onboarding data if role is already correct
+      await prisma.user.update({
+        where: { id: userId },
+        data: { onboardingData: onboardingData || null }
+      });
+    }
 
     // 3. Handle Role-Specific Data
     // We store the data if models exist. This ensures we capture the input.
     if (role === "CREATOR") {
       // Create an empty Creator profile if one doesn't exist
-      // This acts as a flag that they are a creator
       const existing = await prisma.creator.findUnique({ where: { userId } });
       if (!existing) {
         await prisma.creator.create({
           data: { userId }
         });
       }
-    } else if (role === "SELLER" && businessName) {
-      // For Phase 0, we can store the Business Name in a Vendor record
-      // linked to the main tenant (assuming tenantId is on user)
-      // Or we just log it/ignore it if Vendor schema is strict about Tenants.
-      // Let's try to create a Vendor if the user has a tenantId.
-      const userWithTenant = await prisma.user.findUnique({ where: { id: userId }, select: { tenantId: true } });
+    } else if (role === "SELLER") {
+      // For Phase 0, we ensure a Vendor (workspace) is created for sellers.
+      // A seller MUST have a workspace to operate.
+      const userWithTenant = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { tenantId: true, email: true }
+      });
+
       if (userWithTenant?.tenantId) {
-        await prisma.vendor.create({
-          data: {
-            name: businessName,
-            tenantId: userWithTenant.tenantId
-          }
+        // Check if there's already a vendor for this tenant
+        const existingVendor = await prisma.vendor.findFirst({
+          where: { tenantId: userWithTenant.tenantId }
         });
+
+        if (!existingVendor) {
+          const workspaceName = businessName || `${userWithTenant.email.split('@')[0]}'s Store`;
+          await prisma.vendor.create({
+            data: {
+              name: workspaceName,
+              tenantId: userWithTenant.tenantId
+            }
+          });
+          console.log(`[Auth] Created workspace: ${workspaceName} for tenant: ${userWithTenant.tenantId}`);
+        }
       }
     }
     const updatedUser = await prisma.user.findUnique({

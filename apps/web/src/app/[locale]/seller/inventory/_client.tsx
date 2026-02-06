@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import {
     Filter,
@@ -66,18 +67,16 @@ export function SellerInventoryClient({ userEmail, initialInventory }: Props) {
         [initialInventory]
     );
 
+    const bgSoft = "#F9F8F6";
+
     return (
         <DashboardLayout user={{ email: userEmail || "seller", role: "SELLER" }} fullBleed>
-            <div className="min-h-full h-auto w-full relative transition-colors duration-300" style={{
-                background: 'linear-gradient(145deg, var(--background) 0%, var(--card) 60%, var(--accent) 100%)'
-            }}>
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-20 dark:opacity-[0.15]"
-                        style={{ background: 'radial-gradient(circle, #3b82f6 0%, transparent 70%)' }} />
-                    <div className="absolute top-1/2 right-0 w-[400px] h-[400px] rounded-full opacity-10 dark:opacity-[0.10]"
-                        style={{ background: 'radial-gradient(circle, #8b5cf6 0%, transparent 70%)' }} />
-                </div>
-
+            <div
+                className="min-h-full h-auto w-full relative transition-colors duration-300"
+                style={{
+                    background: `radial-gradient(circle at top left, rgba(37,99,235,0.06), transparent 35%), radial-gradient(circle at 80% 20%, rgba(15,23,42,0.05), transparent 35%), ${bgSoft}`,
+                }}
+            >
                 <div className="relative z-10 px-10 py-8">
                     <div className="flex items-center justify-between mb-8">
                         <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
@@ -89,9 +88,9 @@ export function SellerInventoryClient({ userEmail, initialInventory }: Props) {
                                 <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-card text-foreground hover:bg-accent transition-all text-sm font-bold shadow-sm">
                                     <Filter className="w-4 h-4" /> Filters
                                 </button>
-                                <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-all text-sm font-black shadow-lg shadow-blue-500/20">
+                                <Link href="/seller/inventory/new" className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-all text-sm font-black shadow-md">
                                     <Plus className="w-4 h-4" /> New Product
-                                </button>
+                                </Link>
                             </div>
                         </header>
                     </div>
@@ -162,13 +161,13 @@ export function SellerInventoryClient({ userEmail, initialInventory }: Props) {
 
                             {/* Featured Highlights */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                                <div className="rounded-2xl p-6 text-white shadow-xl shadow-blue-100 group relative overflow-hidden" style={{ background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)" }}>
+                                <div className="rounded-2xl p-6 text-white shadow-md group relative overflow-hidden" style={{ background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)" }}>
                                     <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-bl-full transform transition-transform group-hover:scale-110" />
                                     <h3 className="text-lg font-bold">New Arrivals</h3>
                                     <p className="text-sm text-white/80 mt-1 font-medium">Latest for Q1 2024</p>
                                     <button className="mt-4 text-[13px] font-bold text-white underline underline-offset-4 decoration-white/30 hover:decoration-white transition-all">Explore Collection</button>
                                 </div>
-                                <div className="rounded-2xl p-6 text-white shadow-xl shadow-blue-50 group relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0f172a 0%, #334155 100%)" }}>
+                                <div className="rounded-2xl p-6 text-white shadow-md group relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0f172a 0%, #334155 100%)" }}>
                                     <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-bl-full transform transition-transform group-hover:scale-110" />
                                     <h3 className="text-lg font-bold">Bestsellers</h3>
                                     <p className="text-sm text-white/80 mt-1 font-medium">Highest rated items</p>

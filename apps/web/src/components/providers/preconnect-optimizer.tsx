@@ -31,6 +31,10 @@ export function PreconnectOptimizer() {
         // Brandfetch (Partner logos)
         ReactDOM.prefetchDNS("https://cdn.brandfetch.io")
 
+        // Icons8 & Clearbit (Critical for Storefront Integrations)
+        ReactDOM.preconnect("https://img.icons8.com", { crossOrigin: "anonymous" })
+        ReactDOM.preconnect("https://logo.clearbit.com", { crossOrigin: "anonymous" })
+
         // Asset delivery networks
         ReactDOM.prefetchDNS("https://asset.brandfetch.io")
 

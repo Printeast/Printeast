@@ -30,20 +30,16 @@ export default async function SellerSupportPage() {
         : { data: null };
     const audits = auditsData || [];
 
+    const bgSoft = "#F9F8F6";
+
     return (
         <DashboardLayout user={{ email: userEmail, role: "SELLER" }} fullBleed>
-            {/* Full page with gradient background */}
-            <div className="min-h-full w-full relative transition-colors duration-300" style={{
-                background: 'linear-gradient(145deg, var(--background) 0%, var(--card) 60%, var(--accent) 100%)'
-            }}>
-                {/* Gradient mesh overlays */}
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-20 dark:opacity-[0.15]"
-                        style={{ background: 'radial-gradient(circle, #3b82f6 0%, transparent 70%)' }} />
-                    <div className="absolute top-1/2 right-0 w-[400px] h-[400px] rounded-full opacity-10 dark:opacity-[0.10]"
-                        style={{ background: 'radial-gradient(circle, #8b5cf6 0%, transparent 70%)' }} />
-                </div>
-
+            <div
+                className="min-h-full w-full"
+                style={{
+                    background: `radial-gradient(circle at top left, rgba(37,99,235,0.06), transparent 35%), radial-gradient(circle at 80% 20%, rgba(15,23,42,0.05), transparent 35%), ${bgSoft}`,
+                }}
+            >
                 <div className="relative z-10 px-10 py-8">
                     {/* Page Header */}
                     <div className="flex items-center justify-between mb-8">

@@ -1,3 +1,5 @@
+"use client";
+
 import { ShieldCheck, Sparkles } from "lucide-react"
 import Link from "next/link"
 import dynamic from "next/dynamic"
@@ -35,6 +37,7 @@ export function ImageCarouselHero({ }: ImageCarouselHeroProps) {
                         <div className="flex flex-col sm:flex-row items-center gap-4">
                             <Link
                                 href="/dashboard"
+                                prefetch={true}
                                 className="px-8 py-3 rounded-md bg-gray-900 text-white font-bold text-base transition-all duration-300 hover:bg-blue-600 hover:scale-105 flex items-center justify-center"
                             >
                                 {t('buttons.createFree')}

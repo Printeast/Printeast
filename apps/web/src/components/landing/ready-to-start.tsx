@@ -4,9 +4,11 @@ import { motion } from "framer-motion"
 import { ArrowRight, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useTranslations } from "next-intl"
+import Link from "next/link"
 
 export function ReadyToStart() {
     const t = useTranslations('ReadyToStart');
+
     return (
         <section className="relative w-full py-32 bg-transparent overflow-hidden">
             {/* Background Atmosphere - Connecting from previous section */}
@@ -65,12 +67,14 @@ export function ReadyToStart() {
 
                             {/* Action Buttons */}
                             <div className="mt-10 flex flex-col sm:flex-row gap-4 items-center justify-center w-full sm:w-auto">
-                                <Button
-                                    className="h-14 px-8 rounded-md bg-white text-black font-bold text-base hover:bg-blue-50 transition-all hover:scale-105 group"
-                                >
-                                    {t('buttons.initialize')}
-                                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                                </Button>
+                                <Link href="/dashboard" prefetch={true}>
+                                    <Button
+                                        className="h-14 px-8 rounded-md bg-white text-black font-bold text-base hover:bg-blue-50 transition-all hover:scale-105 group"
+                                    >
+                                        {t('buttons.initialize')}
+                                        <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                                    </Button>
+                                </Link>
 
                                 <Button
                                     variant="outline"

@@ -1,421 +1,375 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
-import Link from "next/link";
-
+import React from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { Plus, Store, ChevronLeft, ChevronRight, ClipboardList, CreditCard, BarChart3, Box } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { Plus, ChevronLeft, ChevronRight, Headset, Info } from "lucide-react";
 
 interface Props {
     userEmail: string;
 }
 
-const allIntegrations = [
-    "Amazon",
-    "TikTok Shop",
-    "WooCommerce",
-    "Wix",
-    "Squarespace",
-    "BigCommerce",
-    "Manual",
-    "API",
-    "Adobe Commerce",
-    "Big Cartel",
-    "eBay",
-    "Ecwid",
-    "Gumroad",
-    "Magento",
-    "Prestashop",
-    "Square",
-    "Walmart",
-    "Weebly",
-    "Webflow",
-    "All integrations",
-    "Base",
-    "Instagram",
-    "Nuvemshop",
-    "Storenvy",
-    "YouTube",
-];
+const primary = "#2563eb";
+const bgSoft = "#F9F8F6";
 
-// High-quality colorful logos found online
-const integrationLogos: Record<string, string> = {
-    Shopify: "https://img.icons8.com/color/96/shopify.png",
-    WooCommerce: "https://img.icons8.com/color/96/woocommerce.png",
-    Amazon: "https://img.icons8.com/color/96/amazon.png",
-    Etsy: "https://img.icons8.com/color/144/etsy.png",
-    "Instagram Shop": "https://img.icons8.com/color/96/instagram-new--v1.png",
-    Instagram: "https://img.icons8.com/color/96/instagram-new--v1.png",
-    "TikTok Shop": "https://img.icons8.com/color/96/tiktok.png",
-    "Direct API": "https://img.icons8.com/color/96/api.png",
-    API: "https://img.icons8.com/color/96/api.png",
-};
-
-const topIntegrations = [
+const seamless = [
     {
         name: "Shopify",
         description: "Hosted store builder with fast setup and strong apps.",
-        href: "#",
-    },
-    {
-        name: "WooCommerce",
-        description: "WordPress-based stores with deep customization.",
-        href: "#",
+        logo: "https://img.icons8.com/color/96/shopify.png",
     },
     {
         name: "Amazon",
         description: "Reach high-intent buyers with marketplace scale.",
-        href: "#",
+        logo: "https://img.icons8.com/color/96/amazon.png",
     },
     {
         name: "Etsy",
         description: "Quickly test handmade and niche products.",
-        href: "#",
+        logo: "https://img.icons8.com/color/96/etsy.png",
+    },
+    {
+        name: "WooCommerce",
+        description: "WordPress-based stores with deep customization.",
+        logo: "https://img.icons8.com/color/96/woocommerce.png",
     },
     {
         name: "Instagram",
         description: "Turn social content into shoppable moments.",
-        href: "#",
+        logo: "https://img.icons8.com/color/96/instagram-new--v1.png",
     },
     {
         name: "TikTok Shop",
         description: "Sell with viral, trend-driven commerce.",
-        href: "#",
+        logo: "https://img.icons8.com/color/96/tiktok.png",
     },
     {
         name: "Direct API",
         description: "Custom automation for unique workflows.",
-        href: "#",
+        logo: "https://img.icons8.com/color/96/api.png",
     },
 ];
 
-const integrationSlides = (items: typeof topIntegrations) => {
-    const slides = [];
-    for (let index = 0; index < items.length; index += 4) {
-        slides.push(items.slice(index, index + 4));
-    }
-    return slides;
-};
+const integrations = [
+    { name: "Amazon", logo: "https://img.icons8.com/color/96/amazon.png" },
+    { name: "TikTok Shop", logo: "https://img.icons8.com/color/96/tiktok.png" },
+    { name: "WooCommerce", logo: "https://img.icons8.com/color/96/woocommerce.png" },
+    { name: "Wix", logo: "https://logo.clearbit.com/wix.com" },
+    { name: "Squarespace", logo: "https://logo.clearbit.com/squarespace.com" },
+    { name: "BigCommerce", logo: "https://img.icons8.com/color/96/bigcommerce.png" },
+    { name: "Instagram", logo: "https://img.icons8.com/color/96/instagram-new--v1.png" },
+    { name: "API", logo: "https://img.icons8.com/color/96/api.png" },
+    { name: "Adobe Commerce", logo: "https://logo.clearbit.com/business.adobe.com" },
+    { name: "Big Cartel", logo: "https://logo.clearbit.com/bigcartel.com" },
+    { name: "eBay", logo: "https://img.icons8.com/color/96/ebay.png" },
+    { name: "Ecwid", logo: "https://logo.clearbit.com/ecwid.com" },
+    { name: "Gumroad", logo: "https://logo.clearbit.com/gumroad.com" },
+    { name: "Magento", logo: "https://img.icons8.com/color/96/magento.png" },
+    { name: "Prestashop", logo: "https://logo.clearbit.com/prestashop.com" },
+    { name: "Square", logo: "https://img.icons8.com/color/96/square.png" },
+    { name: "Walmart", logo: "https://img.icons8.com/color/96/walmart.png" },
+    { name: "Weebly", logo: "https://logo.clearbit.com/weebly.com" },
+    { name: "Custom", logo: "https://img.icons8.com/color/96/package.png" },
+    { name: "Nuvemshop", logo: "https://logo.clearbit.com/nuvemshop.com.br" },
+    { name: "Base", logo: "https://img.icons8.com/color/96/database.png" },
+    { name: "YouTube", logo: "https://img.icons8.com/color/96/youtube-play--v1.png" },
+    { name: "Storenvy", logo: "https://img.icons8.com/color/96/shop.png" },
+];
 
-const comparison = [
+const compareRows = [
     {
         platform: "Shopify",
-        setupSpeed: "Fast (easy)",
-        upfrontCost: "Low",
-        ongoingCost: "Monthly",
-        bestFor: "Small to scaling brands wanting speed and ease",
+        setup: "Fast (easy)",
+        upfront: "Low",
+        fixed: "Monthly subscription (plan-based)",
+        fees: "Extra platform fee only if you use a third-party payment gateway (plan-based)",
+        bestFor: "Most small to scaling brands wanting speed, stability, and ease",
+        highlight: false,
+        logo: "https://img.icons8.com/color/96/shopify.png",
     },
     {
         platform: "WooCommerce",
-        setupSpeed: "Moderate",
-        upfrontCost: "Moderate",
-        ongoingCost: "Variable",
-        bestFor: "Maximum control and lower platform fees",
+        setup: "Moderate (needs hosting + WordPress)",
+        upfront: "Low-Medium",
+        fixed: "Hosting, domain, and optional themes/plugins",
+        fees: "No WooCommerce platform fee per transaction (only payment gateway fees)",
+        bestFor: "Brands wanting maximum control and lower long-term platform fees",
+        highlight: true,
+        logo: "https://img.icons8.com/color/96/woocommerce.png",
     },
     {
         platform: "Etsy",
-        setupSpeed: "Instant",
-        upfrontCost: "Very low",
-        ongoingCost: "Per sale",
-        bestFor: "Handmade, creative, fast demand testing",
+        setup: "Instant",
+        upfront: "Very low",
+        fixed: "None required (per listing)",
+        fees: "Listing fee + transaction fee per sale",
+        bestFor: "Handmade, creative, or niche products; fast demand testing",
+        highlight: false,
+        logo: "https://img.icons8.com/color/96/etsy.png",
     },
     {
         platform: "Amazon",
-        setupSpeed: "Moderate",
-        upfrontCost: "Moderate",
-        ongoingCost: "Variable",
-        bestFor: "High-volume items and large-scale selling",
+        setup: "Moderate",
+        upfront: "Low-Medium",
+        fixed: "Seller plan may apply (region dependent)",
+        fees: "Referral fees vary by category + additional seller fees",
+        bestFor: "High-volume products and large-scale marketplace selling",
+        highlight: false,
+        logo: "https://img.icons8.com/color/96/amazon.png",
     },
     {
         platform: "Instagram Shop",
-        setupSpeed: "Moderate",
-        upfrontCost: "Low",
-        ongoingCost: "Variable",
-        bestFor: "Brands with strong social content and creators",
+        setup: "Moderate",
+        upfront: "Low",
+        fixed: "Usually no fixed platform fee",
+        fees: "Typically no marketplace commission when checkout happens on your website; marketing costs may apply",
+        bestFor: "Brands with strong social content and creator-driven sales",
+        highlight: true,
+        logo: "https://img.icons8.com/color/96/instagram-new--v1.png",
     },
     {
         platform: "TikTok Shop",
-        setupSpeed: "Moderate",
-        upfrontCost: "Low",
-        ongoingCost: "Variable",
+        setup: "Moderate",
+        upfront: "Low",
+        fixed: "None required; ads optional",
+        fees: "Commission varies by region, category, and seller program",
         bestFor: "Viral, trend-driven, impulse-purchase products",
+        highlight: true,
+        logo: "https://img.icons8.com/color/96/tiktok.png",
+    },
+    {
+        platform: "Direct API",
+        setup: "Slow (engineering-heavy)",
+        upfront: "High",
+        fixed: "Hosting, infrastructure, and ongoing development",
+        fees: "None (you own the entire commerce stack)",
+        bestFor: "Enterprises, marketplaces, and custom workflows",
+        highlight: false,
+        logo: "https://img.icons8.com/color/96/api.png",
     },
 ];
 
 export function SellerStorefrontClient({ userEmail }: Props) {
-    const [showAll, setShowAll] = useState(false);
-    const integrationScrollRef = useRef<HTMLDivElement>(null);
-    const integrationPages = useMemo(() => integrationSlides(topIntegrations), []);
+    const seamlessSlides = React.useMemo(() => {
+        const chunks: typeof seamless[] = [] as any;
+        for (let i = 0; i < seamless.length; i += 4) {
+            chunks.push(seamless.slice(i, i + 4));
+        }
+        return chunks;
+    }, []);
 
-    const scrollIntegrations = (direction: "left" | "right") => {
-        const container = integrationScrollRef.current;
-        if (!container) return;
-        const scrollAmount = container.clientWidth;
-        container.scrollBy({
-            left: direction === "left" ? -scrollAmount : scrollAmount,
-            behavior: "smooth",
+    const [seamlessIndex, setSeamlessIndex] = React.useState(0);
+    const [showAll, setShowAll] = React.useState(false);
+
+    const visibleIntegrations = showAll ? integrations : integrations.slice(0, 8);
+
+    const toggleSeamless = (dir: "prev" | "next") => {
+        setSeamlessIndex((prev) => {
+            if (dir === "prev") return prev === 0 ? seamlessSlides.length - 1 : prev - 1;
+            return prev === seamlessSlides.length - 1 ? 0 : prev + 1;
         });
     };
 
-    const integrationList = useMemo(
-        () => (showAll ? allIntegrations : allIntegrations.slice(0, 8)),
-        [showAll]
-    );
-
     return (
         <DashboardLayout user={{ email: userEmail || "seller", role: "SELLER" }} fullBleed>
-            {/* 
-               FIX: Added min-h-screen and overflow-y-visible to ensure scrolling works 
-               within the DashboardLayout's main container.
-            */}
-            <div className="relative w-full min-h-full transition-colors duration-300" style={{
-                background: 'linear-gradient(145deg, var(--background) 0%, var(--card) 60%, var(--accent) 100%)'
-            }}>
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-20 dark:opacity-[0.15]"
-                        style={{ background: 'radial-gradient(circle, #3b82f6 0%, transparent 70%)' }} />
-                    <div className="absolute top-1/2 right-0 w-[400px] h-[400px] rounded-full opacity-10 dark:opacity-[0.10]"
-                        style={{ background: 'radial-gradient(circle, #8b5cf6 0%, transparent 70%)' }} />
-                </div>
-
-                <div className="relative z-10 px-8 sm:px-12 py-12 space-y-12 max-w-[1400px]">
-                    <header>
-                        <div className="text-[11px] font-black text-blue-400 uppercase tracking-[0.3em] mb-3">SELLER</div>
-                        <h1 className="text-5xl font-black text-foreground tracking-tight mb-4">Commerce Command</h1>
-                        <p className="text-lg text-muted-foreground font-medium max-w-2xl leading-relaxed">
-                            Live signals from orders, inventory, and payouts.
-                        </p>
-                    </header>
-
-                    {/* Shortcuts Section matching image */}
-                    <section className="bg-card/30 border border-border/50 rounded-3xl p-10 backdrop-blur-sm shadow-2xl">
-                        <h2 className="text-2xl font-black text-foreground tracking-tight mb-2">Workspace shortcuts</h2>
-                        <p className="text-sm text-muted-foreground font-medium mb-8">Quick links into your seller toolkit (LinkedIn backend-ready).</p>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-12">
-                            {[
-                                "My Templates",
-                                "AI & Design Studio",
-                                "Analytics & Insights",
-                                "Branding",
-                                "Resources",
-                                "24/7 Support"
-                            ].map((item) => (
-                                <div key={item} className="flex items-center gap-3 group cursor-pointer">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)] group-hover:scale-125 transition-transform" />
-                                    <span className="text-[15px] font-bold text-foreground/90 group-hover:text-blue-400 transition-colors">{item}</span>
-                                </div>
-                            ))}
+            <div
+                className="min-h-full w-full relative bg-blue-50/50"
+                style={{
+                    background: `radial-gradient(circle at top left, rgba(37,99,235,0.06), transparent 35%), radial-gradient(circle at 80% 20%, rgba(15,23,42,0.05), transparent 35%), ${bgSoft}`,
+                }}
+            >
+                <div className="mx-auto max-w-[1180px] px-8 py-10 space-y-12 text-[15px]">
+                    {/* Header */}
+                    <div className="flex items-start justify-between">
+                        <div>
+                            <h1 className="text-[28px] font-bold text-slate-900 tracking-tight">Storefronts</h1>
+                            <p className="text-slate-500 mt-1">Manage and sync your sales channels seamlessly.</p>
                         </div>
-                    </section>
-                    {/* Summary Cards matching image */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {[
-                            { label: "OPEN ORDERS", value: "0", icon: ClipboardList, color: "bg-blue-500/10 text-blue-500" },
-                            { label: "PAID", value: "$0", icon: CreditCard, color: "bg-green-500/10 text-green-600" },
-                            { label: "PENDING PAYOUTS", value: "$0", icon: BarChart3, color: "bg-orange-500/10 text-orange-600" },
-                            { label: "LOW STOCK", value: "0", icon: Box, color: "bg-purple-500/10 text-purple-600" }
-                        ].map((card) => (
-                            <div key={card.label} className="bg-card/40 border border-border/50 rounded-3xl p-8 backdrop-blur-sm shadow-xl flex flex-col gap-6 group hover:border-blue-500/30 transition-all">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{card.label}</span>
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center border border-border ${card.color}`}>
-                                        <card.icon className="w-5 h-5" />
-                                    </div>
-                                </div>
-                                <div className="text-4xl font-black text-foreground">{card.value}</div>
-                            </div>
-                        ))}
                     </div>
 
-                    <section className="pt-8">
-                        <div className="flex items-center justify-between mb-8">
-                            <h3 className="text-2xl font-black text-foreground tracking-tight">Active Integrations</h3>
-                            <button className="px-4 py-2 rounded-xl border border-border bg-card/50 text-[12px] font-black uppercase tracking-widest hover:bg-card transition-colors">Connect New</button>
-                        </div>
-                    </section>
-                    <section>
-                        <div className="rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm shadow-sm p-8 border-dashed border-2">
-                            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between text-center md:text-left">
-                                <div>
-                                    <h2 className="text-xl font-black text-foreground tracking-tight">My Connected Stores</h2>
-                                    <p className="text-sm text-muted-foreground mt-1 font-medium italic">You haven't connected any stores yet. Choose a platform below to start selling!</p>
-                                </div>
-                                <button className="rounded-xl bg-blue-600 hover:bg-blue-700 px-8 py-4 text-sm font-black text-white shadow-xl shadow-blue-100 transition-all active:scale-[0.98] flex items-center justify-center gap-2 mx-auto md:mx-0">
-                                    <Plus className="h-5 w-5" /> Start Integration
-                                </button>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section className="space-y-6">
-                        <div className="flex flex-wrap items-end justify-between gap-4">
+                    {/* Seamless integrations */}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
                             <div>
-                                <h3 className="text-xl font-black text-foreground tracking-tight">Popular Platforms</h3>
-                                <p className="text-sm text-muted-foreground mt-1 font-medium">
-                                    Official direct-sync integrations for seamless order management.
-                                </p>
+                                <h3 className="text-xl font-bold text-slate-900 tracking-tight">Seamless Integrations</h3>
+                                <p className="text-sm text-slate-500">Connect the most popular sales channels in minutes.</p>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <button
-                                    className="h-9 w-9 rounded-full border border-border bg-card text-muted-foreground hover:text-foreground hover:border-border/80 transition-all shadow-sm flex items-center justify-center"
-                                    onClick={() => scrollIntegrations("left")}
-                                >
-                                    <ChevronLeft className="h-5 w-5" />
+                            <div className="flex items-center gap-2">
+                                <button onClick={() => toggleSeamless("prev")} className="h-10 w-10 rounded-xl border border-slate-200 bg-white shadow-sm flex items-center justify-center hover:bg-slate-50 transition-colors">
+                                    <ChevronLeft className="h-5 w-5 text-slate-600" />
                                 </button>
-                                <button
-                                    className="h-9 w-9 rounded-full border border-border bg-card text-muted-foreground hover:text-foreground hover:border-border/80 transition-all shadow-sm flex items-center justify-center"
-                                    onClick={() => scrollIntegrations("right")}
-                                >
-                                    <ChevronRight className="h-5 w-5" />
+                                <button onClick={() => toggleSeamless("next")} className="h-10 w-10 rounded-xl border border-slate-200 bg-white shadow-sm flex items-center justify-center hover:bg-slate-50 transition-colors">
+                                    <ChevronRight className="h-5 w-5 text-slate-600" />
                                 </button>
                             </div>
                         </div>
-                        <div
-                            ref={integrationScrollRef}
-                            className="flex overflow-x-auto scroll-smooth no-scrollbar snap-x snap-mandatory gap-6 pb-4"
-                        >
-                            {integrationPages.map((page, pageIndex) => (
-                                <div key={pageIndex} className="min-w-full snap-start grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                                    {page.map((integration) => {
-                                        const logo = integrationLogos[integration.name];
-                                        return (
-                                            <div key={integration.name} className="flex flex-col gap-5 p-6 rounded-2xl border border-border/80 bg-card hover:shadow-xl hover:shadow-blue-900/[0.03] transition-all group border-b-4 border-b-transparent hover:border-b-blue-600">
-                                                <div className="h-16 w-16 rounded-2xl bg-card border border-border shadow-sm flex items-center justify-center overflow-hidden transition-transform group-hover:-translate-y-1">
-                                                    {logo ? (
-                                                        <img
-                                                            src={logo}
-                                                            alt={integration.name}
-                                                            className="w-10 h-10 object-contain"
-                                                            loading="lazy"
-                                                        />
-                                                    ) : (
-                                                        <Store className="h-6 w-6 text-muted-foreground" />
-                                                    )}
-                                                </div>
-                                                <div className="flex-1">
-                                                    <div className="text-[15px] font-black text-foreground uppercase tracking-tight">
-                                                        {integration.name}
-                                                    </div>
-                                                    <p className="text-xs text-muted-foreground mt-1.5 font-medium leading-relaxed">{integration.description}</p>
-                                                </div>
-                                                <Link href={integration.href} className="text-[11px] font-black text-blue-600 hover:text-blue-700 uppercase tracking-widest decoration-dotted underline underline-offset-4">
-                                                    Connect Store →
-                                                </Link>
+                        <div className="rounded-2xl border border-slate-200/60 bg-white p-2 shadow-sm">
+                            <div className="grid grid-cols-1 gap-1 lg:grid-cols-4">
+                                {(seamlessSlides[seamlessIndex] || []).map((item) => (
+                                    <div key={item.name} className="flex flex-col gap-4 p-6 rounded-xl hover:bg-slate-50/80 transition-all group cursor-pointer border border-transparent hover:border-slate-100">
+                                        <div className="flex flex-col gap-4">
+                                            <div className="h-14 w-14 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center p-2.5 group-hover:scale-105 transition-transform">
+                                                <Image src={item.logo} alt={item.name} width={40} height={40} className="object-contain" />
                                             </div>
-                                        );
-                                    })}
+                                            <div>
+                                                <div className="text-base font-bold text-slate-900 mb-1">{item.name}</div>
+                                                <p className="text-[13px] text-slate-500 leading-relaxed line-clamp-2">{item.description}</p>
+                                            </div>
+                                        </div>
+                                        <Link className="text-[13px] font-bold text-blue-600 inline-flex items-center gap-1 hover:gap-2 transition-all mt-auto" href="#">
+                                            Learn more
+                                            <ChevronRight className="w-3.5 h-3.5" />
+                                        </Link>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Connected stores card */}
+                    <div className="rounded-2xl border border-slate-200/60 bg-white p-8 shadow-sm group">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div className="max-w-md">
+                                <h3 className="text-xl font-bold text-slate-900 tracking-tight">My Connected Stores</h3>
+                                <p className="mt-2 text-sm text-slate-500 leading-relaxed">You haven&apos;t connected any stores yet. Link your first sales channel to start syncing products.</p>
+                            </div>
+                            <button
+                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#2563eb] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-700 hover:shadow-blue-500/30 transition-all active:scale-[0.98]"
+                            >
+                                <Plus className="h-4 w-4" /> Connect My First Store
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* All integrations */}
+                    <div className="space-y-4">
+                        <div>
+                            <h3 className="text-xl font-bold text-slate-900 tracking-tight">All Integrations</h3>
+                            <p className="text-sm text-slate-500">Broaden your reach with specialized platforms.</p>
+                        </div>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            {visibleIntegrations.map(({ name, logo }) => (
+                                <div
+                                    key={name}
+                                    className="flex items-center gap-4 rounded-xl border border-slate-200/60 bg-white px-5 py-4 shadow-sm transition-all hover:shadow-md hover:border-blue-200 hover:translate-y-[-2px] group cursor-pointer"
+                                >
+                                    <div className="h-12 w-12 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-center p-2.5 transition-colors group-hover:bg-blue-50">
+                                        <Image src={logo} alt={name} width={32} height={32} className="object-contain" />
+                                    </div>
+                                    <div className="text-[14px] font-bold text-slate-800">{name}</div>
+                                    <div className="ml-auto h-8 w-8 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center transition-all group-hover:bg-blue-600 group-hover:text-white">
+                                        <Info className="w-4 h-4" />
+                                    </div>
                                 </div>
                             ))}
                         </div>
-                    </section>
-
-                    <section className="space-y-6">
-                        <div>
-                            <h3 className="text-xl font-black text-foreground tracking-tight">All Sync Options</h3>
-                            <p className="text-sm text-muted-foreground mt-1 font-medium">Browse our full list of supported marketplaces and tools.</p>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {integrationList.map((name) => {
-                                const logo = integrationLogos[name];
-                                return (
-                                    <div key={name} className="rounded-xl border border-border/80 bg-card px-5 py-4 flex items-center gap-4 hover:shadow-md transition-all cursor-pointer group">
-                                        <div className="h-11 w-11 rounded-xl bg-accent border border-border flex items-center justify-center p-2 group-hover:bg-card transition-colors">
-                                            {logo ? (
-                                                <img src={logo} alt={name} className="w-6 h-6 object-contain" />
-                                            ) : (
-                                                <Store className="h-5 w-5 text-muted-foreground" />
-                                            )}
-                                        </div>
-                                        <div className="text-[14px] font-black text-foreground tracking-tight">{name}</div>
-                                        <button className="ml-auto h-7 w-7 rounded-full bg-accent text-muted-foreground text-[10px] font-black border border-border">?</button>
-                                    </div>
-                                );
-                            })}
-                        </div>
                         <button
-                            className="w-full rounded-2xl border-2 border-dashed border-border bg-card/50 py-4 text-xs font-black text-muted-foreground hover:text-foreground hover:border-border/80 transition-all uppercase tracking-widest"
-                            onClick={() => setShowAll((prev) => !prev)}
+                            className="w-full rounded-xl border-2 border-dashed border-slate-200 bg-white py-4 text-sm font-bold text-slate-500 hover:border-slate-300 hover:bg-slate-50/50 transition-all"
+                            onClick={() => setShowAll((p) => !p)}
                         >
-                            {showAll ? "Hide full list" : "Browse all integrations"}
+                            {showAll ? "Collapse Integrations" : "View All Platforms"}
                         </button>
-                    </section>
+                    </div>
 
-                    <section className="space-y-6">
-                        <div>
-                            <h3 className="text-xl font-black text-foreground tracking-tight">Need a custom store?</h3>
-                            <p className="text-sm text-muted-foreground mt-1 font-medium">We provide hosted solutions for sellers who want a full branded experience.</p>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="rounded-2xl border border-border/80 bg-card shadow-sm p-8 flex flex-col gap-5 border-t-4 border-t-blue-600">
-                                <div>
-                                    <div className="text-lg font-black text-foreground tracking-tight">Printeast Native Store</div>
-                                    <p className="text-sm text-muted-foreground mt-2 font-medium leading-relaxed">
-                                        The fastest way to start selling. Zero upfront cost, fully managed hosting, and automatic order routing.
-                                    </p>
-                                </div>
-                                <button className="mt-auto w-full rounded-xl bg-blue-600 hover:bg-blue-700 py-4 text-sm font-black text-white shadow-xl shadow-blue-500/20 transition-all active:scale-[0.98]">
-                                    Create Free Store
+                    {/* CTA cards */}
+                    <div className="space-y-3">
+                        <h3 className="text-xl font-bold text-slate-900">Don’t have a store yet?</h3>
+                        <p className="text-base text-slate-600">Pick the path that fits your business.</p>
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                                <h3 className="text-lg font-bold text-slate-900">Create a Printeast store for free</h3>
+                                <p className="mt-1 text-base text-slate-600">Launch a hosted storefront with zero upfront cost.</p>
+                                <button className="mt-4 w-full rounded-lg bg-[--primary] py-3 text-sm font-semibold text-white" style={{ backgroundColor: primary }}>
+                                    Create store
                                 </button>
                             </div>
-                            <div className="rounded-2xl border border-border/80 bg-card shadow-sm p-8 flex flex-col gap-5 border-t-4 border-t-accent">
-                                <div>
-                                    <div className="text-lg font-black text-foreground tracking-tight">Partner Marketplace</div>
-                                    <p className="text-sm text-muted-foreground mt-2 font-medium leading-relaxed">
-                                        Don't want to handle marketing? Join our marketplace and get your products in front of our organic traffic.
-                                    </p>
-                                </div>
-                                <button className="mt-auto w-full rounded-xl border-2 border-border bg-card hover:bg-accent py-4 text-sm font-black text-foreground transition-all active:scale-[0.98]">
-                                    Join Marketplace
+                            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                                <h3 className="text-lg font-bold text-slate-900">Printeast Marketplace</h3>
+                                <p className="mt-1 text-base text-slate-600">Tap into our marketplace and reach ready-to-buy customers.</p>
+                                <button className="mt-4 w-full rounded-lg border border-slate-200 bg-white py-3 text-sm font-semibold text-slate-800">
+                                    Explore marketplace
                                 </button>
                             </div>
                         </div>
-                    </section>
+                    </div>
 
-                    <section className="space-y-6 pb-20">
-                        <div>
-                            <h3 className="text-xl font-black text-foreground tracking-tight">Comparison Guide</h3>
-                            <p className="text-sm text-muted-foreground mt-1 font-medium">Compare setup speeds and costs across platforms.</p>
-                        </div>
-                        <div className="rounded-2xl border border-border/80 bg-card shadow-sm overflow-hidden border-separate">
+                    {/* Compare platforms */}
+                    <div className="space-y-3">
+                        <h3 className="text-base font-semibold text-slate-900">Compare Platforms</h3>
+                        <p className="text-sm text-slate-500">Deep dive into features, costs, and scalability.</p>
+                        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                             <div className="overflow-x-auto">
-                                <table className="w-full text-left">
-                                    <thead>
-                                        <tr className="border-b border-border bg-accent/50">
-                                            <th className="px-8 py-5 text-[11px] uppercase font-black tracking-widest text-muted-foreground">Integration</th>
-                                            <th className="px-8 py-5 text-[11px] uppercase font-black tracking-widest text-muted-foreground">Speed</th>
-                                            <th className="px-8 py-5 text-[11px] uppercase font-black tracking-widest text-muted-foreground">Upfront</th>
-                                            <th className="px-8 py-5 text-[11px] uppercase font-black tracking-widest text-muted-foreground">Recommendation</th>
+                                <table className="w-full text-left text-sm">
+                                    <thead className="bg-slate-50 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                                        <tr>
+                                            <th className="px-4 py-3">Platform</th>
+                                            <th className="px-4 py-3">Setup Speed</th>
+                                            <th className="px-4 py-3">Upfront Cost</th>
+                                            <th className="px-4 py-3">Ongoing Fixed Cost</th>
+                                            <th className="px-4 py-3">Selling Fees (Platform)</th>
+                                            <th className="px-4 py-3">Best for</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-border font-medium">
-                                        {comparison.map((row) => {
-                                            const logo = integrationLogos[row.platform] || integrationLogos["Instagram Shop"];
-                                            return (
-                                                <tr key={row.platform} className="hover:bg-accent/30 transition-colors">
-                                                    <td className="px-8 py-5">
-                                                        <div className="flex items-center gap-4">
-                                                            <div className="h-9 w-9 rounded-xl bg-card border border-border flex items-center justify-center p-1.5 shadow-sm">
-                                                                {logo ? (
-                                                                    <img src={logo} alt={row.platform} className="w-5 h-5 object-contain" />
-                                                                ) : (
-                                                                    <Store className="h-4 w-4 text-muted-foreground" />
-                                                                )}
-                                                            </div>
-                                                            <span className="text-[15px] font-black text-foreground">{row.platform}</span>
+                                    <tbody className="divide-y divide-slate-200">
+                                        {compareRows.map((row, idx) => (
+                                            <tr
+                                                key={row.platform}
+                                                className={`${idx % 2 === 1 ? "bg-[#EEF2FF]" : "bg-white"}`}
+                                            >
+                                                <td className="px-4 py-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="h-9 w-9 rounded-lg border border-slate-200 bg-white flex items-center justify-center">
+                                                            <Image src={row.logo} alt={row.platform} width={20} height={20} className="object-contain" />
                                                         </div>
-                                                    </td>
-                                                    <td className="px-8 py-5 text-sm text-foreground font-bold">{row.setupSpeed}</td>
-                                                    <td className="px-8 py-5 text-sm text-foreground font-bold">{row.upfrontCost}</td>
-                                                    <td className="px-8 py-5 text-sm text-muted-foreground font-medium leading-relaxed max-w-sm">{row.bestFor}</td>
-                                                </tr>
-                                            );
-                                        })}
+                                                        <span className="text-sm font-semibold text-slate-800">{row.platform}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 py-3 text-sm text-slate-800">{row.setup}</td>
+                                                <td className="px-4 py-3 text-sm text-slate-800">{row.upfront}</td>
+                                                <td className="px-4 py-3 text-sm text-slate-700 leading-relaxed">{row.fixed}</td>
+                                                <td className="px-4 py-3 text-sm text-slate-700 leading-relaxed">{row.fees}</td>
+                                                <td className="px-4 py-3 text-sm text-slate-700 leading-relaxed">{row.bestFor}</td>
+                                            </tr>
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-                    </section>
+                    </div>
+
+                    {/* Bottom CTAs */}
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 pb-12">
+                        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm flex flex-col gap-3">
+                            <h3 className="text-lg font-bold text-slate-900">Moving from another platform?</h3>
+                            <p className="text-base text-slate-600">Our migration specialists will help you transfer your entire catalog to Printeast effortlessly.</p>
+                            <button
+                                className="mt-auto w-full rounded-lg bg-[--primary] py-3 text-sm font-semibold text-white"
+                                style={{ backgroundColor: primary }}
+                            >
+                                Migration Wizard
+                            </button>
+                        </div>
+                        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm flex flex-col gap-3">
+                            <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-full border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-600">
+                                    <Headset className="h-5 w-5" />
+                                </div>
+                                <h3 className="text-lg font-bold text-slate-900">Customer Support</h3>
+                            </div>
+                            <p className="text-base text-slate-600">Get help from our team anytime you need it.</p>
+                            <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                                24/7 live chat, priority onboarding, and migration guidance.
+                            </div>
+                            <button
+                                className="w-full rounded-lg bg-[--primary] py-3 text-sm font-semibold text-white"
+                                style={{ backgroundColor: primary }}
+                            >
+                                Contact support
+                            </button>
+                            <button className="text-xs font-semibold text-[#2563eb]">View help center</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </DashboardLayout>

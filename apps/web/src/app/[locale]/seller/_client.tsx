@@ -1,9 +1,11 @@
 "use client";
 
+import React from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { SellerDashboardData } from "./_data";
+import Image from "next/image";
 import Link from "next/link";
-import { Calendar, CreditCard, BarChart3, Settings } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Link2, ShoppingBag, Upload } from "lucide-react";
 
 interface Props {
     userEmail: string;
@@ -11,228 +13,251 @@ interface Props {
 }
 
 export function SellerDashboardClient({ userEmail, data }: Props) {
-    const { orders, topProducts, paymentsTotals, lowStockCount } = data;
+    const [newOrders, setNewOrders] = React.useState(0);
 
-    const openOrdersCount = orders.length ? orders.filter((o) => (o.status || "").toUpperCase() !== "SHIPPED").length : 0;
+    React.useEffect(() => {
+        const count = data.orders.filter((order) => {
+            const createdAt = order.created_at ? new Date(order.created_at) : null;
+            if (!createdAt || Number.isNaN(createdAt.getTime())) return false;
+            return Date.now() - createdAt.getTime() < 24 * 60 * 60 * 1000;
+        }).length;
+        setNewOrders(count);
+    }, [data.orders]);
 
-    const resources = [
-        { title: "My Templates", href: "/seller/templates" },
-        { title: "AI & Design Studio", href: "/seller/design" },
-        { title: "Analytics & Insights", href: "/seller/analytics" },
-        { title: "Branding", href: "/seller/branding" },
-        { title: "Resources", href: "/seller/resources" },
-        { title: "24/7 Support", href: "/seller/support" },
+    const steps = [
+        {
+            number: "01",
+            title: "Connect Store",
+            description: "Link your e-commerce store to sync products.",
+            cta: "Connect Now",
+            href: "/seller/storefront",
+            icon: Link2,
+            active: true,
+        },
+        {
+            number: "02",
+            title: "Upload Design",
+            description: "Upload your artwork in high resolution for quality.",
+            cta: "Start Upload",
+            href: "/seller/design",
+            icon: Upload,
+        },
+        {
+            number: "03",
+            title: "Place First Order",
+            description: "Order a sample to verify quality before selling.",
+            cta: "Awaiting Step 2",
+            href: "/seller/orders",
+            icon: ShoppingBag,
+        },
     ];
+
+    const trendingProducts = [
+        {
+            label: "Bestseller",
+            name: "Product Name",
+            image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=900&q=80",
+        },
+        {
+            label: "New",
+            name: "Product Name",
+            image: "https://images.unsplash.com/photo-1521577352947-9bb58764b69a?auto=format&fit=crop&w=900&q=80",
+        },
+        {
+            label: "",
+            name: "Product Name",
+            image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80",
+        },
+        {
+            label: "",
+            name: "Product Name",
+            image: "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=900&q=80",
+        },
+    ];
+
+    const marketingTips = [
+        {
+            tag: "Social Strategy",
+            title: "Article Title",
+            description: "Article Description placeholder text",
+            image: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1200&q=80",
+        },
+        {
+            tag: "Business Ops",
+            title: "Article Title",
+            description: "Article Description placeholder text",
+            image: "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1200&q=80",
+        },
+        {
+            tag: "Market Research",
+            title: "Article Title",
+            description: "Article Description placeholder text",
+            image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
+        },
+    ];
+
+    const bgSoft = "#F9F8F6";
 
     return (
         <DashboardLayout user={{ email: userEmail || "seller", role: "SELLER" }} fullBleed>
-            {/* Full page with gradient background */}
-            <div className="min-h-full w-full relative transition-colors duration-300" style={{
-                background: 'linear-gradient(145deg, var(--background) 0%, var(--card) 60%, var(--accent) 100%)'
-            }}>
-                {/* Gradient mesh overlays */}
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-20 dark:opacity-[0.15]"
-                        style={{ background: 'radial-gradient(circle, #3b82f6 0%, transparent 70%)' }} />
-                    <div className="absolute top-1/2 right-0 w-[400px] h-[400px] rounded-full opacity-10 dark:opacity-[0.10]"
-                        style={{ background: 'radial-gradient(circle, #8b5cf6 0%, transparent 70%)' }} />
-                </div>
-
-                <div className="relative z-10 px-10 py-8">
-                    {/* Page Header */}
-                    <header className="mb-8">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-400 mb-1">Seller</p>
-                        <h1 className="text-[28px] font-bold text-foreground leading-tight">Commerce Command</h1>
-                        <p className="text-sm text-muted-foreground mt-1">Live signals from orders, inventory, and payouts.</p>
-                    </header>
-
-                    {/* Workspace Shortcuts */}
-                    <div className="bg-card border border-border rounded-xl shadow-sm p-6 mb-6">
-                        <div className="mb-4">
-                            <h2 className="text-base font-semibold text-foreground">Workspace shortcuts</h2>
-                            <p className="text-sm text-muted-foreground mt-0.5">Quick links into your seller toolkit (LinkedIn backend-ready).</p>
-                        </div>
-                        <ul className="space-y-1">
-                            {resources.map((item) => (
-                                <li key={item.title}>
-                                    <Link
-                                        href={item.href}
-                                        className="flex items-center gap-3 px-2 py-2.5 rounded-lg text-sm text-foreground hover:bg-accent transition-colors"
-                                    >
-                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
-                                        {item.title}
+            <div
+                className="min-h-full w-full"
+                style={{
+                    background: `radial-gradient(circle at top left, rgba(37,99,235,0.06), transparent 35%), radial-gradient(circle at 80% 20%, rgba(15,23,42,0.05), transparent 35%), ${bgSoft}`,
+                }}
+            >
+                <div className="mx-auto max-w-[1240px] px-10 py-8 relative z-10 space-y-10">
+                    <section className="relative overflow-hidden rounded-[24px] bg-[#2563eb] p-8 text-white shadow-md">
+                        <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+                        <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
+                        <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+                            <div className="max-w-2xl">
+                                <h1 className="text-2xl font-semibold">Welcome back!</h1>
+                                <p className="mt-2 text-sm text-white/80">
+                                    Your store is growing! You&apos;ve had {newOrders} new orders in the last 24 hours. Keep up the creative momentum.
+                                </p>
+                                <div className="mt-5 flex flex-wrap gap-3">
+                                    <Link href="/seller/design" className="inline-flex items-center h-9 rounded-xl bg-white px-4 text-sm font-semibold text-[#2563eb] shadow-sm">
+                                        Launch New Campaign
                                     </Link>
-                                </li>
+                                    <Link href="/seller/storefront" className="inline-flex items-center h-9 rounded-xl border border-white/70 px-4 text-sm font-semibold text-white">
+                                        View Storefront
+                                    </Link>
+                                </div>
+                            </div>
+                            <div className="w-full max-w-[220px] rounded-2xl border border-white/30 bg-white/20 backdrop-blur-md p-5 shadow-[0_8px_32px_0_rgba(31,38,135,0.1)]">
+                                <p className="text-[12px] font-extrabold text-white/90 uppercase tracking-wider">Today&apos;s Earnings</p>
+                                <p className="mt-2 text-4xl font-black text-white">$0.00</p>
+                                <p className="mt-1.5 text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                    +0% vs yesterday
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <h2 className="text-base font-semibold text-slate-900">Getting Started</h2>
+                            <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-medium text-slate-400 border border-black/5">
+                                3 Steps left
+                            </span>
+                        </div>
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                            {steps.map((step) => {
+                                const Icon = step.icon;
+                                const iconStyles = step.active
+                                    ? "bg-[#2563eb]/10 text-[#2563eb]"
+                                    : "bg-slate-100 text-slate-400";
+                                const linkStyles = step.active
+                                    ? "text-[#2563eb]"
+                                    : "text-slate-400";
+                                return (
+                                    <div
+                                        key={step.number}
+                                        className={`rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-slate-200/50 transition-all duration-300 hover:shadow-[0_12px_40px_rgb(0,0,0,0.06)] ${step.active ? "border-b-[4px] border-b-[#2563eb]" : ""}`}
+                                    >
+                                        <div className="flex items-start justify-between">
+                                            <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${iconStyles}`}>
+                                                <Icon className="h-5 w-5" strokeWidth={2.5} />
+                                            </div>
+                                            <span className="text-2xl font-black text-slate-100 tracking-tighter">{step.number}</span>
+                                        </div>
+                                        <h3 className="mt-5 text-[15px] font-black text-slate-900">{step.title}</h3>
+                                        <p className="mt-1.5 text-sm text-slate-500 leading-relaxed">{step.description}</p>
+                                        <Link href={step.href} className={`mt-4 inline-flex items-center gap-2 text-sm font-black tracking-tight ${linkStyles} hover:underline`}>
+                                            {step.cta}
+                                            <ArrowRight className="h-4 w-4" />
+                                        </Link>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </section>
+
+                    <section className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h2 className="text-lg font-black text-slate-900 tracking-tight">Trending Products</h2>
+                                <p className="text-sm text-slate-400">Top picks for your niche this month</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 transition-colors">
+                                    <ChevronLeft className="h-5 w-5" />
+                                </button>
+                                <button className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 transition-colors">
+                                    <ChevronRight className="h-5 w-5" />
+                                </button>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                            {trendingProducts.map((product) => (
+                                <div key={product.image} className="rounded-2xl bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-slate-200/50 transition-all hover:shadow-[0_12px_40px_rgb(0,0,0,0.06)] group">
+                                    <div className="relative h-44 overflow-hidden rounded-xl bg-slate-100">
+                                        <Image src={product.image} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
+                                        {product.label ? (
+                                            <span className="absolute left-3 top-3 rounded-full bg-white/95 backdrop-blur-sm px-2.5 py-1 text-[10px] font-black text-slate-700 uppercase tracking-widest shadow-sm">
+                                                {product.label}
+                                            </span>
+                                        ) : null}
+                                    </div>
+                                    <div className="mt-4">
+                                        <p className="text-[15px] font-black text-slate-900">{product.name}</p>
+                                        <button className="mt-4 w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 text-xs font-black text-slate-600 hover:bg-slate-100 transition-colors">
+                                            Add to Design
+                                        </button>
+                                    </div>
+                                </div>
                             ))}
-                        </ul>
-                    </div>
-
-                    {/* Metrics Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                        {/* Open Orders */}
-                        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
-                            <div className="flex items-center justify-between mb-4">
-                                <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">Open Orders</span>
-                                <div className="w-9 h-9 rounded-full bg-muted border border-border flex items-center justify-center">
-                                    <Calendar className="w-4 h-4 text-muted-foreground" />
-                                </div>
-                            </div>
-                            <div className="text-3xl font-bold text-foreground">{openOrdersCount}</div>
                         </div>
+                    </section>
 
-                        {/* Paid */}
-                        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
-                            <div className="flex items-center justify-between mb-4">
-                                <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">Paid</span>
-                                <div className="w-9 h-9 rounded-full bg-muted border border-border flex items-center justify-center">
-                                    <CreditCard className="w-4 h-4 text-muted-foreground" />
-                                </div>
-                            </div>
-                            <div className="text-3xl font-bold text-foreground">{currency(paymentsTotals.paid)}</div>
-                        </div>
-
-                        {/* Pending Payouts */}
-                        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
-                            <div className="flex items-center justify-between mb-4">
-                                <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">Pending Payouts</span>
-                                <div className="w-9 h-9 rounded-full bg-muted border border-border flex items-center justify-center">
-                                    <BarChart3 className="w-4 h-4 text-muted-foreground" />
-                                </div>
-                            </div>
-                            <div className="text-3xl font-bold text-foreground">{currency(paymentsTotals.pending)}</div>
-                        </div>
-
-                        {/* Low Stock */}
-                        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
-                            <div className="flex items-center justify-between mb-4">
-                                <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">Low Stock</span>
-                                <div className="w-9 h-9 rounded-full bg-muted border border-border flex items-center justify-center">
-                                    <Settings className="w-4 h-4 text-muted-foreground" />
-                                </div>
-                            </div>
-                            <div className="text-3xl font-bold text-foreground">{lowStockCount}</div>
-                        </div>
-                    </div>
-
-                    {/* Two column grid for Top Products & Recent Orders */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                        {/* Top Products */}
-                        <div className="bg-card border border-border rounded-xl shadow-sm p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-base font-semibold text-foreground">Top Products</h3>
-                                <Link href="/seller/inventory" className="text-xs font-medium text-blue-500 hover:text-blue-600">
-                                    View All →
-                                </Link>
-                            </div>
-                            {topProducts.length === 0 ? (
-                                <p className="text-sm text-muted-foreground py-8 text-center">No products yet</p>
-                            ) : (
-                                <ul className="space-y-3">
-                                    {topProducts.map((product) => (
-                                        <li key={product.product_id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors">
-                                            <div className="w-10 h-10 rounded bg-muted border border-border flex items-center justify-center flex-shrink-0">
-                                                <span className="text-xs font-bold text-muted-foreground">IMG</span>
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-foreground truncate">{product.name}</p>
-                                                <p className="text-xs text-muted-foreground">{product.orders} orders</p>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-
-                        {/* Recent Orders */}
-                        <div className="bg-card border border-border rounded-xl shadow-sm p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-base font-semibold text-foreground">Recent Orders</h3>
-                                <Link href="/seller/orders" className="text-xs font-medium text-blue-500 hover:text-blue-600">
-                                    View All →
-                                </Link>
-                            </div>
-                            {orders.length === 0 ? (
-                                <p className="text-sm text-muted-foreground py-8 text-center">No orders yet</p>
-                            ) : (
-                                <ul className="space-y-3">
-                                    {orders.map((order) => (
-                                        <li key={order.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-accent transition-colors">
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-foreground">Order #{order.id.slice(0, 8)}</p>
-                                                <p className="text-xs text-muted-foreground">{formatDate(order.created_at)}</p>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="text-sm font-semibold text-foreground">{currency(order.total_amount)}</p>
-                                                <p className="text-xs text-muted-foreground">{formatStatus(order.status)}</p>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Quick Actions */}
-                    <div className="bg-card border border-border rounded-xl shadow-sm p-6">
-                        <h3 className="text-base font-semibold text-foreground mb-4">Quick Actions</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                            <Link
-                                href="/seller/inventory"
-                                className="flex items-center gap-3 p-4 rounded-lg bg-muted hover:bg-accent border border-border transition-all"
-                            >
-                                <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                                    <span className="text-lg">📦</span>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-semibold text-foreground">Add Product</p>
-                                    <p className="text-xs text-muted-foreground">Create new listing</p>
-                                </div>
-                            </Link>
-                            <Link
-                                href="/seller/orders"
-                                className="flex items-center gap-3 p-4 rounded-lg bg-muted hover:bg-accent border border-border transition-all"
-                            >
-                                <div className="w-10 h-10 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center">
-                                    <span className="text-lg">📋</span>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-semibold text-foreground">View Orders</p>
-                                    <p className="text-xs text-foreground">Manage fulfillment</p>
-                                </div>
-                            </Link>
-                            <Link
-                                href="/seller/analytics"
-                                className="flex items-center gap-3 p-4 rounded-lg bg-muted hover:bg-accent border border-border transition-all"
-                            >
-                                <div className="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                                    <span className="text-lg">📊</span>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-semibold text-foreground">Analytics</p>
-                                    <p className="text-xs text-muted-foreground">Track performance</p>
-                                </div>
+                    <section className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-base font-semibold text-slate-900">Marketing Tips</h2>
+                            <Link href="/seller/resources" className="text-xs font-semibold text-[#2563eb]">
+                                See all tutorials
                             </Link>
                         </div>
-                    </div>
+                        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                            {marketingTips.map((tip) => (
+                                <div key={tip.tag} className="relative overflow-hidden rounded-2xl bg-slate-900 text-white">
+                                    <Image src={tip.image} alt={tip.tag} width={600} height={420} className="h-44 w-full object-cover" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                                        <span className="inline-flex items-center rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em]">
+                                            {tip.tag}
+                                        </span>
+                                        <h3 className="mt-2 text-sm font-semibold">{tip.title}</h3>
+                                        <p className="mt-1 text-xs text-white/70">{tip.description}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section className="rounded-2xl bg-[#0b1220] px-6 py-5 text-white">
+                        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                            <div>
+                                <h2 className="text-base font-semibold">Join our Seller&apos;s Club</h2>
+                                <p className="mt-1 text-xs text-white/70">
+                                    Get exclusive access to premium mockups, weekly trend reports, and a community of creators.
+                                </p>
+                            </div>
+                            <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
+                                <input
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    className="h-10 flex-1 rounded-xl border border-white/15 bg-white/10 px-4 text-xs text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/30"
+                                />
+                                <button className="h-10 rounded-xl bg-[#2563eb] px-5 text-xs font-semibold text-white">
+                                    Sign Up
+                                </button>
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </DashboardLayout>
     );
-}
-
-function formatDate(value: string | null | undefined) {
-    if (!value) return "-";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return value;
-    return date.toLocaleDateString("en-GB", { year: "numeric", month: "short", day: "2-digit" });
-}
-
-function formatStatus(value: string | null | undefined) {
-    if (!value) return "Unknown";
-    if (value === "CREATED") return "Draft";
-    return value.toLowerCase().split("_").map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1)).join(" ");
-}
-
-function currency(amount: number | null | undefined) {
-    return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Number(amount || 0));
 }

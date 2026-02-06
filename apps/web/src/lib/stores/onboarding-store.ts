@@ -150,6 +150,7 @@ export const useOnboardingStore = create<OnboardingState>()(
             },
 
             prevStep: () => set((state: OnboardingState) => {
+                if (state.currentStep === 'PROCESSING') return {}; // Lock navigation during processing
                 const prev = state.history[state.history.length - 1];
                 if (!prev) return {};
                 const newHistory = state.history.slice(0, -1);

@@ -1,152 +1,107 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { createClient } from "@/utils/supabase/server";
-import { resolveTenantId } from "../_data";
-import { Palette } from "lucide-react";
+import { RefreshCw } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 export default async function SellerBrandingPage() {
     const supabase = await createClient();
-    const { data: userRes } = await supabase.auth.getUser();
-    const userEmail = userRes.user?.email || "seller";
-    const tenantId = await resolveTenantId(supabase);
+    const { data: { session } } = await supabase.auth.getSession();
+    const userEmail = session?.user?.email || "seller";
 
-    const { data: tenantData } = tenantId
-        ? await supabase.from("tenants").select("name,slug,metadata").eq("id", tenantId).single()
-        : { data: null };
+    const bgSoft = "#F9F8F6";
 
-    const { data: productsData } = tenantId
-        ? await supabase
-            .from("products")
-            .select("id,name,sku,mockup_template_url,metadata")
-            .eq("tenant_id", tenantId)
-            .limit(24)
-        : { data: null };
-    const products = productsData || [];
-
-    const { data: categoriesData } = tenantId
-        ? await supabase.from("categories").select("id,name,parent_id").eq("tenant_id", tenantId).limit(24)
-        : { data: null };
-    const categories = categoriesData || [];
-
-    const brandColors = (tenantData?.metadata as { colors?: string[] } | undefined)?.colors || [];
+    const services = [
+        {
+            title: "Packing Inserts",
+            description: "Add a custom insert card to show off your brand identity and leave a meaningful personal message for your customers with every order.",
+            image: "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?auto=format&fit=crop&w=800&q=80",
+            cta: "Set up inserts",
+            availability: "All stores and providers"
+        },
+        {
+            title: "Neck Labels",
+            description: "Personalize your garments with custom printed neck labels that promote your brand authority and delight your customers with premium finishing.",
+            image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=800&q=80",
+            cta: "Explore neck labels",
+            availability: "All stores and providers"
+        },
+        {
+            title: "Gift Messages",
+            description: "Create a gift message template using your logo and customized fonts to match the unique look and feel of your online store.",
+            image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
+            cta: "Configure messages",
+            availability: "All stores and providers"
+        },
+        {
+            title: "Branded Labels",
+            description: "Enhance your brand recognition with high-quality adhesive labels, perfect for adding a professional touch to your external product packaging.",
+            image: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=800&q=80",
+            cta: "Customize labels",
+            availability: "All stores and providers"
+        }
+    ];
 
     return (
         <DashboardLayout user={{ email: userEmail, role: "SELLER" }} fullBleed>
-            {/* Full page with gradient background */}
-            <div className="min-h-full w-full" style={{
-                background: 'linear-gradient(135deg, #e8f0fe 0%, #f0f4f8 25%, #f5f7fa 50%, #f8f9fb 100%)'
-            }}>
-                {/* Gradient mesh overlays */}
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full opacity-40"
-                        style={{ background: 'radial-gradient(circle, rgba(147,197,253,0.5) 0%, transparent 70%)' }} />
-                    <div className="absolute top-0 right-0 w-[300px] h-[300px] rounded-full opacity-20"
-                        style={{ background: 'radial-gradient(circle, rgba(196,181,253,0.4) 0%, transparent 70%)' }} />
-                </div>
+            <div
+                className="min-h-full w-full"
+                style={{
+                    background: `radial-gradient(circle at top left, rgba(37,99,235,0.06), transparent 35%), radial-gradient(circle at 80% 20%, rgba(15,23,42,0.05), transparent 35%), ${bgSoft}`,
+                }}
+            >
+                <div className="relative z-10 px-10 py-10 max-w-[1400px] mx-auto">
+                    {/* Header */}
+                    <div className="mb-10">
+                        <div className="flex items-center gap-3 mb-2">
+                            <h1 className="text-[28px] font-bold text-slate-900 leading-tight">Seller Branding and Packaging Services</h1>
+                            <button className="p-1 rounded-full hover:bg-slate-100 text-slate-400 transition-colors">
+                                <RefreshCw className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <p className="text-slate-500 text-[15px]">Unlock the power of unforgettable branding to resonate with your audience and elevate your business to new heights.</p>
+                    </div>
 
-                <div className="relative z-10 px-10 py-8">
-                    {/* Page Header */}
-                    <div className="flex items-center justify-between mb-8">
+                    {/* Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {services.map((service) => (
+                            <div key={service.title} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200/60 hover:shadow-md transition-shadow flex flex-col">
+                                <div className="p-8 pb-6">
+                                    <h3 className="text-xl font-bold text-slate-900 mb-3">{service.title}</h3>
+                                    <p className="text-sm text-slate-500 leading-relaxed mb-6 max-w-lg">{service.description}</p>
+
+                                    <div className="relative aspect-[16/9] w-full bg-slate-100 rounded-lg overflow-hidden shadow-inner">
+                                        <Image
+                                            src={service.image}
+                                            alt={service.title}
+                                            fill
+                                            className="object-cover hover:scale-105 transition-transform duration-700"
+                                            unoptimized
+                                        />
+                                    </div>
+                                </div>
+                                <div className="mt-auto px-8 pb-8 pt-0">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-blue-600"></div>
+                                        <span className="text-xs font-medium text-slate-500">Availability: {service.availability}</span>
+                                    </div>
+                                    <button className="w-full py-3 bg-[#2563eb] text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-sm text-sm">
+                                        {service.cta}
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Footer Links */}
+                    <div className="mt-12 border-t border-slate-200 pt-8 pb-8 flex items-center justify-between">
                         <div>
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500 mb-1">Branding</p>
-                            <h1 className="text-[28px] font-bold text-slate-900 leading-tight">Brand & Identity</h1>
-                            <p className="text-sm text-slate-500 mt-1">Tenant, product branding, and taxonomy from Supabase.</p>
+                            <h4 className="text-sm font-bold text-slate-900">Need help getting started?</h4>
+                            <p className="text-xs text-slate-500 mt-1">Learn how to make the most of our branding features.</p>
                         </div>
-                        <span className="px-2.5 py-1 bg-blue-50 text-blue-600 text-xs font-semibold rounded-full">{products.length} Products</span>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                        {/* Brand Kit Card */}
-                        <div className="lg:col-span-2 bg-white border border-slate-200/80 rounded-xl shadow-sm overflow-hidden">
-                            <div className="px-6 py-4 border-b border-slate-100">
-                                <h2 className="text-base font-semibold text-slate-900">Brand kit</h2>
-                                <p className="text-xs text-slate-500 mt-0.5">From tenants table (name, slug, metadata.colors).</p>
-                            </div>
-                            <div className="px-6 py-5">
-                                <div className="flex flex-wrap items-center gap-4">
-                                    <div className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-3">
-                                        <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-500 mb-1">Name</p>
-                                        <p className="text-base font-semibold text-slate-800">{tenantData?.name || "Tenant"}</p>
-                                    </div>
-                                    <div className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-3">
-                                        <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-500 mb-1">Slug</p>
-                                        <p className="text-base font-semibold text-slate-800">{tenantData?.slug || "-"}</p>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        {brandColors.length === 0 ? (
-                                            <p className="text-sm text-slate-500">Add colors in tenant metadata.colors</p>
-                                        ) : (
-                                            brandColors.map((c) => (
-                                                <span key={c} className="h-9 w-9 rounded-lg border border-slate-200 shadow-sm" style={{ background: c }} />
-                                            ))
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Categories Card */}
-                        <div className="bg-white border border-slate-200/80 rounded-xl shadow-sm overflow-hidden">
-                            <div className="px-6 py-4 border-b border-slate-100">
-                                <h2 className="text-base font-semibold text-slate-900">Categories</h2>
-                                <p className="text-xs text-slate-500 mt-0.5">From categories table.</p>
-                            </div>
-                            <div className="px-6 py-5">
-                                {categories.length === 0 ? (
-                                    <div className="p-4 bg-slate-50 rounded-lg">
-                                        <p className="text-sm font-medium text-slate-800">No categories</p>
-                                        <p className="text-xs text-slate-500">Add rows in categories to see them here.</p>
-                                    </div>
-                                ) : (
-                                    <ul className="space-y-2">
-                                        {categories.map((c) => (
-                                            <li key={c.id} className="flex items-center gap-2 text-sm text-slate-700">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6]" />
-                                                <span>{c.name}</span>
-                                                {c.parent_id && <span className="text-[10px] text-slate-400">Child of {c.parent_id.slice(0, 6)}</span>}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Product Branding Card */}
-                    <div className="bg-white border border-slate-200/80 rounded-xl shadow-sm overflow-hidden">
-                        <div className="px-6 py-4 border-b border-slate-100">
-                            <h2 className="text-base font-semibold text-slate-900">Product branding</h2>
-                            <p className="text-xs text-slate-500 mt-0.5">Products with SKU and mockup templates.</p>
-                        </div>
-                        <div className="px-6 py-5">
-                            {products.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center py-12 text-center">
-                                    <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mb-4">
-                                        <Palette className="w-6 h-6 text-slate-400" />
-                                    </div>
-                                    <h3 className="text-base font-semibold text-slate-800 mb-1">No products</h3>
-                                    <p className="text-sm text-slate-500">Create products to manage branding assets.</p>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    {products.map((p) => (
-                                        <div key={p.id} className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-xs text-slate-500">{p.sku}</span>
-                                                <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full ${p.mockup_template_url
-                                                    ? "bg-blue-50 text-blue-600"
-                                                    : "bg-slate-100 text-slate-600"
-                                                    }`}>
-                                                    {p.mockup_template_url ? "Template" : "Missing"}
-                                                </span>
-                                            </div>
-                                            <p className="text-sm font-medium text-slate-800 line-clamp-2">{p.name}</p>
-                                            <p className="text-[10px] text-slate-500 break-all">
-                                                {p.mockup_template_url || "Add mockup_template_url in products"}
-                                            </p>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+                        <div className="flex items-center gap-6 text-xs font-bold text-blue-600">
+                            <Link href="#" className="hover:underline hover:text-blue-800 transition-colors">Video Tutorial</Link>
+                            <Link href="#" className="hover:underline hover:text-blue-800 transition-colors">Read Article</Link>
                         </div>
                     </div>
                 </div>
