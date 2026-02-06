@@ -19,7 +19,10 @@ import {
     BarChart3,
     Palette,
     BookOpen,
-    Headset
+    Headset,
+    Home,
+    PenTool,
+    LifeBuoy,
 } from "lucide-react";
 
 type SideLink = { label: string; href: string; icon: React.ElementType };
@@ -53,12 +56,31 @@ const SELLER_LINKS: SidebarSection[] = [
     }
 ];
 
+const CREATOR_LINKS: SidebarSection[] = [
+    {
+        items: [
+            { label: "Home", href: "/creator", icon: Home },
+            { label: "Products", href: "/creator/products", icon: Box },
+            { label: "Orders", href: "/creator/orders", icon: ClipboardList },
+            { label: "Marketplace Listings", href: "/creator/marketplace", icon: Store },
+            { label: "My Designs", href: "/creator/designs", icon: PenTool },
+            { label: "AI & Design Studio", href: "/creator/ai-studio", icon: Sparkles },
+            { label: "Analytics & Insights", href: "/creator/analytics", icon: BarChart3 },
+            { label: "Branding", href: "/creator/branding", icon: Palette },
+            { label: "Resources", href: "/creator/resources", icon: BookOpen },
+            { label: "Community & Help", href: "/creator/community", icon: LifeBuoy },
+        ],
+    },
+];
+
 export function Sidebar({ role }: SidebarProps) {
     const pathname = usePathname();
 
     let sections: SidebarSection[] = [];
     if (role === "SELLER") {
         sections = SELLER_LINKS;
+    } else if (role === "CREATOR") {
+        sections = CREATOR_LINKS;
     } else {
         sections = [{ items: [] }];
     }
