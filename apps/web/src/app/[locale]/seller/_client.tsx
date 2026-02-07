@@ -6,13 +6,33 @@ import { SellerDashboardData } from "./_data";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ChevronLeft, ChevronRight, Link2, ShoppingBag, Upload } from "lucide-react";
+import { Role } from "@repo/types";
 
 interface Props {
     userEmail: string;
     data: SellerDashboardData;
+    role?: Role;
+    secondaryCtaLabel?: string;
+    secondaryCtaHref?: string;
+    clubTitle?: string;
+    connectTitle?: string;
+    connectDescription?: string;
+    connectCta?: string;
+    connectHref?: string;
 }
 
-export function SellerDashboardClient({ userEmail, data }: Props) {
+export function SellerDashboardClient({
+    userEmail,
+    data,
+    role = "SELLER",
+    secondaryCtaLabel,
+    secondaryCtaHref,
+    clubTitle,
+    connectTitle,
+    connectDescription,
+    connectCta,
+    connectHref,
+}: Props) {
     const [newOrders, setNewOrders] = React.useState(0);
 
     React.useEffect(() => {
@@ -27,10 +47,10 @@ export function SellerDashboardClient({ userEmail, data }: Props) {
     const steps = [
         {
             number: "01",
-            title: "Connect Store",
-            description: "Link your e-commerce store to sync products.",
-            cta: "Connect Now",
-            href: "/seller/storefront",
+            title: connectTitle || "Connect Store",
+            description: connectDescription || "Link your e-commerce store to sync products.",
+            cta: connectCta || "Connect Now",
+            href: connectHref || "/seller/storefront",
             icon: Link2,
             active: true,
         },
@@ -99,7 +119,7 @@ export function SellerDashboardClient({ userEmail, data }: Props) {
     const bgSoft = "#F9F8F6";
 
     return (
-        <DashboardLayout user={{ email: userEmail || "seller", role: "SELLER" }} fullBleed>
+        <DashboardLayout user={{ email: userEmail || "seller", role }} fullBleed>
             <div
                 className="min-h-full w-full"
                 style={{
@@ -120,8 +140,8 @@ export function SellerDashboardClient({ userEmail, data }: Props) {
                                     <Link href="/seller/design" className="inline-flex items-center h-9 rounded-xl bg-white px-4 text-sm font-semibold text-[#2563eb] shadow-sm">
                                         Launch New Campaign
                                     </Link>
-                                    <Link href="/seller/storefront" className="inline-flex items-center h-9 rounded-xl border border-white/70 px-4 text-sm font-semibold text-white">
-                                        View Storefront
+                                    <Link href={secondaryCtaHref || "/seller/storefront"} className="inline-flex items-center h-9 rounded-xl border border-white/70 px-4 text-sm font-semibold text-white">
+                                        {secondaryCtaLabel || "View Storefront"}
                                     </Link>
                                 </div>
                             </div>
@@ -239,7 +259,7 @@ export function SellerDashboardClient({ userEmail, data }: Props) {
                     <section className="rounded-2xl bg-[#0b1220] px-6 py-5 text-white">
                         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                             <div>
-                                <h2 className="text-base font-semibold">Join our Seller&apos;s Club</h2>
+                                <h2 className="text-base font-semibold">{clubTitle || "Seller's Club"}</h2>
                                 <p className="mt-1 text-xs text-white/70">
                                     Get exclusive access to premium mockups, weekly trend reports, and a community of creators.
                                 </p>
