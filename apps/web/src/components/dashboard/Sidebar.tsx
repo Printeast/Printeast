@@ -16,6 +16,7 @@ import {
     Store,
     LayoutTemplate,
     Sparkles,
+
     BarChart3,
     Palette,
     BookOpen,
@@ -36,8 +37,9 @@ const SELLER_LINKS: SidebarSection[] = [
     {
         title: "CREATION",
         items: [
+
             { label: "Products", href: "/seller/inventory", icon: Box },
-            { label: "My Store", href: "/seller/storefront", icon: Store },
+            { label: "Store", href: "/seller/storefront", icon: Store },
             { label: "My Templates", href: "/seller/templates", icon: LayoutTemplate },
             { label: "AI & Design Studio", href: "/seller/design", icon: Sparkles },
         ]

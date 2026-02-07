@@ -57,20 +57,27 @@ export class OrderService {
             orders: orders.map((o: any) => ({
                 id: o.id,
                 status: o.status,
-                totalAmount: o.totalAmount.toNumber(),
+                totalAmount: o.totalAmount?.toNumber() ?? 0,
                 createdAt: o.createdAt.toISOString(),
                 buyer: {
-                    email: o.buyer.email,
-                    fullName: o.buyer.email // Fallback to email as name fields don't exist in DB yet
+                    email: o.buyer?.email ?? "Unknown",
+                    fullName: o.buyer?.email ?? "Unknown"
                 },
-                items: (o.items || []).map((item: any) => ({
-                    id: item.id,
-                    productName: item.variant.product.name,
-                    variantName: item.variant.name,
-                    priceAtTime: item.priceAtTime.toNumber(),
-                    quantity: item.quantity,
-                    imageUrl: item.design.previewUrl || item.design.imageUrl || item.variant.product.mockupTemplateUrl
-                }))
+                items: (o.items || []).map((item: any) => {
+                    const product = item.variant?.product;
+                    const design = item.design;
+                    // Robust image fallback chain: Generated Preview -> Uploaded Design -> Product Template -> Placeholder
+                    const mainImage = design?.previewUrl || design?.imageUrl || product?.mockupTemplateUrl || null;
+
+                    return {
+                        id: item.id,
+                        productName: product?.name || design?.promptText || "Custom Product",
+                        variantName: item.variant?.name || "Standard",
+                        priceAtTime: item.priceAtTime?.toNumber() ?? 0,
+                        quantity: item.quantity ?? 1,
+                        imageUrl: mainImage
+                    };
+                })
             })),
             pagination: {
                 total,

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { orderController } from "../controllers/order.controller";
 import { protect } from "../middleware/auth.middleware";
 
-const router = Router();
+const router: Router = Router();
 
 // All order routes are protected
 router.use(protect);
