@@ -29,8 +29,9 @@ export function GlobalReach() {
                 >
 
                     {/* Nebula-like Glows */}
-                    <div className="absolute top-1/4 left-1/4 w-[60vw] h-[60vw] bg-blue-900/20 rounded-full blur-[160px] animate-pulse" style={{ animationDuration: '10s' }} />
-                    <div className="absolute bottom-1/4 right-1/4 w-[50vw] h-[50vw] bg-indigo-900/20 rounded-full blur-[140px]" />
+                    {/* Nebula-like Glows - Optimized: Removed heavy animate-pulse on large areas */}
+                    <div className="absolute top-1/4 left-1/4 w-[60vw] h-[60vw] bg-blue-900/20 rounded-full blur-[160px] opacity-60" />
+                    <div className="absolute bottom-1/4 right-1/4 w-[50vw] h-[50vw] bg-indigo-900/20 rounded-full blur-[140px] opacity-60" />
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[40vw] bg-blue-600/10 rounded-full blur-[180px] rotate-12" />
 
                     {/* Deep Dark Globe Arena Glow */}
@@ -45,7 +46,7 @@ export function GlobalReach() {
                                 transition={{ duration: 1, ease: "easeOut" }}
                                 className="space-y-6"
                             >
-                                <h2 className="text-4xl lg:text-7xl font-black tracking-tighter leading-[0.9] text-white">
+                                <h2 className="text-3xl sm:text-4xl lg:text-6xl font-black tracking-tighter leading-[0.95] lg:leading-[0.9] text-white">
                                     <span className="whitespace-nowrap">{t('title.line1')}</span> <br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 whitespace-nowrap">{t('title.line1Blue')}</span>
                                     <br />
@@ -60,7 +61,7 @@ export function GlobalReach() {
                                     })}
                                 </p>
 
-                                <div className="flex flex-wrap gap-12 pt-4">
+                                <div className="grid grid-cols-2 md:flex md:flex-wrap gap-8 md:gap-12 pt-4">
                                     {[
                                         { label: t('stats.activeHubs'), value: '45+' },
                                         { label: t('stats.countries'), value: '180+' },

@@ -47,15 +47,15 @@ export const useOnboardingStore = create<OnboardingState>()(
                     let newPath = state.computedPath;
 
                     // Update path logic based on new journey options
-                    if (key === 'podJourney' && value === 'I run a non-profit or community organization') {
+                    if (key === 'podJourney' && value === 'I want to support my community or cause through merchandise') {
                         newPath = 'NON_PROFIT';
                     }
                     else if (key === 'goal') {
-                        if (value === 'Designer/Artist looking to sell my artwork') {
+                        if (value === 'I want to sell my artwork as an Artist') {
                             newPath = 'ARTIST';
-                        } else if (value === 'Shopping for myself') {
+                        } else if (value === 'I want to shop for myself') {
                             newPath = 'INDIVIDUAL';
-                        } else if (value === 'Launch an online business') {
+                        } else if (value === 'I want to launch an online business') {
                             newPath = 'SELLER_STARTER';
                         } else if (value === 'I want to grow my business') {
                             newPath = 'SELLER_EXPANDING';
@@ -63,9 +63,9 @@ export const useOnboardingStore = create<OnboardingState>()(
                     }
                     else if (key === 'podJourney') {
                         // Infer path from journey if not already set by goal
-                        if (value === "I'm an established business expanding into custom products") {
+                        if (value === "I want to scale my existing business with better fulfillment") {
                             newPath = 'SELLER_EXPANDING';
-                        } else if (value === "I want to start a side business with minimal upfront investment") {
+                        } else if (value === "I want to start a side-hustle with zero upfront inventory") {
                             newPath = 'SELLER_STARTER';
                         } else if (!state.computedPath) {
                             newPath = 'SELLER_STARTER'; // Default fallback
@@ -86,8 +86,8 @@ export const useOnboardingStore = create<OnboardingState>()(
 
             nextStep: () => {
                 const { currentStep, answers, goToStep, computedPath } = get();
-                const isIndividual = answers.goal === 'Shopping for myself';
-                const isNonProfit = computedPath === 'NON_PROFIT' || answers.podJourney === 'I run a non-profit or community organization';
+                const isIndividual = answers.goal === 'I want to shop for myself';
+                const isNonProfit = computedPath === 'NON_PROFIT' || answers.podJourney === 'I want to support my community or cause through merchandise';
 
                 let next: StepName = 'PROCESSING';
 

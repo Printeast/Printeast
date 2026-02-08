@@ -187,7 +187,7 @@ const Logos3 = ({
             <div className="relative z-10 w-full">
                 {/* Replaced Carousel with ScrollVelocity for velocity-based scrolling */}
                 <ScrollVelocity
-                    velocity={40} // Increased base speed slightly more
+                    velocity={60} // Increased base speed further
                     numCopies={5}
                     velocityMapping={{ input: [0, 1000], output: [0, 10] }} // Increased scroll sensitivity
                     className="flex items-center"

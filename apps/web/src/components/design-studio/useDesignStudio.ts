@@ -76,7 +76,13 @@ export function useDesignStudio(options: UseDesignStudioOptions = {}) {
         }
 
         try {
-            await designService.autoSave(currentDesign.id, JSON.parse(currentData));
+            const response = await designService.autoSave(currentDesign.id, JSON.parse(currentData));
+            if (!response.success && (response.message?.includes("not found") || response.message?.includes("access denied"))) {
+                console.warn("Design not found or access denied, clearing stale ID:", currentDesign.id);
+                setCurrentDesign(null);
+                await del("printeast_wizard_design_id");
+                return;
+            }
             setLastSaved(new Date());
             setHasUnsavedChanges(false);
             lastSavedDataRef.current = currentData;
@@ -333,6 +339,10 @@ export function useDesignStudio(options: UseDesignStudioOptions = {}) {
                     setCanRedo(false);
                 }
             } else {
+                if (response.message?.includes("not found") || response.message?.includes("access denied")) {
+                    console.warn("Design not found or access denied during load, clearing stale ID.");
+                    await del("printeast_wizard_design_id");
+                }
                 setError(response.message || "Failed to load design");
             }
         } catch (err: any) {
@@ -474,6 +484,16 @@ export function useDesignStudio(options: UseDesignStudioOptions = {}) {
 
             // Update existing
             const response = await designService.update(currentDesign.id, { designData });
+
+            if (!response.success && (response.message?.includes("not found") || response.message?.includes("access denied"))) {
+                console.warn("Design not found or access denied during manual save, clearing stale ID.");
+                setCurrentDesign(null);
+                await del("printeast_wizard_design_id");
+
+                // Retry as a new creation
+                const newDesign = await createDesign();
+                return !!newDesign;
+            }
 
             // Force preview update on manual save
             await savePreviewToIndexedDB();

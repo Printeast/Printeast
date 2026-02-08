@@ -122,10 +122,7 @@ export function OnboardingWizard() {
                 </AnimatePresence>
             </div>
 
-            {/* Debug Controls */}
-            <div className="fixed bottom-4 left-4 opacity-0 hover:opacity-100 text-[10px] text-gray-300 transition-opacity z-50">
-                {currentStep}
-            </div>
+
         </main>
     );
 }

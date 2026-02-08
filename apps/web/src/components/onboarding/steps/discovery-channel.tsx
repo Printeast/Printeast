@@ -29,11 +29,28 @@ const POPULAR_SOCIALS = [
     { id: "pinterest", label: "Pinterest" },
 ];
 
+const POPULAR_AI = [
+    { id: "chatgpt", label: "ChatGPT" },
+    { id: "perplexity", label: "Perplexity" },
+    { id: "claude", label: "Claude" },
+    { id: "gemini", label: "Google Gemini" },
+    { id: "midjourney", label: "Midjourney" },
+    { id: "bing", label: "Bing AI" },
+];
+
+const POPULAR_REVIEWS = [
+    { id: "trustpilot", label: "Trustpilot" },
+    { id: "capterra", label: "Capterra" },
+    { id: "g2", label: "G2" },
+    { id: "reddit", label: "Reddit Reviews" },
+    { id: "producthunt", label: "ProductHunt" },
+];
+
 export function DiscoveryChannelStep() {
     const { nextStep, setAnswer } = useOnboardingStore();
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [detail, setDetail] = useState("");
-    const [selectedSocial, setSelectedSocial] = useState<string | null>(null);
+    const [selectedSubOption, setSelectedSubOption] = useState<string | null>(null);
 
     const handleSelect = (option: typeof DISCOVERY_OPTIONS[0]) => {
         if (!option.hasInput) {
@@ -43,12 +60,12 @@ export function DiscoveryChannelStep() {
         } else {
             setSelectedId(option.id);
             setDetail("");
-            setSelectedSocial(null);
+            setSelectedSubOption(null);
         }
     };
 
-    const handleSocialSelect = (label: string) => {
-        setSelectedSocial(label);
+    const handleSubSelect = (label: string) => {
+        setSelectedSubOption(label);
         setDetail(label);
     };
 
@@ -57,12 +74,13 @@ export function DiscoveryChannelStep() {
         const option = DISCOVERY_OPTIONS.find(o => o.id === selectedId);
         if (option) {
             setAnswer("discoveryChannel", option.label);
-            setAnswer("discoveryDetail", detail || selectedSocial || "");
+            setAnswer("discoveryDetail", detail || selectedSubOption || "");
             nextStep();
         }
     };
 
     const selectedOption = DISCOVERY_OPTIONS.find(o => o.id === selectedId);
+    const isGrid = DISCOVERY_OPTIONS.length > 7;
 
     return (
         <div className="w-full">
@@ -80,11 +98,15 @@ export function DiscoveryChannelStep() {
             </motion.div>
 
             <div className="flex flex-col gap-6">
-                <div className={cn(
-                    DISCOVERY_OPTIONS.length > 7
-                        ? "grid grid-cols-2 md:grid-cols-4 gap-3"
-                        : "flex flex-col gap-3"
-                )}>
+                <div
+                    data-lenis-prevent
+                    className={cn(
+                        "max-h-[500px] overflow-y-auto pr-1 custom-scrollbar",
+                        isGrid
+                            ? "grid grid-cols-2 md:grid-cols-4 gap-3"
+                            : "flex flex-col gap-3"
+                    )}
+                >
                     <AnimatePresence mode="popLayout">
                         {DISCOVERY_OPTIONS.map((opt, index) => {
                             const isSelected = selectedId === opt.id;
@@ -95,19 +117,19 @@ export function DiscoveryChannelStep() {
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: index * 0.05 }}
-                                    className={cn(DISCOVERY_OPTIONS.length <= 7 && "w-full")}
+                                    className={cn(!isGrid && "w-full")}
                                 >
                                     <button
                                         onClick={() => handleSelect(opt)}
                                         className={cn(
                                             "group w-full bg-white border border-neutral-200 rounded-xl hover:border-black hover:shadow-md transition-all duration-200",
                                             isSelected && "border-black shadow-md ring-1 ring-black/5",
-                                            DISCOVERY_OPTIONS.length > 7
+                                            isGrid
                                                 ? "flex flex-col items-center justify-center p-4 h-32 md:h-40 text-center gap-3"
                                                 : "p-4 md:p-5 flex items-center justify-between text-left"
                                         )}
                                     >
-                                        {DISCOVERY_OPTIONS.length > 7 ? (
+                                        {isGrid ? (
                                             <>
                                                 <div className={cn(
                                                     "w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-colors duration-200",
@@ -148,26 +170,26 @@ export function DiscoveryChannelStep() {
                                         )}
                                     </button>
 
-                                    {/* List Mode Social Sub-options */}
-                                    {DISCOVERY_OPTIONS.length <= 7 && isSelected && opt.id === "social-media" && (
+                                    {/* List Mode Sub-options (Inline) */}
+                                    {!isGrid && isSelected && (opt.id === "social-media" || opt.id === "ai" || opt.id === "review-site") && (
                                         <motion.div
                                             initial={{ opacity: 0, height: 0 }}
                                             animate={{ opacity: 1, height: "auto" }}
                                             className="mt-4 px-2"
                                         >
                                             <div className="flex flex-wrap gap-2 mb-4">
-                                                {POPULAR_SOCIALS.map(social => (
+                                                {(opt.id === "social-media" ? POPULAR_SOCIALS : opt.id === "ai" ? POPULAR_AI : POPULAR_REVIEWS).map(sub => (
                                                     <button
-                                                        key={social.id}
-                                                        onClick={() => handleSocialSelect(social.label)}
+                                                        key={sub.id}
+                                                        onClick={() => handleSubSelect(sub.label)}
                                                         className={cn(
                                                             "px-3 py-1.5 rounded-full text-xs font-semibold border transition-all",
-                                                            selectedSocial === social.label
+                                                            selectedSubOption === sub.label
                                                                 ? "bg-black text-white border-black"
                                                                 : "bg-white text-neutral-600 border-neutral-200 hover:border-black hover:text-black"
                                                         )}
                                                     >
-                                                        {social.label}
+                                                        {sub.label}
                                                     </button>
                                                 ))}
                                             </div>
@@ -175,7 +197,7 @@ export function DiscoveryChannelStep() {
                                     )}
 
                                     {/* List Mode Input (Inline) */}
-                                    {DISCOVERY_OPTIONS.length <= 7 && isSelected && opt.hasInput && (
+                                    {!isGrid && isSelected && opt.hasInput && (
                                         <motion.div
                                             initial={{ opacity: 0, height: 0, marginTop: 0 }}
                                             animate={{ opacity: 1, height: "auto", marginTop: 12 }}
@@ -188,7 +210,7 @@ export function DiscoveryChannelStep() {
                                                     value={detail}
                                                     onChange={(e) => {
                                                         setDetail(e.target.value);
-                                                        setSelectedSocial(null);
+                                                        setSelectedSubOption(null);
                                                     }}
                                                     placeholder={opt.placeholder}
                                                     className="h-12 bg-white border-neutral-300 focus:border-black text-base shadow-sm"
@@ -198,7 +220,7 @@ export function DiscoveryChannelStep() {
                                                 />
                                                 <button
                                                     onClick={handleFinish}
-                                                    disabled={!detail.trim() && !selectedSocial}
+                                                    disabled={!detail.trim() && !selectedSubOption}
                                                     className="h-12 px-6 bg-black text-white rounded-lg font-medium text-sm hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 whitespace-nowrap shadow-sm"
                                                 >
                                                     Next <ArrowRight className="w-4 h-4" />
@@ -212,49 +234,37 @@ export function DiscoveryChannelStep() {
                     </AnimatePresence>
                 </div>
 
-                {/* Grid Mode Selection/Input (Floating Popout) */}
+                {/* Grid Mode Selection/Input (Centered Box Style) */}
                 <AnimatePresence>
-                    {DISCOVERY_OPTIONS.length > 7 && selectedOption && selectedOption.hasInput && (
-                        <div className="fixed inset-x-0 bottom-6 z-50 flex justify-center px-4 pointer-events-none">
-                            <motion.div
-                                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                                transition={{ type: "spring", bounce: 0.3, duration: 0.5 }}
-                                className="w-full max-w-[420px] bg-white/80 backdrop-blur-2xl p-5 rounded-3xl border border-white/50 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)] pointer-events-auto"
-                            >
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-sm font-semibold text-neutral-900 flex items-center gap-2">
-                                        <div className="p-1.5 bg-blue-50 rounded-full text-blue-600">
-                                            <selectedOption.icon className="w-3.5 h-3.5" />
-                                        </div>
-                                        {selectedOption.id === "social-media"
-                                            ? "Which platform?"
-                                            : selectedOption.label}
-                                    </h3>
-                                    <button
-                                        onClick={() => setSelectedId(null)}
-                                        className="text-neutral-400 hover:text-neutral-900 transition-colors"
-                                    >
-                                        <span className="sr-only">Close</span>
-                                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 1L1 13M1 1l12 12" /></svg>
-                                    </button>
-                                </div>
+                    {isGrid && selectedOption?.hasInput && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            className="mt-4 p-6 bg-neutral-50 rounded-2xl border border-neutral-100 max-w-[480px] mx-auto w-full"
+                        >
+                            <div className="flex flex-col gap-4">
+                                <label className="text-sm font-bold text-neutral-900 px-1">
+                                    {(selectedOption.id === "social-media") && "Which platform?"}
+                                    {(selectedOption.id === "ai") && "Which AI tool?"}
+                                    {(selectedOption.id === "review-site") && "Which review site?"}
+                                    {(selectedOption.id !== "social-media" && selectedOption.id !== "ai" && selectedOption.id !== "review-site") && selectedOption.label}
+                                </label>
 
-                                {selectedOption.id === "social-media" && (
-                                    <div className="flex flex-wrap gap-1.5 mb-4">
-                                        {POPULAR_SOCIALS.map(social => (
+                                {(selectedOption.id === "social-media" || selectedOption.id === "ai" || selectedOption.id === "review-site") && (
+                                    <div className="flex flex-wrap gap-1.5 mb-2">
+                                        {(selectedOption.id === "social-media" ? POPULAR_SOCIALS : selectedOption.id === "ai" ? POPULAR_AI : POPULAR_REVIEWS).map(sub => (
                                             <button
-                                                key={social.id}
-                                                onClick={() => handleSocialSelect(social.label)}
+                                                key={sub.id}
+                                                onClick={() => handleSubSelect(sub.label)}
                                                 className={cn(
                                                     "px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200",
-                                                    selectedSocial === social.label
+                                                    selectedSubOption === sub.label
                                                         ? "bg-neutral-900 text-white border-neutral-900 shadow-md"
                                                         : "bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400 hover:bg-neutral-50"
                                                 )}
                                             >
-                                                {social.label}
+                                                {sub.label}
                                             </button>
                                         ))}
                                     </div>
@@ -266,24 +276,24 @@ export function DiscoveryChannelStep() {
                                         value={detail}
                                         onChange={(e) => {
                                             setDetail(e.target.value);
-                                            setSelectedSocial(null);
+                                            setSelectedSubOption(null);
                                         }}
                                         placeholder="Type here..."
-                                        className="h-11 bg-white/50 border-neutral-200 focus:border-neutral-900 focus:bg-white text-sm rounded-xl shadow-sm transition-all"
+                                        className="h-12 bg-white border-neutral-300 focus:border-black text-base shadow-sm"
                                         onKeyDown={(e) => {
-                                            if (e.key === "Enter" && (detail.trim() || selectedSocial)) handleFinish();
+                                            if (e.key === "Enter" && (detail.trim() || selectedSubOption)) handleFinish();
                                         }}
                                     />
                                     <button
                                         onClick={handleFinish}
-                                        disabled={!detail.trim() && !selectedSocial}
-                                        className="h-11 px-5 bg-neutral-900 text-white rounded-xl font-semibold text-sm hover:bg-black disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center gap-2 shadow-lg shadow-neutral-900/20 active:scale-95"
+                                        disabled={!detail.trim() && !selectedSubOption}
+                                        className="h-12 px-6 bg-neutral-900 text-white rounded-lg font-medium text-sm hover:bg-black disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center gap-2 shadow-lg shadow-neutral-900/20 active:scale-95"
                                     >
-                                        <ArrowRight className="w-4 h-4 ml-0.5" />
+                                        Next <ArrowRight className="w-4 h-4 ml-0.5" />
                                     </button>
                                 </div>
-                            </motion.div>
-                        </div>
+                            </div>
+                        </motion.div>
                     )}
                 </AnimatePresence>
             </div>

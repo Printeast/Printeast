@@ -85,21 +85,21 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem("wizard_state", JSON.stringify(state));
     }, [state]);
 
-    const updateProduct = (data: Partial<WizardState["product"]>) => {
+    const updateProduct = React.useCallback((data: Partial<WizardState["product"]>) => {
         setState((prev) => ({ ...prev, product: { ...prev.product, ...data } }));
-    };
+    }, []);
 
-    const updateDesign = (data: Partial<WizardState["design"]>) => {
+    const updateDesign = React.useCallback((data: Partial<WizardState["design"]>) => {
         setState((prev) => ({ ...prev, design: { ...prev.design, ...data } }));
-    };
+    }, []);
 
-    const updateVariants = (data: Partial<WizardState["variants"]>) => {
+    const updateVariants = React.useCallback((data: Partial<WizardState["variants"]>) => {
         setState((prev) => ({ ...prev, variants: { ...prev.variants, ...data } }));
-    };
+    }, []);
 
-    const updateSettings = (data: Partial<WizardState["settings"]>) => {
+    const updateSettings = React.useCallback((data: Partial<WizardState["settings"]>) => {
         setState((prev) => ({ ...prev, settings: { ...prev.settings, ...data } }));
-    };
+    }, []);
 
     const [toastMessage, setToastMessage] = useState<string | null>(null);
 

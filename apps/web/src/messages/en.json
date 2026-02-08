@@ -80,7 +80,8 @@
         }
     },
     "AiStudio": {
-        "title": "Design Like A Pro <blue>Powered By AI</blue>",
+        "titlePart1": "Design Like A Pro",
+        "titlePart2": "Powered By AI",
         "description": "The world's most advanced design editor, built directly into Printeast. <secondary>Experience fluid, cinematic creation with smart mockups.</secondary>",
         "editor": {
             "untitled": "Untitled Project",
@@ -114,7 +115,7 @@
     },
     "FeaturesGrid": {
         "studio": "AI Studio",
-        "createCustom": "Create Your <br /> Custom T-Shirt",
+        "createCustom": "Create Your <br></br> Custom T-Shirt",
         "startsFrom": "Starts from",
         "startDesigning": "Start Designing",
         "newDrop": "New Drop",
@@ -222,7 +223,8 @@
         }
     },
     "ProfitCalculator": {
-        "title": "See How Much You Can Make From Your <word></word>",
+        "titlePart1": "See How Much You",
+        "titlePart2": "Can Make From Your",
         "words": [
             "Brand",
             "Hobby",
@@ -247,6 +249,7 @@
         "perYear": "Per Year",
         "monthly": "Monthly",
         "yearly": "Yearly",
+        "manualInputCallout": "ENTER {limit}+ <br></br> <blue>MANUALLY</blue> ABOVE",
         "estimates": "*Estimates based on sales volume",
         "categories": {
             "Apparel": "Apparel",

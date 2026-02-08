@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect, memo } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from "framer-motion"
 import Image from "next/image"
 import { ChevronDown, Check, ChevronRight, ArrowLeft, Shirt, Coffee, Home, ShoppingBag, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -99,9 +99,12 @@ export function ProfitCalculator() {
     const [selectedProduct, setSelectedProduct] = useState<Product>(PRODUCTS[0]!)
     const [sellingPrice, setSellingPrice] = useState(PRODUCTS[0]!.defaultPrice)
     const [dailySales, setDailySales] = useState(5)
+    const words = useMemo(() => t.raw('words') as string[], [t]);
 
-    const [selectedPeriod, setSelectedPeriod] = useState(t('perMonth'))
+    const [selectedPeriod, setSelectedPeriod] = useState<"month" | "year">("month")
     const [selectedRegion, setSelectedRegion] = useState("India")
+    const [showPriceCallout, setShowPriceCallout] = useState(false)
+    const [showSalesCallout, setShowSalesCallout] = useState(false)
 
     const REGION_DATA: Record<string, { symbol: string, rate: number, label: string }> = {
         "India": { symbol: "₹", rate: 83, label: "India (₹)" },
@@ -123,26 +126,71 @@ export function ProfitCalculator() {
 
     const profitPerUnit = sellingPrice - selectedProduct.baseCost
     // Calculate profit based on selected period
-    const rawProfit = profitPerUnit * dailySales * (selectedPeriod === t('perYear') ? 365 : 30)
+    const rawProfit = profitPerUnit * dailySales * (selectedPeriod === "year" ? 365 : 30)
     const estimatedProfit = formatValue(rawProfit)
 
-    // Dynamic Header Text Animation
-    const words = t.raw('words') as string[];
-    const [headerWord, setHeaderWord] = useState(words[0])
-
-    useEffect(() => {
-        let i = 0
-        const interval = setInterval(() => {
-            i = (i + 1) % words.length
-            const nextWord = words[i]
-            if (nextWord) setHeaderWord(nextWord)
-        }, 2000)
-        return () => clearInterval(interval)
-    }, [words])
-
+    const aiSuggestedPrice = selectedProduct.suggestedPrice
     const REGIONS = Object.keys(REGION_DATA)
 
-    const aiSuggestedPrice = selectedProduct.suggestedPrice
+    const headerContent = useMemo(() => (
+        <div className="flex flex-col space-y-6 lg:translate-y-[-10%]">
+            <h2 className="text-3xl lg:text-6xl font-black tracking-tighter leading-[1.05] text-slate-900 mb-4 whitespace-normal">
+                <div className="block whitespace-nowrap">{t('titlePart1')}</div>
+                <div className="block whitespace-nowrap">{t('titlePart2')}</div>
+                <div className="block mt-2">
+                    <RollingHeader words={words} />
+                </div>
+            </h2>
+            <p className="text-lg md:text-xl text-slate-500 font-medium leading-relaxed max-w-xl">
+                {t('subtitle')}
+            </p>
+        </div>
+    ), [t, words])
+
+    const PRICE_LIMIT = 1000000 / currentRegion.rate
+    const SALES_LIMIT = 10000
+
+    // Auto-hide callouts after 2.5s
+    useEffect(() => {
+        if (showPriceCallout) {
+            const timer = setTimeout(() => setShowPriceCallout(false), 2500)
+            return () => clearTimeout(timer)
+        }
+        return undefined
+    }, [showPriceCallout])
+
+    useEffect(() => {
+        if (showSalesCallout) {
+            const timer = setTimeout(() => setShowSalesCallout(false), 2500)
+            return () => clearTimeout(timer)
+        }
+        return undefined
+    }, [showSalesCallout])
+
+    const handlePriceInputChange = (val: string) => {
+        if (val === "") {
+            setSellingPrice(0) // Visual clearing, effectively 0 USD
+            return
+        }
+        const num = Number(val)
+        if (isNaN(num)) return
+
+        const usdPrice = num / currentRegion.rate
+        if (usdPrice > PRICE_LIMIT) setSellingPrice(PRICE_LIMIT)
+        else setSellingPrice(usdPrice)
+    }
+
+    const handleSalesInputChange = (val: string) => {
+        if (val === "") {
+            setDailySales(0)
+            return
+        }
+        const num = Number(val)
+        if (isNaN(num)) return
+
+        if (num > SALES_LIMIT) setDailySales(SALES_LIMIT)
+        else setDailySales(num)
+    }
 
     return (
         <section className="py-32 bg-transparent relative overflow-hidden transform-gpu">
@@ -151,44 +199,18 @@ export function ProfitCalculator() {
             <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-400/5 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3" />
 
             <div className="max-w-[1440px] mx-auto px-6 lg:px-12 relative z-10">
-                <div className="grid grid-cols-1 lg:grid-cols-[0.5fr,2.5fr] gap-12 lg:gap-16 items-center">
+                <div className="grid grid-cols-1 lg:grid-cols-[0.8fr,3.2fr] gap-8 lg:gap-12 items-center">
 
                     {/* LEFT: Text Content */}
-                    <div className="flex flex-col space-y-6 lg:translate-y-[-10%]">
-                        <h2 className="text-4xl lg:text-7xl font-black tracking-tighter leading-[0.9] text-slate-900 transform-gpu mb-4">
-                            {t.rich('title', {
-                                word: () => (
-                                    <span className="relative inline-flex min-w-[10ch] h-[1.1em] items-center text-blue-600 ml-2">
-                                        <AnimatePresence mode="wait">
-                                            <motion.span
-                                                key={headerWord}
-                                                initial={{ y: 20, opacity: 0 }}
-                                                animate={{ y: 0, opacity: 1 }}
-                                                exit={{ y: -20, opacity: 0 }}
-                                                transition={{ duration: 0.3 }}
-                                                className="absolute left-0"
-                                            >
-                                                {headerWord}
-                                            </motion.span>
-                                        </AnimatePresence>
-                                        <span className="invisible">Side Hustle</span>
-                                    </span>
-                                )
-                            })}
-                        </h2>
-                        <p className="text-lg md:text-xl text-slate-500 font-medium leading-relaxed max-w-xl">
-                            {t('subtitle')}
-                        </p>
-                    </div>
+                    {headerContent}
 
                     {/* RIGHT: Calculator Interactive Card */}
                     <div className="w-full">
-                        <div className="bg-white rounded-3xl border border-gray-100 p-5 lg:p-6 flex flex-col lg:flex-row gap-8 items-center w-full shadow-[0_25px_60px_rgba(0,0,0,0.06)] relative z-10 transition-all duration-500">
+                        <div className="bg-white rounded-3xl border border-gray-100 p-4 lg:py-5 lg:px-6 flex flex-col lg:flex-row gap-8 items-center w-full shadow-[0_25px_60px_rgba(0,0,0,0.06)] relative z-10 [transform:translateZ(0)] [backface-visibility:hidden]">
 
                             {/* LEFT: Product Preview */}
                             <motion.div
-                                layout
-                                className="w-full lg:w-[50%] aspect-[2/3] relative rounded-2xl overflow-hidden bg-[#0B0F17] group will-change-transform transform-gpu shadow-xl"
+                                className="w-full lg:w-[45%] aspect-[2/3.8] relative rounded-2xl overflow-hidden bg-[#0B0F17] group shadow-xl"
                             >
                                 <Image
                                     src={selectedProduct.image}
@@ -206,7 +228,7 @@ export function ProfitCalculator() {
                             </motion.div>
 
                             {/* RIGHT: Calculator Controls */}
-                            <div className="w-full lg:w-[50%] space-y-2.5 pr-2">
+                            <div className="w-full lg:w-[55%] space-y-2 pr-2">
                                 {/* Product Selector */}
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between px-1">
@@ -233,20 +255,48 @@ export function ProfitCalculator() {
                                                 <input
                                                     type="number"
                                                     value={formatValue(sellingPrice)}
-                                                    onChange={(e) => setSellingPrice(Number(e.target.value) / currentRegion.rate)}
-                                                    className="w-16 bg-transparent font-black text-xl text-right outline-none text-gray-900 tabular-nums"
+                                                    onChange={(e) => handlePriceInputChange(e.target.value)}
+                                                    className="w-20 bg-transparent font-black text-xl text-right outline-none text-gray-900 tabular-nums"
                                                 />
                                             </div>
                                         </div>
-                                        <CustomSlider
-                                            value={sellingPrice}
-                                            min={0}
-                                            max={selectedProduct.suggestedPrice * 2}
-                                            onChange={setSellingPrice}
-                                            formatLabel={(v) => `${currentRegion.symbol}${formatValue(v)}`}
-                                            minLabel={`${currentRegion.symbol}${formatValue(0)}`}
-                                            maxLabel={`${currentRegion.symbol}${formatValue(selectedProduct.suggestedPrice * 2)}`}
-                                        />
+                                        <div className="relative">
+                                            <CustomSlider
+                                                value={sellingPrice}
+                                                min={0}
+                                                max={selectedProduct.suggestedPrice * 2}
+                                                onChange={(v) => {
+                                                    setSellingPrice(v)
+                                                    if (v >= selectedProduct.suggestedPrice * 2) setShowPriceCallout(true)
+                                                    else setShowPriceCallout(false)
+                                                }}
+                                                formatLabel={(v) => `${currentRegion.symbol}${formatValue(v)}`}
+                                                minLabel={`${currentRegion.symbol}${formatValue(0)}`}
+                                                maxLabel={`${currentRegion.symbol}${formatValue(selectedProduct.suggestedPrice * 2)}`}
+                                            />
+                                            <AnimatePresence>
+                                                {showPriceCallout && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                        exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                                                        className="absolute -top-[110px] right-[-12px] bg-blue-600 text-white text-[9px] font-black px-3 py-2.5 rounded-xl shadow-2xl z-50 pointer-events-none text-right leading-tight"
+                                                    >
+                                                        <div className="flex items-start gap-2">
+                                                            <Sparkles className="w-3 h-3 text-blue-200 mt-0.5" />
+                                                            <div>
+                                                                {t.rich('manualInputCallout', {
+                                                                    limit: `${currentRegion.symbol}${formatValue(selectedProduct.suggestedPrice * 2)}`,
+                                                                    blue: (chunks) => <span className="text-blue-100">{chunks}</span>,
+                                                                    br: () => <br />
+                                                                })}
+                                                            </div>
+                                                        </div>
+                                                        <div className="absolute top-full right-6 w-2.5 h-2.5 bg-blue-600 rotate-45 -translate-y-1/2" />
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
                                     </div>
 
                                     <div className="space-y-2.5">
@@ -256,21 +306,49 @@ export function ProfitCalculator() {
                                                 <input
                                                     type="number"
                                                     value={dailySales}
-                                                    onChange={(e) => setDailySales(Number(e.target.value))}
+                                                    onChange={(e) => handleSalesInputChange(e.target.value)}
                                                     className="w-12 bg-transparent font-black text-xl text-right outline-none text-gray-900 tabular-nums"
                                                 />
                                                 <span className="text-gray-400 font-bold text-xs">/ day</span>
                                             </div>
                                         </div>
-                                        <CustomSlider
-                                            value={dailySales}
-                                            min={1}
-                                            max={100}
-                                            onChange={setDailySales}
-                                            formatLabel={(v) => v.toString()}
-                                            minLabel="1 sale"
-                                            maxLabel="100 sales"
-                                        />
+                                        <div className="relative">
+                                            <CustomSlider
+                                                value={dailySales}
+                                                min={1}
+                                                max={100}
+                                                onChange={(v) => {
+                                                    setDailySales(v)
+                                                    if (v >= 100) setShowSalesCallout(true)
+                                                    else setShowSalesCallout(false)
+                                                }}
+                                                formatLabel={(v) => v.toString()}
+                                                minLabel="1 sale"
+                                                maxLabel="100 sales"
+                                            />
+                                            <AnimatePresence>
+                                                {showSalesCallout && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                        exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                                                        className="absolute -top-[110px] right-[-12px] bg-blue-600 text-white text-[9px] font-black px-3 py-2.5 rounded-xl shadow-2xl z-50 pointer-events-none text-right leading-tight"
+                                                    >
+                                                        <div className="flex items-start gap-2">
+                                                            <Sparkles className="w-3 h-3 text-blue-200 mt-0.5" />
+                                                            <div>
+                                                                {t.rich('manualInputCallout', {
+                                                                    limit: '100',
+                                                                    blue: (chunks) => <span className="text-blue-100">{chunks}</span>,
+                                                                    br: () => <br />
+                                                                })}
+                                                            </div>
+                                                        </div>
+                                                        <div className="absolute top-full right-6 w-2.5 h-2.5 bg-blue-600 rotate-45 -translate-y-1/2" />
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -299,10 +377,10 @@ export function ProfitCalculator() {
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em] px-1">VIEW EARNINGS</label>
                                         <button
-                                            onClick={() => setSelectedPeriod(selectedPeriod === t('perMonth') ? t('perYear') : t('perMonth'))}
+                                            onClick={() => setSelectedPeriod(selectedPeriod === "month" ? "year" : "month")}
                                             className="w-full flex items-center justify-between bg-white border border-gray-200 px-4 py-2.5 rounded-xl hover:border-blue-400 transition-colors group/period"
                                         >
-                                            <span className="text-sm font-bold text-gray-900">{selectedPeriod === t('perMonth') ? t('monthly') : t('yearly')}</span>
+                                            <span className="text-sm font-bold text-gray-900">{selectedPeriod === "month" ? t('monthly') : t('yearly')}</span>
                                             <ChevronDown className="w-4 h-4 text-gray-400 transition-transform group-hover/period:translate-y-0.5" />
                                         </button>
                                     </div>
@@ -326,7 +404,7 @@ export function ProfitCalculator() {
                                         <div className="relative z-10 flex flex-col gap-5">
                                             <div className="space-y-1">
                                                 <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px]">
-                                                    ESTIMATED {selectedPeriod === t('perMonth') ? 'MONTHLY' : 'YEARLY'} PROFIT
+                                                    ESTIMATED {selectedPeriod === "month" ? 'MONTHLY' : 'YEARLY'} PROFIT
                                                 </p>
                                                 <div className="text-5xl lg:text-7xl font-black tracking-tighter text-white flex items-baseline gap-2">
                                                     <span className="text-2xl lg:text-3xl text-gray-400">{currentRegion.symbol}</span>
@@ -511,7 +589,7 @@ const CustomSlider = memo(({ value, min, max, onChange, formatLabel, minLabel, m
     maxLabel?: string
 }) => {
     // Calculate percentage for background fill
-    const percentage = ((value - min) / (max - min)) * 100
+    const percentage = Math.min(Math.max(((value - min) / (max - min)) * 100, 0), 100)
 
     return (
         <div className="space-y-3">
@@ -530,16 +608,21 @@ const CustomSlider = memo(({ value, min, max, onChange, formatLabel, minLabel, m
                     type="range"
                     min={min}
                     max={max}
+                    step={(max - min) / 200}
                     value={value}
                     onChange={(e) => onChange(Number(e.target.value))}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                     aria-label={formatLabel(value)}
                 />
 
-                {/* Custom Thumb - Positioned via left% */}
+                {/* Custom Thumb - Perfectly bound with translate */}
                 <div
-                    className="absolute top-1/2 w-6 h-6 bg-white border-[3px] border-blue-600 rounded-full z-10 pointer-events-none transition-transform duration-100 ease-out group-hover:scale-110 -translate-y-1/2 -translate-x-1/2 flex items-center justify-center shadow-md shadow-blue-200"
-                    style={{ left: `${percentage}%` }}
+                    className="absolute w-6 h-6 bg-white border-[3px] border-blue-600 rounded-full z-10 pointer-events-none group-hover:scale-110 flex items-center justify-center shadow-md shadow-blue-200 will-change-transform"
+                    style={{
+                        left: `${percentage}%`,
+                        top: '50%',
+                        transform: `translate(-${percentage}%, -50%)`
+                    }}
                 >
                     <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
                 </div>
@@ -554,36 +637,57 @@ const CustomSlider = memo(({ value, min, max, onChange, formatLabel, minLabel, m
     )
 })
 
-const AnimatedNumber = memo(({ value }: { value: number }) => {
-    const [displayValue, setDisplayValue] = useState(value)
+const RollingHeader = memo(({ words }: { words: string[] }) => {
+    const [index, setIndex] = useState(0)
 
     useEffect(() => {
-        let start = displayValue
-        const end = value
-        const duration = 500
-        const startTime = performance.now()
+        if (!words || words.length === 0) return;
+        const interval = setInterval(() => {
+            setIndex((prev) => (prev + 1) % words.length)
+        }, 2000)
+        return () => clearInterval(interval)
+    }, [words])
 
-        const update = (currentTime: number) => {
-            const elapsed = currentTime - startTime
-            const progress = Math.min(elapsed / duration, 1)
-            // Ease out expo for a premium feel
-            const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress)
-
-            const current = Math.floor(start + (end - start) * ease)
-            setDisplayValue(current)
-
-            if (progress < 1) {
-                requestAnimationFrame(update)
-            }
-        }
-
-        requestAnimationFrame(update)
-    }, [value])
+    const word = words[index] || ""
 
     return (
-        <span className="tabular-nums will-change-[contents]">
-            {new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(displayValue)}
+        <span className="relative inline-flex min-w-[10ch] h-[1.1em] items-center text-blue-600">
+            <AnimatePresence mode="wait">
+                <motion.span
+                    key={word}
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -20, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute left-0"
+                >
+                    {word}
+                </motion.span>
+            </AnimatePresence>
+            <span className="invisible">Side Hustle</span>
         </span>
+    )
+})
+
+const AnimatedNumber = memo(({ value }: { value: number }) => {
+    const motionValue = useMotionValue(value)
+    const springValue = useSpring(motionValue, {
+        stiffness: 400,
+        damping: 40
+    })
+
+    useEffect(() => {
+        motionValue.set(value)
+    }, [value, motionValue])
+
+    const displayValue = useTransform(springValue, (latest) =>
+        new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Math.floor(latest))
+    )
+
+    return (
+        <motion.span className="tabular-nums">
+            {displayValue}
+        </motion.span>
     )
 })
 

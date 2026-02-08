@@ -47,7 +47,7 @@ export function SalesVolumeStep() {
                 className="mb-8"
             >
                 <h2 className="text-xl font-bold text-neutral-900 mb-2">
-                    What's your current monthly sales volume?
+                    What&apos;s your current monthly sales volume?
                 </h2>
                 <p className="text-sm text-neutral-500">
                     This helps us recommend the best pricing tier for you.
@@ -82,29 +82,34 @@ export function SalesVolumeStep() {
             <AnimatePresence>
                 {selected === "Custom" && (
                     <motion.div
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="mt-6"
+                        className="mt-8 p-6 bg-neutral-50 rounded-2xl border border-neutral-100 max-w-[480px] mx-auto w-full"
                     >
-                        <div className="flex gap-2 w-full">
-                            <Input
-                                autoFocus
-                                value={customValue}
-                                onChange={(e) => setCustomValue(e.target.value)}
-                                placeholder="Enter your monthly volume..."
-                                className="h-12 bg-white border-neutral-300 focus:border-black text-base shadow-sm rounded-xl"
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter" && customValue.trim()) handleCustomSubmit();
-                                }}
-                            />
-                            <button
-                                onClick={handleCustomSubmit}
-                                disabled={!customValue.trim()}
-                                className="h-12 px-6 bg-black text-white rounded-lg font-medium hover:bg-neutral-800 disabled:opacity-50 transition-colors flex items-center gap-2 whitespace-nowrap shadow-sm"
-                            >
-                                Next <ArrowRight className="w-4 h-4" />
-                            </button>
+                        <div className="flex flex-col gap-4">
+                            <label className="text-sm font-bold text-neutral-900 px-1">
+                                Enter your custom volume:
+                            </label>
+                            <div className="flex gap-2">
+                                <Input
+                                    autoFocus
+                                    value={customValue}
+                                    onChange={(e) => setCustomValue(e.target.value)}
+                                    placeholder="Enter monthly volume..."
+                                    className="h-12 bg-white border-neutral-300 focus:border-black text-base shadow-sm"
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter" && customValue.trim()) handleCustomSubmit();
+                                    }}
+                                />
+                                <button
+                                    onClick={handleCustomSubmit}
+                                    disabled={!customValue.trim()}
+                                    className="h-12 px-6 bg-black text-white rounded-lg font-medium text-sm hover:bg-neutral-800 disabled:opacity-50 transition-colors flex items-center gap-2 whitespace-nowrap shadow-sm"
+                                >
+                                    Next <ArrowRight className="w-4 h-4" />
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
                 )}
