@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { getSellerInventoryData } from "../../seller/_data";
-import { SellerInventoryClient } from "../../seller/_client";
+import { SellerInventoryClient } from "../../seller/inventory/_client";
 
 export default async function CreatorInventoryPage() {
     const supabase = await createClient();
