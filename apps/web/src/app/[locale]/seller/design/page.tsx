@@ -1,24 +1,48 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { createClient } from "@/utils/supabase/server";
-import { resolveTenantId } from "../_data";
-import { Paintbrush, Upload } from "lucide-react";
-import Image from "next/image";
+import { Paintbrush, Upload, Plus } from "lucide-react";
+import Link from "next/link";
+import { DesignCard } from "./_components/DesignCard";
+
+interface Design {
+    id: string;
+    promptText?: string;
+    status?: string;
+    createdAt?: string;
+    imageUrl?: string;
+    previewUrl?: string;
+}
 
 export default async function SellerDesignPage() {
     const supabase = await createClient();
-    const { data: userRes } = await supabase.auth.getUser();
-    const userEmail = userRes.user?.email || "seller";
-    const tenantId = await resolveTenantId(supabase);
+    const { data: { session } } = await supabase.auth.getSession();
+    const userEmail = session?.user?.email || "seller";
+    const token = session?.access_token;
 
-    const { data: designsData } = tenantId
-        ? await supabase
-            .from("designs")
-            .select("id,prompt_text,status,created_at,image_url,preview_url")
-            .eq("tenant_id", tenantId)
-            .order("created_at", { ascending: false })
-            .limit(30)
-        : { data: null };
-    const designs = designsData || [];
+    // Fetch designs from Backend API to bypass RLS and ensure consistency
+    let designs: Design[] = [];
+    try {
+        if (token) {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+            const res = await fetch(`${apiUrl}/designs?limit=30`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                cache: "no-store"
+            });
+
+            if (res.ok) {
+                const json = await res.json();
+                if (json.success && Array.isArray(json.data)) {
+                    designs = json.data as Design[];
+                }
+            } else {
+                console.error("Failed to fetch designs:", res.status, await res.text());
+            }
+        }
+    } catch (e) {
+        console.error("Error fetching designs from API:", e);
+    }
 
     const draftCount = designs.filter((d) => (d.status || "").toUpperCase() === "DRAFT").length;
     const liveCount = designs.length - draftCount;
@@ -55,14 +79,20 @@ export default async function SellerDesignPage() {
                                 <p className="text-xs text-slate-500 mt-0.5">Kick off a fresh prompt or upload.</p>
                             </div>
                             <div className="px-6 py-5 space-y-3">
-                                <button className="w-full h-11 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all shadow-sm">
+                                <Link
+                                    href="/seller/wizard/design?fresh=true"
+                                    className="w-full h-11 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all shadow-sm"
+                                >
                                     <Paintbrush className="w-4 h-4" />
                                     Generate with AI
-                                </button>
-                                <button className="w-full h-11 bg-white border border-slate-200 text-slate-700 rounded-lg font-medium text-sm flex items-center justify-center gap-2 hover:bg-slate-50 transition-all">
+                                </Link>
+                                <Link
+                                    href="/seller/wizard/design?action=upload&fresh=true"
+                                    className="w-full h-11 bg-white border border-slate-200 text-slate-700 rounded-lg font-medium text-sm flex items-center justify-center gap-2 hover:bg-slate-50 transition-all"
+                                >
                                     <Upload className="w-4 h-4" />
                                     Upload design file
-                                </button>
+                                </Link>
                             </div>
                         </div>
 
@@ -82,37 +112,23 @@ export default async function SellerDesignPage() {
                                         <p className="text-sm text-slate-500">Create or upload to see items here.</p>
                                     </div>
                                 ) : (
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                         {designs.map((d) => (
-                                            <div key={d.id} className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs text-slate-500">
-                                                        {new Date(d.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                                                    </span>
-                                                    <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full ${(d.status || "").toUpperCase() === "DRAFT"
-                                                        ? "bg-amber-50 text-amber-700"
-                                                        : "bg-slate-100 text-slate-600"
-                                                        }`}>
-                                                        {d.status || "Draft"}
-                                                    </span>
-                                                </div>
-                                                <div className="h-24 rounded-lg bg-white border border-slate-200 overflow-hidden flex items-center justify-center">
-                                                    {d.preview_url || d.image_url ? (
-                                                        <Image
-                                                            src={d.preview_url || d.image_url}
-                                                            alt="Preview"
-                                                            width={200}
-                                                            height={96}
-                                                            className="w-full h-full object-cover"
-                                                            unoptimized
-                                                        />
-                                                    ) : (
-                                                        <span className="text-[11px] text-slate-400">No preview</span>
-                                                    )}
-                                                </div>
-                                                <p className="text-sm font-medium text-slate-800 line-clamp-2">{d.prompt_text || "Untitled"}</p>
-                                            </div>
+                                            <DesignCard key={d.id} design={d} />
                                         ))}
+
+                                        {/* Quick "Add New" card in the grid if small number of designs */}
+                                        {designs.length < 6 && (
+                                            <Link
+                                                href="/seller/wizard/design?fresh=true"
+                                                className="border-2 border-dashed border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 rounded-xl flex flex-col items-center justify-center min-h-[180px] transition-all group"
+                                            >
+                                                <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-blue-100 flex items-center justify-center mb-3 transition-colors">
+                                                    <Plus className="w-5 h-5 text-slate-400 group-hover:text-blue-600" />
+                                                </div>
+                                                <span className="text-sm font-semibold text-slate-500 group-hover:text-blue-600">Create new</span>
+                                            </Link>
+                                        )}
                                     </div>
                                 )}
                             </div>

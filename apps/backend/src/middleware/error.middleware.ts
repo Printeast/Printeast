@@ -32,7 +32,7 @@ export const globalErrorHandler = (
 
   res.status(code).json({
     success: false,
-    error: status.toUpperCase(),
+    error: String(status).toUpperCase(),
     message,
     details: env.NODE_ENV === "development" ? err.stack : null,
   });

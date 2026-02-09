@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+// import { useParams } from "next/navigation";
+
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import {
     Filter,
-    Plus,
     Search,
     LayoutGrid,
     List,
@@ -52,6 +52,8 @@ const categories = [
 export function SellerInventoryClient({ userEmail, initialInventory }: Props) {
     const [activeCategory, setActiveCategory] = useState("Men's clothing");
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+    // const params = useParams();
+    // const locale = params?.locale || "en";
 
     const products = useMemo(
         () =>
@@ -85,12 +87,10 @@ export function SellerInventoryClient({ userEmail, initialInventory }: Props) {
                                 <p className="text-sm text-muted-foreground mt-1 font-medium">Manage your synchronized products and listings.</p>
                             </div>
                             <div className="flex items-center gap-3">
-                                <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-card text-foreground hover:bg-accent transition-all text-sm font-bold shadow-sm">
-                                    <Filter className="w-4 h-4" /> Filters
+                                <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all shadow-sm group">
+                                    <Filter className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
+                                    <span>Filters</span>
                                 </button>
-                                <Link href="/seller/inventory/new" className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-all text-sm font-black shadow-md">
-                                    <Plus className="w-4 h-4" /> New Product
-                                </Link>
                             </div>
                         </header>
                     </div>
@@ -99,7 +99,7 @@ export function SellerInventoryClient({ userEmail, initialInventory }: Props) {
                         {/* Categories Sidebar */}
                         <div className="lg:col-span-1 space-y-6">
                             <div className="rounded-2xl border border-border bg-card/70 backdrop-blur-sm p-6 shadow-sm">
-                                <h3 className="text-sm font-black text-foreground uppercase tracking-wider mb-4">Categories</h3>
+                                <h3 className="text-xs font-black text-foreground uppercase tracking-[0.15em] mb-4">CATEGORIES</h3>
                                 <div className="space-y-1">
                                     {categories.map((cat) => (
                                         <button
@@ -129,33 +129,32 @@ export function SellerInventoryClient({ userEmail, initialInventory }: Props) {
                                         className="h-11 w-full pl-11 pr-4 bg-background border border-border rounded-xl text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all"
                                     />
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <select className="h-11 px-4 rounded-xl border border-border bg-background text-sm font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
-                                        <option>Newest First</option>
-                                        <option>Oldest First</option>
-                                        <option>Price: High to Low</option>
-                                        <option>Price: Low to High</option>
-                                    </select>
-                                    <div className="flex p-1 bg-accent rounded-xl">
-                                        <button
-                                            onClick={() => setViewMode("grid")}
-                                            className={`h-10 w-12 flex items-center justify-center rounded-lg transition-all ${viewMode === "grid"
-                                                ? "bg-background text-foreground shadow-sm border border-border"
-                                                : "text-muted-foreground hover:text-foreground"
-                                                }`}
-                                        >
-                                            <LayoutGrid className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                            onClick={() => setViewMode("list")}
-                                            className={`h-10 w-12 flex items-center justify-center rounded-lg transition-all ${viewMode === "list"
-                                                ? "bg-background text-foreground shadow-sm border border-border"
-                                                : "text-muted-foreground hover:text-foreground"
-                                                }`}
-                                        >
-                                            <List className="w-4 h-4" />
-                                        </button>
-                                    </div>
+                                {/* Toolbar buttons */}
+                                <select className="h-11 px-4 rounded-xl border border-border bg-background text-sm font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+                                    <option>Newest First</option>
+                                    <option>Oldest First</option>
+                                    <option>Price: High to Low</option>
+                                    <option>Price: Low to High</option>
+                                </select>
+                                <div className="flex p-1 bg-accent rounded-xl">
+                                    <button
+                                        onClick={() => setViewMode("grid")}
+                                        className={`h-10 w-12 flex items-center justify-center rounded-lg transition-all ${viewMode === "grid"
+                                            ? "bg-background text-foreground shadow-sm border border-border"
+                                            : "text-muted-foreground hover:text-foreground"
+                                            }`}
+                                    >
+                                        <LayoutGrid className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode("list")}
+                                        className={`h-10 w-12 flex items-center justify-center rounded-lg transition-all ${viewMode === "list"
+                                            ? "bg-background text-foreground shadow-sm border border-border"
+                                            : "text-muted-foreground hover:text-foreground"
+                                            }`}
+                                    >
+                                        <List className="w-4 h-4" />
+                                    </button>
                                 </div>
                             </div>
 

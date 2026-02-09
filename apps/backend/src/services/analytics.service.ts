@@ -6,7 +6,7 @@ export class AnalyticsService {
      * NOTE: This query can be heavy. It IS INTENDED to be cached by the Redis Middleware.
      */
     async getSellerStats(tenantId: string) {
-        // Parallelize queries for extreme performance
+        // Parallelize queries for high-performance data aggregation
         const [ordersAgg, products, topProductGroups, lowStock, recentOrders, recentPayments, paymentsAgg] = await Promise.all([
             // 1. Core Summary Stats
             prisma.order.aggregate({
@@ -30,7 +30,7 @@ export class AnalyticsService {
             prisma.inventory.count({
                 where: { variant: { product: { tenantId } }, quantity: { lt: 20 } },
             }),
-            // 5. Recent Orders
+            // 5. Recent Orders with robust relation checks
             prisma.order.findMany({
                 where: { tenantId },
                 orderBy: { createdAt: "desc" },
@@ -60,57 +60,66 @@ export class AnalyticsService {
             })
         ]);
 
-        // Fetch details for top variants
-        const topVariantDetails = await prisma.productVariant.findMany({
-            where: { id: { in: topProductGroups.map(p => p.variantId) } },
-            select: {
-                id: true,
-                name: true,
-                sku: true,
-                product: { select: { name: true } }
-            }
-        });
+        // Safely map top variants, filtering out those with missing product relations
+        const variantIds = topProductGroups.map(p => p.variantId).filter(Boolean);
+        const topVariantDetails = variantIds.length > 0
+            ? await prisma.productVariant.findMany({
+                where: { id: { in: variantIds } },
+                select: {
+                    id: true,
+                    name: true,
+                    sku: true,
+                    product: { select: { name: true } }
+                }
+            })
+            : [];
 
-        const paidPayments = paymentsAgg.find(p => p.status === 'PAID')?._sum.amount?.toNumber() || 0;
-        const totalPayments = paymentsAgg.reduce((sum, p) => sum + (p._sum.amount?.toNumber() || 0), 0);
+        // Strict null checks for financial math
+        const paidPayments = paymentsAgg.find(p => p.status === 'PAID')?._sum.amount?.toNumber() ?? 0;
+        const totalPayments = paymentsAgg.reduce((sum, p) => sum + (p._sum.amount?.toNumber() ?? 0), 0);
+        const revenue = ordersAgg._sum.totalAmount?.toNumber() ?? 0;
+        const orderCount = ordersAgg._count.id ?? 0;
 
         return {
             summary: {
-                revenue: ordersAgg._sum.totalAmount?.toNumber() || 0,
-                orders: ordersAgg._count.id,
-                products: products,
-                lowStockCount: lowStock,
+                revenue: revenue,
+                orders: orderCount,
+                products: products ?? 0,
+                lowStockCount: lowStock ?? 0,
                 paidAmount: paidPayments,
-                pendingAmount: totalPayments - paidPayments,
-                aov: ordersAgg._count.id ? (ordersAgg._sum.totalAmount?.toNumber() || 0) / ordersAgg._count.id : 0
+                pendingAmount: Math.max(0, totalPayments - paidPayments), // Prevent negative pending
+                aov: orderCount > 0 ? revenue / orderCount : 0
             },
             recentOrders: recentOrders.map(o => ({
                 id: o.id,
                 status: o.status,
-                totalAmount: o.totalAmount.toNumber(),
+                totalAmount: o.totalAmount?.toNumber() ?? 0,
                 trackingNumber: o.trackingNumber,
                 createdAt: o.createdAt.toISOString(),
-                buyerEmail: (o.buyer as any)?.email || 'Guest',
-                itemsCount: o._count.items
+                buyerEmail: o.buyer?.email || 'Guest',
+                itemsCount: o._count?.items ?? 0
             })),
             recentPayments: recentPayments.map(p => ({
                 id: p.id,
                 orderId: p.orderId,
-                amount: p.amount.toNumber(),
+                amount: p.amount?.toNumber() ?? 0,
                 status: p.status,
                 createdAt: p.createdAt.toISOString()
             })),
-            topProducts: topVariantDetails.map(v => ({
-                id: v.id,
-                name: `${v.product.name} (${v.name})`,
-                sku: v.sku,
-                orderCount: topProductGroups.find(tp => tp.variantId === v.id)?._count.id || 0
-            })),
+            topProducts: topVariantDetails.map(v => {
+                const group = topProductGroups.find(tp => tp.variantId === v.id);
+                return {
+                    id: v.id,
+                    name: v.product?.name ? `${v.product.name} (${v.name})` : v.name,
+                    sku: v.sku,
+                    orderCount: group?._count.id ?? 0
+                };
+            }),
             currency: "USD",
         };
     }
 
-    async getRevenueChart(tenantId: string) {
+    async getRevenueChart(_tenantId: string) {
         // Return dummy chart data for now
         return [
             { date: "Mon", amount: 1200 },

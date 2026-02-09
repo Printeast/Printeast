@@ -90,7 +90,7 @@ export function LandingNavbar({ }: LandingNavbarProps) {
                 variants={navVariants}
                 transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}
                 className={cn(
-                    "fixed z-50 left-0 right-0 flex items-center justify-between px-6 border-b border-transparent overflow-visible will-change-transform",
+                    "fixed z-50 left-0 right-0 flex items-center justify-between px-4 md:px-6 border-b border-transparent overflow-visible will-change-transform",
                 )}
             >
                 <div className="flex items-center gap-12 flex-shrink-0">
@@ -105,7 +105,7 @@ export function LandingNavbar({ }: LandingNavbarProps) {
                                 className="h-auto w-auto object-contain"
                             />
                         </div>
-                        <span className="text-2xl font-black tracking-tighter text-[#111827]">PRINTEAST</span>
+                        <span className="text-xl sm:text-2xl font-black tracking-tighter text-[#111827]">PRINTEAST</span>
                     </Link>
                 </div>
 
@@ -127,8 +127,8 @@ export function LandingNavbar({ }: LandingNavbarProps) {
                     ))}
                 </div>
 
-                <div className="flex items-center gap-4 flex-shrink-0">
-                    <button aria-label="Search" className="w-10 h-10 rounded-md flex items-center justify-center text-slate-600 hover:bg-black/5 transition-colors">
+                <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+                    <button aria-label="Search" className="hidden sm:flex w-10 h-10 rounded-md items-center justify-center text-slate-600 hover:bg-black/5 transition-colors">
                         <Search className="w-5 h-5" />
                     </button>
 
@@ -138,11 +138,11 @@ export function LandingNavbar({ }: LandingNavbarProps) {
                             onClick={() => setShowLangMenu(!showLangMenu)}
                             disabled={isPending}
                             onBlur={() => setTimeout(() => setShowLangMenu(false), 200)} // Delay toggle to allow interactions
-                            className="flex items-center gap-2 px-3 py-2 rounded-md border border-slate-200 bg-slate-50/50 hover:bg-white text-xs font-bold text-slate-700 transition-all hover:shadow-sm active:scale-95 disabled:opacity-50"
+                            className="flex items-center gap-2 px-2 sm:px-3 py-2 rounded-md border border-slate-200 bg-slate-50/50 hover:bg-white text-xs font-bold text-slate-700 transition-all hover:shadow-sm active:scale-95 disabled:opacity-50"
                             aria-label="Change Language"
                         >
                             <Globe className="w-3.5 h-3.5" />
-                            <span>{locale.toUpperCase()}/{currentLang.currency}</span>
+                            <span className="hidden sm:inline">{locale.toUpperCase()}/{currentLang.currency}</span>
                         </button>
 
                         <AnimatePresence>
@@ -185,9 +185,10 @@ export function LandingNavbar({ }: LandingNavbarProps) {
                     <Link
                         href="/dashboard"
                         prefetch={true}
-                        className="px-6 py-2.5 rounded-md bg-slate-900 text-white font-bold hover:bg-blue-600 hover:shadow-lg transition-all text-sm shadow-md active:scale-95"
+                        className="px-4 py-2 sm:px-6 sm:py-2.5 rounded-md bg-slate-900 text-white font-bold hover:bg-blue-600 hover:shadow-lg transition-all text-xs sm:text-sm shadow-md active:scale-95 whitespace-nowrap"
                     >
-                        {t('startNow')}
+                        <span className="sm:hidden">Start</span>
+                        <span className="hidden sm:inline">{t('startNow')}</span>
                     </Link>
                 </div>
             </m.nav>
@@ -205,15 +206,15 @@ export function LandingNavbar({ }: LandingNavbarProps) {
                             damping: 30,
                             mass: 0.8
                         }}
-                        className="fixed z-[100] left-1/2 top-[88px] pointer-events-auto"
+                        className="fixed z-[100] left-1/2 top-[80px] sm:top-[88px] pointer-events-auto w-full max-w-[95vw] sm:max-w-fit flex justify-center"
                     >
-                        <div className="relative flex items-center p-1.5 bg-white/95 backdrop-blur-2xl rounded-md border border-slate-200 ring-1 ring-black/[0.01] transform transition-all active:scale-[0.98]">
+                        <div className="relative flex items-center p-1 sm:p-1.5 bg-white/95 backdrop-blur-2xl rounded-md border border-slate-200 ring-1 ring-black/[0.01] transform transition-all active:scale-[0.98] overflow-x-auto no-scrollbar max-w-full">
                             {TABS.map((tab: string) => (
                                 <button
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
                                     className={cn(
-                                        "relative px-5 py-2 rounded-md text-xs font-bold tracking-wide transition-all duration-300 z-10",
+                                        "relative px-3 py-1.5 sm:px-5 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold tracking-wide transition-all duration-300 z-10 whitespace-nowrap",
                                         activeTab === tab ? "text-white" : "text-slate-500 hover:text-slate-900",
                                     )}
                                 >

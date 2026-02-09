@@ -3,6 +3,7 @@
 import React from "react";
 
 import { Sidebar } from "./Sidebar";
+import Link from "next/link";
 import { Role } from "@repo/types";
 import { Menu, Search, Bell, User, Plus, Contrast } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -107,8 +108,13 @@ export function DashboardLayout({ children, user, fullBleed }: DashboardLayoutPr
                                 align="start"
                                 className="w-[220px] p-1.5 rounded-xl bg-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border-slate-100 animate-in fade-in zoom-in-95 duration-200"
                             >
-                                <DropdownMenuItem className="px-4 py-3 text-[15px] font-bold text-slate-800 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
-                                    Single Product
+                                <DropdownMenuItem asChild>
+                                    <Link
+                                        href={`/${locale}/seller/wizard`}
+                                        className="px-4 py-3 text-[15px] font-bold text-slate-800 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors flex items-center w-full"
+                                    >
+                                        Single Product
+                                    </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem className="px-4 py-3 text-[15px] font-bold text-slate-800 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
                                     Multiple Product

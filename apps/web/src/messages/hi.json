@@ -80,7 +80,8 @@
         }
     },
     "AiStudio": {
-        "title": "प्रो की तरह डिज़ाइन करें <blue>AI द्वारा संचालित</blue>",
+        "titlePart1": "प्रो की तरह डिज़ाइन करें",
+        "titlePart2": "AI द्वारा संचालित",
         "description": "दुनिया का सबसे उन्नत डिज़ाइन संपादक, सीधे Printeast में निर्मित। स्मार्ट मॉकअप के साथ तरल, सिनेमाई निर्माण का अनुभव करें।",
         "editor": {
             "untitled": "बिना शीर्षक वाला प्रोजेक्ट",
@@ -114,7 +115,7 @@
     },
     "FeaturesGrid": {
         "studio": "AI स्टूडियो",
-        "createCustom": "अपनी <br /> कस्टम टी-शर्ट बनाएं",
+        "createCustom": "अपनी <br></br> कस्टम टी-शर्ट बनाएं",
         "startsFrom": "से शुरू",
         "startDesigning": "डिजाइन करना शुरू करें",
         "newDrop": "नया ड्रॉप",
@@ -220,7 +221,8 @@
         }
     },
     "ProfitCalculator": {
-        "title": "देखें कि आप अपने <word></word> से कितना कमा सकते हैं",
+        "titlePart1": "देखें कि आप",
+        "titlePart2": "कितना कमा सकते हैं अपने",
         "words": [
             "ब्रांड",
             "शौक",
@@ -245,6 +247,7 @@
         "perYear": "प्रति वर्ष",
         "monthly": "मासिक",
         "yearly": "वार्षिक",
+        "manualInputCallout": "{limit}+ <br></br> <blue>दर्ज करें</blue>",
         "estimates": "*बिक्री की मात्रा पर आधारित अनुमान",
         "categories": {
             "Apparel": "परिधान",

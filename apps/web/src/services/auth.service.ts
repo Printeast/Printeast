@@ -57,7 +57,7 @@ export class AuthService {
                     data: {
                         full_name: fullName || "",
                     },
-                    emailRedirectTo: `${window.location.origin}/auth/callback`,
+                    emailRedirectTo: `${window.location.origin}/api/auth/callback`,
                 },
             });
 
@@ -157,7 +157,7 @@ export class AuthService {
             const { error } = await this.supabase.auth.signInWithOAuth({
                 provider,
                 options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
+                    redirectTo: `${window.location.origin}/api/auth/callback`,
                 },
             });
 

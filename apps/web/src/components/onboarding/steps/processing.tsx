@@ -56,16 +56,13 @@ export function ProcessingStep() {
                     await new Promise(resolve => setTimeout(resolve, 600));
 
                     setStage("finalizing");
-
-                    // Final short delay before success
-                    await new Promise(resolve => setTimeout(resolve, 400));
+                    await new Promise(resolve => setTimeout(resolve, 300));
 
                     setStatus("success");
 
-                    // Redirect logic
                     setTimeout(() => {
                         router.push(targetPath);
-                    }, 500);
+                    }, 300);
                 } else {
                     console.error("Onboarding error:", res);
                     if (res.error?.includes("already onboarded")) {

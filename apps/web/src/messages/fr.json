@@ -80,7 +80,8 @@
         }
     },
     "AiStudio": {
-        "title": "Créez comme un pro <blue>via l'IA</blue>",
+        "titlePart1": "Créez comme un pro",
+        "titlePart2": "via l'IA",
         "description": "L'éditeur le plus avancé au monde, intégré à Printeast. Vivez une création fluide et cinématographique avec des mockups intelligents.",
         "editor": {
             "untitled": "Projet sans titre",
@@ -114,7 +115,7 @@
     },
     "FeaturesGrid": {
         "studio": "Studio IA",
-        "createCustom": "Créez votre <br /> T-shirt personnalisé",
+        "createCustom": "Créez votre <br></br> T-shirt personnalisé",
         "startsFrom": "À partir de",
         "startDesigning": "Commencer le design",
         "newDrop": "Nouveau Drop",
@@ -220,7 +221,8 @@
         }
     },
     "ProfitCalculator": {
-        "title": "Voyez combien vous pouvez gagner avec votre <word />",
+        "titlePart1": "Voyez combien vous",
+        "titlePart2": "pouvez gagner avec votre",
         "words": [
             "Marque",
             "Hobby",
@@ -245,6 +247,7 @@
         "perYear": "Par an",
         "monthly": "Mensuel",
         "yearly": "Annuel",
+        "manualInputCallout": "SAISIE {limit}+ <br></br> <blue>MANUELLE</blue>",
         "estimates": "*Estimations basées sur le volume de ventes",
         "categories": {
             "Apparel": "Vêtements",

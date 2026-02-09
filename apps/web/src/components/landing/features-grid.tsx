@@ -52,12 +52,12 @@ const TypingText = memo(({ text }: { text: string }) => {
             } else {
                 clearInterval(interval)
             }
-        }, 30) // Faster typing
+        }, 50)
         return () => clearInterval(interval)
     }, [text])
 
     return (
-        <span className="inline-flex items-center">
+        <span className="inline-flex items-center text-white drop-shadow-md font-medium">
             {display}
             <span className="w-[1.5px] h-3 bg-white/80 ml-0.5 animate-pulse" />
         </span>
@@ -74,82 +74,82 @@ const AiProductWidget = memo(({ t }: { t: any }) => {
 
         const interval = setInterval(() => {
             setCurrentIndex((prev) => (prev + 1) % AI_DEMOS.length)
-        }, 3000) // Faster rotation
+        }, 4000)
         return () => clearInterval(interval)
     }, [isInView])
 
     const currentDemo = AI_DEMOS[currentIndex] || AI_DEMOS[0]!
 
     return (
-        <div ref={containerRef} className="relative z-30 w-full max-w-[340px] mx-auto lg:mx-0 group/widget transform-gpu">
-            {/* Background Green Spot & Glow - Positioned Behind */}
-            <div className="absolute top-1/2 -left-16 -translate-y-1/2 z-40 pointer-events-none">
-                <div className="w-32 h-64 bg-green-400 rounded-full blur-[50px] opacity-40" />
+        <div ref={containerRef} className="relative z-30 w-full max-w-[85vw] sm:max-w-[340px] mx-auto lg:mx-0 group/widget transform-gpu">
+            {/* Background Green Spot & Glow - Enlarged (Preserved) */}
+            <div className="absolute top-1/2 -left-24 -translate-y-1/2 z-0 pointer-events-none">
+                <div className="w-56 h-56 lg:w-72 lg:h-72 bg-green-400 rounded-full blur-[80px] opacity-60 mix-blend-normal" />
             </div>
 
-            <div className="bg-white rounded-md p-4 h-auto min-h-[440px] flex flex-col relative z-20 border border-white/60 ring-1 ring-black/5">
-                <div className="relative w-full aspect-[4/3] bg-gray-50 rounded-md overflow-hidden mb-5 group border border-gray-100 transform-gpu">
-                    <div className="absolute top-3 right-3 z-20 bg-white/95 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold tracking-wider text-black border border-black/5">
+            <div className="bg-white/90 backdrop-blur-sm rounded-xl p-3 h-auto flex flex-col relative z-20 border border-slate-100 shadow-2xl shadow-slate-200/50">
+                <div className="relative w-full aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden mb-3 group transform-gpu z-20">
+                    <div className="absolute top-3 right-3 z-20 bg-white px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide text-black shadow-sm">
                         {t('studio')}
                     </div>
 
                     <AnimatePresence mode="popLayout">
                         <motion.div
                             key={currentDemo.id}
-                            initial={{ opacity: 0, scale: 1.05 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.4 }} // Faster fade
+                            initial={{ opacity: 0, scale: 1.15, filter: "blur(8px)" }}
+                            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                            exit={{ opacity: 0, scale: 1.05, filter: "blur(4px)" }}
+                            transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
                             className="absolute inset-0 w-full h-full transform-gpu"
                         >
                             <Image
                                 src={currentDemo.image}
                                 alt={`AI generated image`}
                                 fill
-                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-in-out will-change-transform"
+                                className="absolute inset-0 w-full h-full object-cover"
                                 loading={currentIndex === 0 ? "eager" : "lazy"}
                                 priority={currentIndex === 0}
-                                sizes="340px"
+                                sizes="(max-width: 768px) 100vw, 340px"
                             />
                         </motion.div>
                     </AnimatePresence>
 
-                    {/* Glass Overlay UI */}
-                    <div className="absolute bottom-4 left-0 right-0 px-6 flex justify-center z-20">
+                    {/* Pill Overlay UI */}
+                    <div className="absolute bottom-4 left-0 right-0 flex justify-center z-20">
                         <motion.div
-                            initial={{ y: 0, opacity: 1 }}
+                            initial={{ y: 10, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
                             key={currentDemo.id}
-                            className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 flex items-center w-auto max-w-full"
+                            className="bg-black/50 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 shadow-lg"
                         >
-                            <span className="text-[11px] text-white font-medium tracking-wide truncate flex items-center">
+                            <span className="text-[10px] tracking-wide flex items-center">
                                 <TypingText text={currentDemo.prompt} />
                             </span>
                         </motion.div>
                     </div>
                 </div>
 
-                <div className="flex-1 flex flex-col items-center text-center px-2">
-                    <h3 className="text-base font-bold text-gray-900 leading-tight mb-1 tracking-tight">
+                <div className="flex-1 flex flex-col items-center text-center px-4 relative z-20">
+                    <h3 className="text-xl font-black text-slate-900 leading-tight mb-1 tracking-tight">
                         {t.rich('createCustom', {
                             br: () => <br />
                         })}
                     </h3>
-                    <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium mb-5">
-                        <div className="flex flex-col">
-                            <span className="text-[9px] text-gray-500 font-medium">{t('startsFrom')}</span>
-                            <span className="text-xs font-bold text-gray-900">$12.99</span>
-                        </div>
+
+                    <div className="flex flex-col items-center mb-3">
+                        <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">{t('startsFrom')}</span>
+                        <span className="text-lg font-black text-slate-900">$12.99</span>
                     </div>
 
-                    <div className="flex gap-2 mb-5">
+                    <div className="flex gap-1.5 mb-4 flex-wrap justify-center w-full">
                         {["NEON", "3D", "ANIME", "RETRO"].map((style) => (
                             <div
                                 key={style}
                                 className={cn(
-                                    "px-3 py-1 rounded-md text-[10px] font-extrabold border transition-all cursor-pointer tracking-wide",
+                                    "px-3 py-1.5 rounded-md text-[9px] font-bold border transition-all cursor-pointer tracking-widest uppercase",
                                     style === currentDemo.style
-                                        ? "bg-black text-white border-black scale-105"
-                                        : "bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:text-gray-700"
+                                        ? "bg-[#0c0c0e] text-white border-[#0c0c0e]"
+                                        : "bg-white text-gray-400 border-gray-200 hover:border-gray-300 hover:text-gray-900"
                                 )}
                             >
                                 {style}
@@ -157,8 +157,8 @@ const AiProductWidget = memo(({ t }: { t: any }) => {
                         ))}
                     </div>
 
-                    <button className="w-full py-3 bg-black text-white rounded-md text-xs font-bold hover:bg-gray-800 transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5 active:scale-[0.98]">
-                        {t('startDesigning')} <ArrowRight className="w-4 h-4" />
+                    <button className="w-full py-3 bg-black text-white rounded-md text-xs font-bold hover:bg-neutral-900 transition-all flex items-center justify-center gap-2 group shadow-lg shadow-black/20 hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.99]">
+                        {t('startDesigning')} <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
                     </button>
                 </div>
             </div>
@@ -308,7 +308,7 @@ const FeatureCard = memo(({
 export const FeaturesGrid = memo(function FeaturesGrid() {
     const t = useTranslations('FeaturesGrid');
     return (
-        <div className="w-full max-w-[1400px] mx-auto p-4 sm:p-6 lg:p-0 transform-gpu">
+        <div className="w-full max-w-[1400px] mx-auto p-4 sm:p-6 lg:p-0 transform-gpu relative">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 auto-rows-[auto] items-center">
 
                 {/* LEFT: Product Widget */}
@@ -318,7 +318,7 @@ export const FeaturesGrid = memo(function FeaturesGrid() {
 
 
                 {/* CENTER: Process Animation */}
-                <div className="lg:col-span-6 lg:col-start-4 lg:row-start-1 relative z-10 min-h-[500px] lg:h-[600px] transform lg:scale-100 flex items-center justify-center transform-gpu">
+                <div className="lg:col-span-6 lg:col-start-4 lg:row-start-1 relative min-h-[400px] sm:min-h-[500px] lg:h-[600px] transform scale-90 sm:scale-100 lg:scale-100 flex items-center justify-center transform-gpu">
                     <ProcessShowcase />
                 </div>
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef, memo } from "react"
+import { useState, useEffect, useRef, memo, useMemo } from "react"
 import { motion, AnimatePresence, useInView } from "framer-motion"
 import { Sparkles, Wand2, Zap, MousePointer2, Type, Image as ImageIcon, Box, Download, Share2, ZoomIn, Undo, Redo, LayoutTemplate } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -30,24 +30,23 @@ export function AiStudioSection() {
                 <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.03]" />
             </div>
 
-            <div className="container mx-auto px-4 relative z-10">
+            <div className="w-full relative z-10">
 
                 {/* Section Header */}
-                <div className="text-center mb-16 max-w-5xl mx-auto">
+                <div className="text-center mb-16 max-w-5xl mx-auto px-4">
                     <motion.h2
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.1 }}
-                        className="text-4xl lg:text-5xl font-black tracking-tighter leading-[0.95] text-slate-900 mb-6 lg:whitespace-nowrap transform-gpu"
+                        className="text-4xl lg:text-6xl font-black tracking-tighter leading-[1.05] text-slate-900 mb-6 transform-gpu"
                     >
-                        {t.rich('title', {
-                            blue: (chunks) => <span className="text-blue-600">{chunks}</span>
-                        })}
+                        <div className="block">{t('titlePart1')}</div>
+                        <div className="block text-blue-600">{t('titlePart2')}</div>
                     </motion.h2>
 
                     <motion.p
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
-                        className="text-slate-500 text-lg leading-relaxed"
+                        className="text-slate-500 text-lg leading-relaxed max-w-3xl mx-auto"
                     >
                         {t.rich('description', {
                             secondary: (chunks) => <span className="block">{chunks}</span>
@@ -55,8 +54,8 @@ export function AiStudioSection() {
                     </motion.p>
                 </div>
 
-                {/* THE STUDIO SIMULATION */}
-                <div className="w-full max-w-[1400px] mx-auto">
+                {/* THE STUDIO SIMULATION - Removed curved card background */}
+                <div className="max-w-[1400px] mx-auto px-4 lg:px-12 mt-12">
                     <StudioSimulation isInView={isInView} t={t} />
                 </div>
 
@@ -75,6 +74,13 @@ const StudioSimulation = memo(({ isInView, t }: { isInView: boolean, t: any }) =
     // 5: Reveal -> Camera Zooms Out -> Cursor moves away
     const [phase, setPhase] = useState(0)
 
+    const styles = useMemo(() => [
+        { name: t('editor.aiPanel.styles.geometric'), image: "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=200&h=120&auto=format&fit=crop" },
+        { name: t('editor.aiPanel.styles.3dRender'), image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=200&h=120&auto=format&fit=crop" },
+        { name: t('editor.aiPanel.styles.anime'), image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=200&h=120&auto=format&fit=crop" },
+        { name: t('editor.aiPanel.styles.digitalArt'), image: "https://images.unsplash.com/photo-1549490349-8643362247b5?q=80&w=200&h=120&auto=format&fit=crop" }
+    ], [t])
+
     useEffect(() => {
         if (!isInView) return
 
@@ -92,7 +98,7 @@ const StudioSimulation = memo(({ isInView, t }: { isInView: boolean, t: any }) =
                 await wait(1000)
                 setPhase(3) // Typing & Zoom
 
-                await wait(9000) // Increased to allow typing ( ~5.5s) to finish fully + pause
+                await wait(6000) // Increased to allow typing ( ~5.5s) to finish fully + pause
                 setPhase(4) // Move Cursor to Button
 
                 await wait(1700) // Increased travel time for a more natural move
@@ -110,7 +116,7 @@ const StudioSimulation = memo(({ isInView, t }: { isInView: boolean, t: any }) =
     }, [isInView])
 
     return (
-        <div className="relative w-full aspect-[16/9] bg-[#0f0f11] rounded-md overflow-hidden ring-1 ring-white/10 flex flex-col font-sans select-none">
+        <div className="relative w-full aspect-[3/4] md:aspect-[16/11] lg:aspect-[21/11] bg-[#0c0c0e] rounded-3xl overflow-hidden border border-white/10 flex flex-col font-sans select-none">
             {/* --- TOP BAR --- */}
             <div className="h-14 bg-[#1a1a1c]/95 backdrop-blur-md border-b border-white/5 flex items-center justify-between px-6 z-40">
                 <div className="flex items-center gap-5">
@@ -203,12 +209,7 @@ const StudioSimulation = memo(({ isInView, t }: { isInView: boolean, t: any }) =
                                         <span className="text-[10px] text-blue-500 font-bold cursor-pointer hover:text-blue-400 transition-colors">{t('editor.aiPanel.viewAll')}</span>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2.5">
-                                        {[
-                                            { name: t('editor.aiPanel.styles.geometric'), image: "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=200&h=120&auto=format&fit=crop" },
-                                            { name: t('editor.aiPanel.styles.3dRender'), image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=200&h=120&auto=format&fit=crop" },
-                                            { name: t('editor.aiPanel.styles.anime'), image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=200&h=120&auto=format&fit=crop" },
-                                            { name: t('editor.aiPanel.styles.digitalArt'), image: "https://images.unsplash.com/photo-1549490349-8643362247b5?q=80&w=200&h=120&auto=format&fit=crop" }
-                                        ].map((style, i) => (
+                                        {styles.map((style, i) => (
                                             <div
                                                 key={style.name}
                                                 className={cn(
@@ -266,7 +267,7 @@ const StudioSimulation = memo(({ isInView, t }: { isInView: boolean, t: any }) =
                                 exit={{ opacity: 0 }}
                                 className="absolute inset-0 z-0 flex items-center justify-center"
                             >
-                                <div className="w-[150%] h-[150%] bg-gradient-to-conic from-blue-500 via-indigo-500 to-purple-500 animate-spin-slow opacity-20 blur-[100px]" />
+                                <div className="w-[150%] h-[150%] bg-gradient-to-conic from-blue-500 via-indigo-500 to-purple-500 animate-spin-slow opacity-20 blur-[100px] will-change-transform" />
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -277,9 +278,9 @@ const StudioSimulation = memo(({ isInView, t }: { isInView: boolean, t: any }) =
 
                     {/* ZOOM CONTAINER */}
                     <motion.div
-                        className="relative w-full max-w-[500px] aspect-square flex items-center justify-center"
+                        className="relative w-full max-w-[650px] aspect-square flex items-center justify-center"
                         animate={{
-                            scale: phase >= 3 && phase <= 5 ? 1.3 : 1, // Zoom in during typing/generation
+                            scale: phase >= 3 && phase <= 5 ? 1.5 : 1, // Zoom in significantly during typing/generation
                             y: phase >= 3 && phase <= 5 ? 40 : 0
                         }}
                         transition={{ duration: 1.5, ease: "easeInOut" }}
@@ -341,12 +342,12 @@ function Cursor({ phase }: { phase: number }) {
 
     // We'll use absolute positioning based on container % to keep it responsive-ish
     const variants = {
-        0: { left: "90%", top: "90%", opacity: 0 },
-        1: { left: "4%", top: "65%", opacity: 1 }, // Sidebar AI Icon position (approx)
+        0: { left: "90%", top: "85%", opacity: 0 },
+        1: { left: "4%", top: "60%", opacity: 1 }, // Sidebar AI Icon position (approx)
         2: { left: "20%", top: "35%", opacity: 1 }, // Input box position
         3: { left: "20%", top: "35%", opacity: 1 }, // Typing...
-        4: { left: "20%", top: "90%", opacity: 1 }, // Move to Generate Button
-        5: { left: "20%", top: "90%", opacity: 1 }, // Stay at Button (Clicking)
+        4: { left: "20%", top: "85%", opacity: 1 }, // Move to Generate Button
+        5: { left: "20%", top: "85%", opacity: 1 }, // Stay at Button (Clicking)
         6: { left: "90%", top: "90%", opacity: 0 }  // Exit
     }
 

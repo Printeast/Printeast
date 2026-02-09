@@ -135,6 +135,8 @@ const ProductCard = memo(({ item, index, exploreText }: { item: any, index: numb
                         fill
                         className="object-cover transition-transform duration-1000 group-hover:scale-105"
                         sizes="(max-width: 768px) 400px, 450px"
+                        priority={index === 0}
+                        loading={index === 0 ? "eager" : "lazy"}
                     />
 
                     <div className="absolute inset-0 ring-1 ring-black/5 rounded-md" />

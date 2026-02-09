@@ -1,27 +1,46 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { createClient } from "@/utils/supabase/server";
-import { resolveTenantId } from "../_data";
 import { Plus, RefreshCw, Search, Calendar, ChevronDown } from "lucide-react";
-import Image from "next/image";
+
+import { TemplateCard } from "./_components/TemplateCard";
 
 export default async function SellerTemplatesPage() {
     const supabase = await createClient();
-    const { data: userRes } = await supabase.auth.getUser();
-    const userEmail = userRes.user?.email || "seller";
-    const tenantId = await resolveTenantId(supabase);
+    // @ts-ignore
+    const { prisma } = await import("@repo/database");
 
-    const { data: designRows = [] } = tenantId
-        ? await supabase
-            .from("designs")
-            .select("id,prompt_text,status,created_at,preview_url")
-            .eq("tenant_id", tenantId)
-            .order("created_at", { ascending: false })
-            .limit(24)
-        : { data: [] };
+    const { data: { user } } = await supabase.auth.getUser();
+    const userEmail = user?.email || "seller";
 
-    const templates = (designRows as Array<{ id: string; prompt_text: string | null; status: string; created_at: string; preview_url?: string | null }>).filter(
-        (d) => (d.status || "").toUpperCase() !== "DRAFT",
-    );
+    // Fetch designs directly from DB to avoid RLS/Cache issues with fresh tenants
+    // We fetch ALL designs for this user that are not DRAFTS (so TEMPLATE, PUBLISHED, etc.)
+    const prismaTemplates = user ? await prisma.design.findMany({
+        where: {
+            userId: user.id,
+            status: { not: "DRAFT" }
+        },
+        select: {
+            id: true,
+            promptText: true,
+            createdAt: true,
+            previewUrl: true,
+            // designData: true -- REMOVED FOR PERFORMANCE
+        },
+        orderBy: {
+            createdAt: 'desc'
+        },
+        take: 24
+    }) : [];
+
+    // Map Prisma camelCase to the component's expected snake_case used in JSX
+    const templates = prismaTemplates.map((t: any) => ({
+        id: t.id,
+        prompt_text: t.promptText,
+        status: t.status,
+        createdAt: t.createdAt.toISOString(),
+        previewUrl: t.previewUrl,
+        // designData: t.designData
+    }));
 
     const bgSoft = "#F9F8F6";
 
@@ -89,35 +108,8 @@ export default async function SellerTemplatesPage() {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {templates.map((tpl) => (
-                                <div key={tpl.id} className="bg-white border border-slate-200/60 rounded-[24px] p-6 space-y-5 hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] hover:border-blue-200 transition-all group cursor-pointer relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 p-4">
-                                        <span className="px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full bg-blue-50 text-blue-500 border border-blue-100 shadow-sm">
-                                            {tpl.status || "LIVE"}
-                                        </span>
-                                    </div>
-                                    <div className="h-56 rounded-[18px] bg-slate-50 border border-slate-100 overflow-hidden flex items-center justify-center relative">
-                                        {tpl.preview_url ? (
-                                            <Image
-                                                src={tpl.preview_url}
-                                                alt="Preview"
-                                                fill
-                                                className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                                unoptimized
-                                            />
-                                        ) : (
-                                            <span className="text-[11px] font-black text-slate-300 uppercase tracking-widest">No preview</span>
-                                        )}
-                                    </div>
-                                    <div className="space-y-2">
-                                        <p className="text-[18px] font-black text-slate-900 leading-tight line-clamp-2 tracking-tight group-hover:text-blue-600 transition-colors">
-                                            {tpl.prompt_text || "Untitled template"}
-                                        </p>
-                                        <p className="text-[12px] font-black text-slate-400 uppercase tracking-widest">
-                                            Created {new Date(tpl.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                                        </p>
-                                    </div>
-                                </div>
+                            {templates.map((tpl: any) => (
+                                <TemplateCard key={tpl.id} template={tpl} />
                             ))}
                         </div>
                     )}

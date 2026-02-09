@@ -124,18 +124,27 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
             return `${wrap(-copyWidth, 0, v)}px`;
         });
 
-        const directionFactor = useRef<number>(1);
+        // Smooth speed multiplier using useSpring
+        const speedMultiplierTarget = useMotionValue(1);
+        const smoothSpeedMultiplier = useSpring(speedMultiplierTarget, {
+            damping: 25,
+            stiffness: 150
+        });
 
         useAnimationFrame((_, delta) => {
-            let moveBy = directionFactor.current * baseVelocity * ((delta || 16) / 1000);
+            const hoverMultiplier = smoothSpeedMultiplier.get();
+            const scrollInfluence = Math.abs(velocityFactor.get());
 
-            if (velocityFactor.get() < 0) {
-                directionFactor.current = -1;
-            } else if (velocityFactor.get() > 0) {
-                directionFactor.current = 1;
-            }
+            // Base movement based on time delta
+            let moveBy = baseVelocity * ((delta || 16) / 1000);
 
-            moveBy += directionFactor.current * moveBy * velocityFactor.get();
+            // Add scroll-based speed increase (scrollInfluence is normalized by velocityMapping)
+            moveBy += moveBy * scrollInfluence;
+
+            // Apply hover multiplier on top
+            moveBy *= hoverMultiplier;
+
+            // Force one direction
             baseX.set(baseX.get() + moveBy);
         });
 
@@ -151,6 +160,8 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
         return (
             <div className={`${parallaxClassName ?? ''} relative overflow-hidden`} style={parallaxStyle}>
                 <motion.div
+                    onMouseEnter={() => speedMultiplierTarget.set(4.5)} // Increased hover multiplier as requested
+                    onMouseLeave={() => speedMultiplierTarget.set(1)}
                     className={`${scrollerClassName ?? ''} flex whitespace-nowrap text-center font-sans text-4xl font-bold tracking-[-0.02em] drop-shadow md:text-[5rem] md:leading-[5rem]`}
                     style={{ ...scrollerStyle, x } as any}
                 >

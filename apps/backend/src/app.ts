@@ -13,6 +13,7 @@ import authRoutes from "./routes/auth.routes";
 import storageRoutes from "./routes/storage.routes";
 import analyticsRoutes from "./routes/analytics.routes";
 import orderRoutes from "./routes/order.routes";
+import designRoutes from "./routes/design.routes";
 
 const app: Application = express();
 
@@ -23,7 +24,8 @@ app.use(cors({
   credentials: true
 }));
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(pino());
 
 app.use(isolationMiddleware); // Inject Tenant Context "The Brain"
@@ -38,6 +40,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/storage", storageRoutes);
 app.use("/api/v1/analytics", analyticsRoutes);
 app.use("/api/v1/orders", orderRoutes);
+app.use("/api/v1/designs", designRoutes);
 
 app.all("*", (req, _, next) =>
   next(new AppError(`Route ${req.originalUrl} not found`, 404)),

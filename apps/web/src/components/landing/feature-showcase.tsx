@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, memo } from "react"
+import { useRef, memo, useMemo } from "react"
 import Image from "next/image"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { cn } from "@/lib/utils"
@@ -20,7 +20,7 @@ export function FeatureShowcase() {
     // Increased distance to -60% to ensure all 5 cards (including "Earn Profits") are fully visible
     const x = useTransform(scrollYProgress, [0.2, 1], ["0%", "-55%"])
 
-    const items = [
+    const items = useMemo(() => [
         {
             id: "1",
             title: t('items.1.title'),
@@ -51,7 +51,7 @@ export function FeatureShowcase() {
             description: t('items.5.description'),
             src: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=800&auto=format&fit=crop",
         },
-    ]
+    ], [t])
 
     return (
         <section

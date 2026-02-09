@@ -20,16 +20,16 @@ export function ImageCarouselHero({ }: ImageCarouselHeroProps) {
         <div className="relative w-full min-h-screen bg-transparent flex flex-col font-sans selection:bg-blue-100 selection:text-blue-900 pb-32">
 
             {/* Main Content Area - Centered Layout */}
-            <div className="flex-1 relative z-10 flex flex-col items-center text-center px-4 lg:px-8 pt-48 pb-12 max-w-[1600px] mx-auto w-full will-change-transform">
+            <div className="flex-1 relative z-10 flex flex-col items-center text-center px-4 lg:px-8 pt-32 md:pt-48 pb-12 max-w-[1600px] mx-auto w-full will-change-transform">
 
                 <div className="flex flex-col items-center w-full">
-                    <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black text-[#111827] leading-none tracking-tight mb-6 whitespace-nowrap transform-gpu">
+                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#111827] leading-none tracking-tight mb-6 whitespace-normal sm:whitespace-nowrap transform-gpu">
                         {t.rich('title', {
                             blue: (chunks) => <span className="text-blue-600">{chunks}</span>
                         })}
                     </h1>
 
-                    <p className="text-sm sm:text-base text-slate-500 mb-8 font-medium leading-relaxed md:whitespace-nowrap">
+                    <p className="text-sm sm:text-base text-slate-500 mb-8 font-medium leading-relaxed max-w-2xl mx-auto">
                         {t('subtitle')}
                     </p>
 
