@@ -26,7 +26,9 @@ export default async function middleware(request: NextRequest) {
         path.includes('/dashboard') ||
         path.includes('/onboarding') ||
         path.includes('/seller') ||
-        path.includes('/creator');
+        path.includes('/creator') ||
+        path.includes('/settings') ||
+        path.includes('/affiliate');
 
     if (isProtectedRoute && !user) {
         const url = new URL("/login", request.url);

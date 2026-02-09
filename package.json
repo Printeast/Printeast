@@ -8,11 +8,15 @@
     "clean": "turbo run clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "db:push": "turbo run db:push",
-    "db:generate": "turbo run db:generate"
+    "db:generate": "turbo run db:generate",
+    "test": "turbo run test",
+    "test:integration": "pnpm --filter backend test src/__tests__/integration",
+    "test:e2e": "pnpm --filter web exec playwright test"
   },
   "devDependencies": {
-    "turbo": "^1.11.3",
+    "@playwright/test": "^1.58.2",
     "prettier": "^3.2.4",
+    "turbo": "^1.11.3",
     "typescript": "^5.3.3"
   },
   "packageManager": "pnpm@8.15.1",

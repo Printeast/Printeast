@@ -2,11 +2,8 @@
 
 import { ShieldCheck, Sparkles } from "lucide-react"
 import Link from "next/link"
-import dynamic from "next/dynamic"
 
-const FeaturesGrid = dynamic(() => import("./features-grid").then(mod => mod.FeaturesGrid), {
-    loading: () => <div className="w-full h-[600px] bg-slate-50/50 rounded-xl" />
-})
+import { FeaturesGrid } from "./features-grid"
 import { useTranslations } from 'next-intl';
 
 interface ImageCarouselHeroProps {

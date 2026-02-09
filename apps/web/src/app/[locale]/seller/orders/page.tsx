@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,9 +11,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { createClient } from "@/utils/supabase/server";
-import { Download, MoreHorizontal, Plus, RefreshCw, Search } from "lucide-react";
+import { Download, MoreHorizontal, RefreshCw, Search, Shirt, LayoutTemplate, Store } from "lucide-react";
 import { OrderAdvancedFilters } from "./OrderAdvancedFilters";
 import { ActiveFilterBadges } from "./ActiveFilterBadges";
+import { ActionMenuButton } from "@/components/seller/ActionMenuButton";
 
 type OrderItemRow = {
     id: string;
@@ -90,6 +90,29 @@ export default async function SellerOrdersPage(props: { searchParams: Promise<Se
                             </Link>
                         </div>
                         <div className="flex items-center gap-2">
+                            <ActionMenuButton
+                                label="New order"
+                                options={[
+                                    {
+                                        icon: <Shirt className="w-5 h-5" />,
+                                        title: "Single product",
+                                        description: "Select a product from catalog",
+                                        href: "/seller/wizard/product",
+                                    },
+                                    {
+                                        icon: <LayoutTemplate className="w-5 h-5" />,
+                                        title: "Use a template",
+                                        description: "Select a template to create products",
+                                        href: "/seller/templates",
+                                    },
+                                    {
+                                        icon: <Store className="w-5 h-5" />,
+                                        title: "Select from store",
+                                        description: "Copy products from another store",
+                                        href: "/seller/inventory",
+                                    },
+                                ]}
+                            />
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <button className="w-9 h-9 flex items-center justify-center rounded-full bg-card border border-border text-muted-foreground hover:text-foreground hover:border-border/80 transition-all shadow-sm">
@@ -104,10 +127,6 @@ export default async function SellerOrdersPage(props: { searchParams: Promise<Se
                                     <DropdownMenuItem>Import orders</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                            <Button className="h-9 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm font-medium text-sm gap-1.5">
-                                <Plus className="w-4 h-4" />
-                                New
-                            </Button>
                         </div>
                     </div>
 

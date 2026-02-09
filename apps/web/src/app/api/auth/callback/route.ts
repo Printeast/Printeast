@@ -12,11 +12,18 @@ export async function GET(request: Request) {
         const supabase = await createClient();
         const { error } = await supabase.auth.exchangeCodeForSession(code);
         if (!error) {
-            const forwardedHost = request.headers.get('x-forwarded-host'); // hosted on a separate domain
+            // Determine the correct redirect origin
             const isLocalEnv = process.env.NODE_ENV === 'development';
-            if (isLocalEnv) {
-                // we can be sure that origin is http://localhost:3000
-                return NextResponse.redirect(`${origin}${next}`);
+            const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1');
+            const forwardedHost = request.headers.get('x-forwarded-host');
+
+            // Force localhost redirect in development to prevent production URL redirects
+            if (isLocalEnv || isLocalhost) {
+                // Always redirect to localhost in dev mode
+                const devOrigin = origin.includes('localhost') || origin.includes('127.0.0.1')
+                    ? origin
+                    : 'http://localhost:3000';
+                return NextResponse.redirect(`${devOrigin}${next}`);
             } else if (forwardedHost) {
                 return NextResponse.redirect(`https://${forwardedHost}${next}`);
             } else {

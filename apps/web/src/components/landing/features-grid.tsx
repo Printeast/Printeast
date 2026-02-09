@@ -6,7 +6,7 @@ import { motion, AnimatePresence, useInView } from "framer-motion"
 import dynamic from "next/dynamic"
 import { useTranslations } from "next-intl"
 
-const ProcessShowcase = dynamic(() => import("./process-showcase").then((mod) => mod.ProcessShowcase), {
+const ProcessShowcase = dynamic(() => import("../showcase/process-showcase").then((mod) => mod.ProcessShowcase), {
     ssr: false,
     loading: () => <div className="w-full h-full bg-slate-50/50 rounded-md" />
 })

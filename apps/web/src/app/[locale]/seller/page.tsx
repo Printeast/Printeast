@@ -9,9 +9,10 @@ export default async function SellerPage() {
 
     // Secure Fallback: Use getUser for identity, session for token
     const userEmail = userRes.user?.email || session?.user?.email || "seller";
+    const userName = userRes.user?.user_metadata?.full_name || userRes.user?.user_metadata?.name || "";
 
     // Fetch real data (passing token for server-side auth)
     const data = await getSellerDashboardData(session?.access_token);
 
-    return <SellerDashboardClient userEmail={userEmail} data={data} />;
+    return <SellerDashboardClient userEmail={userEmail} userName={userName} data={data} />;
 }

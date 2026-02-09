@@ -9,10 +9,11 @@ import { ArrowRight, ChevronLeft, ChevronRight, Link2, ShoppingBag, Upload } fro
 
 interface Props {
     userEmail: string;
+    userName?: string;
     data: SellerDashboardData;
 }
 
-export function SellerDashboardClient({ userEmail, data }: Props) {
+export function SellerDashboardClient({ userEmail, userName, data }: Props) {
     const [newOrders, setNewOrders] = React.useState(0);
 
     React.useEffect(() => {
@@ -112,7 +113,7 @@ export function SellerDashboardClient({ userEmail, data }: Props) {
                         <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
                         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
                             <div className="max-w-2xl">
-                                <h1 className="text-2xl font-semibold">Welcome back!</h1>
+                                <h1 className="text-2xl font-semibold">Welcome back{userName ? `, ${userName}` : ""}!</h1>
                                 <p className="mt-2 text-sm text-white/80">
                                     Your store is growing! You&apos;ve had {newOrders} new orders in the last 24 hours. Keep up the creative momentum.
                                 </p>
@@ -127,7 +128,7 @@ export function SellerDashboardClient({ userEmail, data }: Props) {
                             </div>
                             <div className="w-full max-w-[220px] rounded-2xl border border-white/30 bg-white/20 backdrop-blur-md p-5 shadow-[0_8px_32px_0_rgba(31,38,135,0.1)]">
                                 <p className="text-[12px] font-extrabold text-white/90 uppercase tracking-wider">Today&apos;s Earnings</p>
-                                <p className="mt-2 text-4xl font-black text-white">$0.00</p>
+                                <p className="mt-2 text-4xl font-black text-white">${data.paymentsTotals.paid.toLocaleString()}</p>
                                 <p className="mt-1.5 text-xs font-bold text-emerald-300 flex items-center gap-1.5">
                                     <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                                     +0% vs yesterday

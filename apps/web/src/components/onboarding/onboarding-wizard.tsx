@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useOnboardingStore } from "@/lib/stores/onboarding-store";
 import { Loader2, ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { api } from "@/services/api.service";
 
 // Steps
 import { GoalSelectionStep } from "./steps/goal-selection";
@@ -19,23 +21,68 @@ import { ProcessingStep } from "./steps/processing";
 import { NonProfitIntentionStep } from "./steps/non-profit-intention";
 
 export function OnboardingWizard() {
-    const { currentStep, reset, prevStep } = useOnboardingStore();
+    const { currentStep, prevStep } = useOnboardingStore();
     const [hydrated, setHydrated] = useState(false);
+    const [checkingRole, setCheckingRole] = useState(true);
+    const router = useRouter();
 
     useEffect(() => {
-        useOnboardingStore.persist.rehydrate();
-        setHydrated(true);
+        const init = async () => {
+            useOnboardingStore.persist.rehydrate();
 
-        const state = useOnboardingStore.getState();
-        if (state.currentStep === "PROCESSING") {
-            state.reset();
-        }
-    }, [reset]);
+            const state = useOnboardingStore.getState();
 
-    if (!hydrated) {
+            // If stuck on PROCESSING, reset
+            if (state.currentStep === "PROCESSING") {
+                state.reset();
+            }
+
+            // FAST PATH: Use cached onboard status check (< 5ms if cached)
+            try {
+                const res = await api.get<{ onboarded: boolean; redirectTo?: string; cached?: boolean }>("/auth/onboard-status");
+
+                if (res.success && res.data?.onboarded && res.data?.redirectTo) {
+                    // Already onboarded - instant redirect
+                    router.replace(res.data.redirectTo);
+                    return;
+                }
+            } catch (e) {
+                // Fallback to /me endpoint if new endpoint not deployed yet
+                try {
+                    const fallback = await api.get<{ user: { roles: Array<{ role: { name: string } }> } }>("/auth/me");
+
+                    if (fallback.success && fallback.data?.user?.roles && fallback.data.user.roles.length > 0) {
+                        const role = fallback.data.user.roles[0]?.role?.name;
+
+                        if (role === "SELLER") {
+                            router.replace("/seller");
+                            return;
+                        } else if (role === "CREATOR") {
+                            router.replace("/creator");
+                            return;
+                        } else if (role && role !== "CUSTOMER" && role !== "PENDING") {
+                            router.replace("/dashboard");
+                            return;
+                        }
+                    }
+                } catch {
+                    // Continue with onboarding
+                }
+            }
+
+            setCheckingRole(false);
+            setHydrated(true);
+        };
+
+        init();
+    }, [router]);
+
+    // Show loading while checking role
+    if (checkingRole || !hydrated) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-white">
+            <div className="flex flex-col items-center justify-center min-h-screen bg-white">
                 <Loader2 className="w-8 h-8 animate-spin text-neutral-900" />
+                <p className="text-sm text-neutral-500 mt-4">Loading...</p>
             </div>
         );
     }
@@ -73,6 +120,7 @@ export function OnboardingWizard() {
     const progress = Math.round(((displayIndex + 1) / steps.length) * 100);
 
     const isFirstStep = currentStep === "GOAL";
+    const isProcessing = currentStep === "PROCESSING";
 
     return (
         <main className="min-h-screen bg-white text-neutral-900 font-sans selection:bg-neutral-100 flex flex-col items-center pt-20 pb-16 px-6">
@@ -80,7 +128,7 @@ export function OnboardingWizard() {
             <div className="w-full max-w-[520px] mx-auto">
                 {/* Navigation Header */}
                 <div className="mb-10 flex items-center justify-between">
-                    {!isFirstStep && currentStep !== "PROCESSING" && (
+                    {!isFirstStep && !isProcessing && (
                         <button
                             onClick={prevStep}
                             className="p-2 -ml-2 text-neutral-400 hover:text-neutral-900 transition-colors rounded-full hover:bg-neutral-50"
@@ -126,3 +174,4 @@ export function OnboardingWizard() {
         </main>
     );
 }
+

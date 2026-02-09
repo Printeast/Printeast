@@ -338,9 +338,10 @@ export function WizardCatalogClient() {
                                                             <span className="text-lg font-black text-slate-900 tracking-tight">${product.price.toFixed(2)}</span>
                                                         </div>
                                                         <button
+                                                            onClick={() => router.push(`/seller/wizard/product/${product.id}`)}
                                                             className="px-6 py-2.5 bg-[#0f172a] hover:bg-blue-600 text-white text-[11px] font-black uppercase tracking-[0.1em] rounded-xl transition-all shadow-md active:scale-95 translate-y-0 group-hover:-translate-y-1 duration-300"
                                                         >
-                                                            Design
+                                                            Select
                                                         </button>
                                                     </div>
                                                 </div>
@@ -372,10 +373,10 @@ export function WizardCatalogClient() {
                                                         <p className="text-xl font-black text-slate-900 tracking-tighter">${item.price.toFixed(2)}</p>
                                                     </div>
                                                     <button
-                                                        onClick={() => router.push(`/seller/wizard/design?productId=${item.id}&provider=${item.provider}`)}
+                                                        onClick={() => router.push(`/seller/wizard/product/${item.id}`)}
                                                         className="px-5 py-2 bg-slate-100 group-hover:bg-blue-600 group-hover:text-white rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
                                                     >
-                                                        Start Designing →
+                                                        Select →
                                                     </button>
                                                 </div>
                                             </div>
