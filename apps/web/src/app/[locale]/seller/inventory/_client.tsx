@@ -28,6 +28,7 @@ interface Props {
     userEmail: string;
     tenantId: string | null;
     initialInventory: InventoryItem[];
+    role?: Role;
 }
 
 const categories = [
@@ -49,7 +50,7 @@ const categories = [
     "Stationery & Business",
 ];
 
-export function SellerInventoryClient({ userEmail, initialInventory }: Props) {
+export function SellerInventoryClient({ userEmail, initialInventory, role = "SELLER" }: Props) {
     const [activeCategory, setActiveCategory] = useState("Men's clothing");
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
     // const params = useParams();
@@ -72,7 +73,7 @@ export function SellerInventoryClient({ userEmail, initialInventory }: Props) {
     const bgSoft = "#F9F8F6";
 
     return (
-        <DashboardLayout user={{ email: userEmail || "seller", role: "SELLER" }} fullBleed>
+        <DashboardLayout user={{ email: userEmail || "seller", role }} fullBleed>
             <div
                 className="min-h-full h-auto w-full relative transition-colors duration-300"
                 style={{
