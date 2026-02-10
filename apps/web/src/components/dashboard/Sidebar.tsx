@@ -75,6 +75,19 @@ const CREATOR_LINKS: SidebarSection[] = [
     },
 ];
 
+const CUSTOMER_LINKS: SidebarSection[] = [
+    {
+        items: [
+            { label: "Home", href: "/customer", icon: Home },
+            { label: "Products", href: "/customer/products", icon: Box },
+            { label: "Orders", href: "/customer/orders", icon: ClipboardList },
+            { label: "My Templates", href: "/customer/templates", icon: LayoutTemplate },
+            { label: "AI & Design Studio", href: "/customer/ai-studio", icon: Sparkles },
+            { label: "Resources", href: "/customer/resources", icon: BookOpen },
+        ],
+    },
+];
+
 export function Sidebar({ role }: SidebarProps) {
     const pathname = usePathname();
 
@@ -83,6 +96,8 @@ export function Sidebar({ role }: SidebarProps) {
         sections = SELLER_LINKS;
     } else if (role === "CREATOR") {
         sections = CREATOR_LINKS;
+    } else if (role === "CUSTOMER") {
+        sections = CUSTOMER_LINKS;
     } else {
         sections = [{ items: [] }];
     }

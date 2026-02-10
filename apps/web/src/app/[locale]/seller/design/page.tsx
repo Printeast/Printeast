@@ -2,6 +2,7 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { createClient } from "@/utils/supabase/server";
 import { Paintbrush, Upload, Plus } from "lucide-react";
 import Link from "next/link";
+import { Role } from "@repo/types";
 import { DesignCard } from "./_components/DesignCard";
 
 interface Design {
@@ -13,7 +14,7 @@ interface Design {
     previewUrl?: string;
 }
 
-export default async function SellerDesignPage() {
+export default async function SellerDesignPage({ role = "SELLER" }: { role?: Role }) {
     const supabase = await createClient();
     const { data: { session } } = await supabase.auth.getSession();
     const userEmail = session?.user?.email || "seller";
@@ -50,7 +51,7 @@ export default async function SellerDesignPage() {
     const bgSoft = "#F9F8F6";
 
     return (
-        <DashboardLayout user={{ email: userEmail, role: "SELLER" }} fullBleed>
+        <DashboardLayout user={{ email: userEmail, role }} fullBleed>
             <div
                 className="min-h-full w-full"
                 style={{

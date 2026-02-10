@@ -1,10 +1,11 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { createClient } from "@/utils/supabase/server";
 import { Plus, RefreshCw, Search, Calendar, ChevronDown } from "lucide-react";
+import { Role } from "@repo/types";
 
 import { TemplateCard } from "./_components/TemplateCard";
 
-export default async function SellerTemplatesPage() {
+export default async function SellerTemplatesPage({ role = "SELLER" }: { role?: Role }) {
     const supabase = await createClient();
     // @ts-ignore
     const { prisma } = await import("@repo/database");
@@ -45,7 +46,7 @@ export default async function SellerTemplatesPage() {
     const bgSoft = "#F9F8F6";
 
     return (
-        <DashboardLayout user={{ email: userEmail, role: "SELLER" }} fullBleed>
+        <DashboardLayout user={{ email: userEmail, role }} fullBleed>
             <div
                 className="min-h-full w-full"
                 style={{

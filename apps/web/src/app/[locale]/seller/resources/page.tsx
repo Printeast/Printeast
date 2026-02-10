@@ -3,7 +3,9 @@ import { createClient } from "@/utils/supabase/server";
 import { resolveTenantId } from "../_data";
 import Link from "next/link";
 
-export default async function SellerResourcesPage() {
+import { Role } from "@repo/types";
+
+export default async function SellerResourcesPage({ role = "SELLER" }: { role?: Role }) {
     const supabase = await createClient();
     const { data: userRes } = await supabase.auth.getUser();
     const userEmail = userRes.user?.email || "seller";
@@ -28,7 +30,7 @@ export default async function SellerResourcesPage() {
     const bgSoft = "#F9F8F6";
 
     return (
-        <DashboardLayout user={{ email: userEmail, role: "SELLER" }} fullBleed>
+        <DashboardLayout user={{ email: userEmail, role }} fullBleed>
             <div
                 className="min-h-full w-full"
                 style={{
