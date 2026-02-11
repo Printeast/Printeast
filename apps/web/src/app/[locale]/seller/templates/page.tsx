@@ -1,9 +1,14 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { createClient } from "@/utils/supabase/server";
+<<<<<<< HEAD
 import { Plus, RefreshCw, Search, Calendar, ChevronDown } from "lucide-react";
 import { Role } from "@repo/types";
 
 import { TemplateCard } from "./_components/TemplateCard";
+=======
+import { Role } from "@repo/types";
+import { FilterableTemplateList } from "./_components/FilterableTemplateList";
+>>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
 
 export default async function SellerTemplatesPage({ role = "SELLER" }: { role?: Role }) {
     const supabase = await createClient();
@@ -13,8 +18,11 @@ export default async function SellerTemplatesPage({ role = "SELLER" }: { role?: 
     const { data: { user } } = await supabase.auth.getUser();
     const userEmail = user?.email || "seller";
 
+<<<<<<< HEAD
     // Fetch designs directly from DB to avoid RLS/Cache issues with fresh tenants
     // We fetch ALL designs for this user that are not DRAFTS (so TEMPLATE, PUBLISHED, etc.)
+=======
+>>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
     const prismaTemplates = user ? await prisma.design.findMany({
         where: {
             userId: user.id,
@@ -25,6 +33,7 @@ export default async function SellerTemplatesPage({ role = "SELLER" }: { role?: 
             promptText: true,
             createdAt: true,
             previewUrl: true,
+<<<<<<< HEAD
             // designData: true -- REMOVED FOR PERFORMANCE
         },
         orderBy: {
@@ -34,12 +43,24 @@ export default async function SellerTemplatesPage({ role = "SELLER" }: { role?: 
     }) : [];
 
     // Map Prisma camelCase to the component's expected snake_case used in JSX
+=======
+            status: true,
+            designData: true,
+        },
+        orderBy: {
+            createdAt: "desc"
+        },
+        take: 50
+    }) : [];
+
+>>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
     const templates = prismaTemplates.map((t: any) => ({
         id: t.id,
         prompt_text: t.promptText,
         status: t.status,
         createdAt: t.createdAt.toISOString(),
         previewUrl: t.previewUrl,
+<<<<<<< HEAD
         // designData: t.designData
     }));
 
@@ -116,6 +137,14 @@ export default async function SellerTemplatesPage({ role = "SELLER" }: { role?: 
                     )}
                 </div>
             </div>
+=======
+        designData: t.designData || null,
+    }));
+
+    return (
+        <DashboardLayout user={{ email: userEmail, role }} fullBleed>
+            <FilterableTemplateList templates={templates} />
+>>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
         </DashboardLayout>
     );
 }

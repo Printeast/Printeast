@@ -14,6 +14,10 @@ import {
     Package,
     Box
 } from "lucide-react";
+<<<<<<< HEAD
+=======
+import { Role } from "@repo/types";
+>>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
 type InventoryItem = {
     id: string;
     name: string;
@@ -51,8 +55,16 @@ const categories = [
 ];
 
 export function SellerInventoryClient({ userEmail, initialInventory, role = "SELLER" }: Props) {
+<<<<<<< HEAD
     const [activeCategory, setActiveCategory] = useState("Men's clothing");
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+=======
+    const [activeCategory, setActiveCategory] = useState("New Arrivals");
+    const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+    const [search, setSearch] = useState("");
+    const [sort, setSort] = useState("newest");
+    const isCustomer = role === "CUSTOMER";
+>>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
     // const params = useParams();
     // const locale = params?.locale || "en";
 
@@ -70,6 +82,35 @@ export function SellerInventoryClient({ userEmail, initialInventory, role = "SEL
         [initialInventory]
     );
 
+<<<<<<< HEAD
+=======
+    const filteredProducts = useMemo(() => {
+        const matchesCategory = (product: typeof products[number]) => {
+            if (!activeCategory) return true;
+            return product.category === activeCategory;
+        };
+
+        const matchesSearch = (product: typeof products[number]) => {
+            if (!search.trim()) return true;
+            const haystack = `${product.name} ${product.sku}`.toLowerCase();
+            return haystack.includes(search.toLowerCase());
+        };
+
+        const sorted = [...products]
+            .filter(matchesCategory)
+            .filter(matchesSearch)
+            .sort((a, b) => {
+                if (sort === "name") return a.name.localeCompare(b.name);
+                if (sort === "priceHigh") return (b.price || 0) - (a.price || 0);
+                if (sort === "priceLow") return (a.price || 0) - (b.price || 0);
+                if (sort === "oldest") return a.id.localeCompare(b.id);
+                return b.id.localeCompare(a.id); // newest default
+            });
+
+        return sorted;
+    }, [activeCategory, products, search, sort]);
+
+>>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
     const bgSoft = "#F9F8F6";
 
     return (
@@ -127,15 +168,33 @@ export function SellerInventoryClient({ userEmail, initialInventory, role = "SEL
                                     <input
                                         type="text"
                                         placeholder="Search by product name, SKU or ID..."
+<<<<<<< HEAD
+=======
+                                        value={search}
+                                        onChange={(e) => setSearch(e.target.value)}
+>>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
                                         className="h-11 w-full pl-11 pr-4 bg-background border border-border rounded-xl text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all"
                                     />
                                 </div>
                                 {/* Toolbar buttons */}
+<<<<<<< HEAD
                                 <select className="h-11 px-4 rounded-xl border border-border bg-background text-sm font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
                                     <option>Newest First</option>
                                     <option>Oldest First</option>
                                     <option>Price: High to Low</option>
                                     <option>Price: Low to High</option>
+=======
+                                <select
+                                    value={sort}
+                                    onChange={(e) => setSort(e.target.value)}
+                                    className="h-11 px-4 rounded-xl border border-border bg-background text-sm font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                                >
+                                    <option value="newest">Newest First</option>
+                                    <option value="oldest">Oldest First</option>
+                                    <option value="priceHigh">Price: High to Low</option>
+                                    <option value="priceLow">Price: Low to High</option>
+                                    <option value="name">Name A-Z</option>
+>>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
                                 </select>
                                 <div className="flex p-1 bg-accent rounded-xl">
                                     <button
@@ -160,11 +219,19 @@ export function SellerInventoryClient({ userEmail, initialInventory, role = "SEL
                             </div>
 
                             {/* Featured Highlights */}
+<<<<<<< HEAD
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                                 <div className="rounded-2xl p-6 text-white shadow-md group relative overflow-hidden" style={{ background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)" }}>
                                     <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-bl-full transform transition-transform group-hover:scale-110" />
                                     <h3 className="text-lg font-bold">New Arrivals</h3>
                                     <p className="text-sm text-white/80 mt-1 font-medium">Latest for Q1 2024</p>
+=======
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                <div className="rounded-2xl p-6 text-white shadow-md group relative overflow-hidden" style={{ background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)" }}>
+                                    <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-bl-full transform transition-transform group-hover:scale-110" />
+                                    <h3 className="text-lg font-bold">New Arrivals</h3>
+                                    <p className="text-sm text-white/80 mt-1 font-medium">Latest items</p>
+>>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
                                     <button className="mt-4 text-[13px] font-bold text-white underline underline-offset-4 decoration-white/30 hover:decoration-white transition-all">Explore Collection</button>
                                 </div>
                                 <div className="rounded-2xl p-6 text-white shadow-md group relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0f172a 0%, #334155 100%)" }}>
@@ -174,23 +241,42 @@ export function SellerInventoryClient({ userEmail, initialInventory, role = "SEL
                                     <button className="mt-4 text-[13px] font-bold text-white underline underline-offset-4 decoration-white/30 hover:decoration-white transition-all">View Trends</button>
                                 </div>
                                 <div className="rounded-2xl p-6 bg-card border border-border shadow-sm group relative overflow-hidden">
+<<<<<<< HEAD
                                     <div className="absolute top-0 right-0 w-24 h-24 bg-accent rounded-bl-full transform transition-transform group-hover:scale-110" />
                                     <h3 className="text-lg font-bold text-foreground">Holiday Hub</h3>
                                     <p className="text-sm text-muted-foreground mt-1 font-medium">Seasonal favorites</p>
                                     <button className="mt-4 text-[13px] font-bold text-blue-600 hover:text-blue-700 transition-colors">Setup Store →</button>
                                 </div>
                             </div>
+=======
+                                     <div className="absolute top-0 right-0 w-24 h-24 bg-accent rounded-bl-full transform transition-transform group-hover:scale-110" />
+                                     <h3 className="text-lg font-bold text-foreground">Holiday Hub</h3>
+                                     <p className="text-sm text-muted-foreground mt-1 font-medium">Seasonal favorites</p>
+                                     {!isCustomer && (
+                                         <button className="mt-4 text-[13px] font-bold text-blue-600 hover:text-blue-700 transition-colors">Setup Store →</button>
+                                     )}
+                                 </div>
+                                </div>
+>>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
 
                             {/* Products Area */}
                             <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden min-h-[500px]">
                                 <div className="px-6 py-5 border-b border-border flex items-center justify-between">
                                     <h2 className="text-base font-bold text-foreground tracking-tight">{activeCategory}</h2>
                                     <div className="px-3 py-1 bg-accent border border-border rounded-full text-[11px] font-bold text-muted-foreground">
+<<<<<<< HEAD
                                         {products.length} Items Found
                                     </div>
                                 </div>
                                 <div className="p-6">
                                     {products.length === 0 ? (
+=======
+                                        {filteredProducts.length} Items Found
+                                    </div>
+                                </div>
+                                <div className="p-6">
+                                    {filteredProducts.length === 0 ? (
+>>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
                                         <div className="flex flex-col items-center justify-center py-20 text-center">
                                             <div className="w-20 h-20 bg-accent border border-border rounded-3xl flex items-center justify-center mb-6">
                                                 <Package className="w-10 h-10 text-muted-foreground" />
@@ -200,7 +286,11 @@ export function SellerInventoryClient({ userEmail, initialInventory, role = "SEL
                                         </div>
                                     ) : viewMode === "grid" ? (
                                         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+<<<<<<< HEAD
                                             {products.map((product) => (
+=======
+                                            {filteredProducts.map((product) => (
+>>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
                                                 <div key={product.id} className="group rounded-2xl border border-border bg-card overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1">
                                                     <div className="aspect-square relative bg-accent/30 overflow-hidden">
                                                         <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/20">
@@ -239,7 +329,11 @@ export function SellerInventoryClient({ userEmail, initialInventory, role = "SEL
                                         </div>
                                     ) : (
                                         <div className="space-y-3">
+<<<<<<< HEAD
                                             {products.map((item) => (
+=======
+                                            {filteredProducts.map((item) => (
+>>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
                                                 <div key={item.id} className="flex items-center gap-5 p-4 bg-card border border-border rounded-2xl hover:border-blue-200 hover:shadow-md transition-all cursor-pointer group">
                                                     <div className="w-20 h-20 bg-accent border border-border rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-blue-50/30 transition-colors">
                                                         <Box className="w-8 h-8 text-muted-foreground group-hover:text-blue-200 transition-colors" />
