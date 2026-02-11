@@ -1,7 +1,7 @@
 "use client";
 
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { TrendingUp, ShoppingBag, DollarSign, Users, ChevronDown, Calendar, ArrowUpRight } from "lucide-react";
+import { TrendingUp, ShoppingBag, DollarSign, Users, ChevronDown, Calendar } from "lucide-react";
 import { useState } from "react";
 
 const topDesignsPlaceholders = Array.from({ length: 4 }, (_, i) => i);

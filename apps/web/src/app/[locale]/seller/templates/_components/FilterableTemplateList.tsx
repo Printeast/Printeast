@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Calendar, ChevronDown, Plus, RefreshCw, Search } from "lucide-react";
+import { ChevronDown, Plus, RefreshCw, Search } from "lucide-react";
 
 import { TemplateCard } from "./TemplateCard";
 
