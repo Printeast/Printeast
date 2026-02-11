@@ -5,11 +5,7 @@ const withNextIntl = require('next-intl/plugin')(
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     // === MONOREPO SUPPORT ===
-<<<<<<< HEAD
     transpilePackages: ["@repo/types", "@repo/database", "three", "@react-three/fiber", "@react-three/drei"],
-=======
-    transpilePackages: ["@repo/types", "@repo/database"],
->>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
 
     // === IMAGE OPTIMIZATION ===
     images: {

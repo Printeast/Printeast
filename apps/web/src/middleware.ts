@@ -14,13 +14,6 @@ export default async function middleware(request: NextRequest) {
         return intlResponse;
     }
 
-<<<<<<< HEAD
-    // 2. Run Supabase session update
-    const { supabaseResponse, user } = await updateSession(request);
-
-    const path = request.nextUrl.pathname;
-
-=======
     const path = request.nextUrl.pathname;
 
     if (process.env.FAST_DEV === "true") {
@@ -36,7 +29,6 @@ export default async function middleware(request: NextRequest) {
     // 2. Run Supabase session update
     const { supabaseResponse, user } = await updateSession(request);
 
->>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
     // Check if it's an auth or protected route
     // We check for inclusions since they might be prefixed with /[locale]
     const isAuthRoute = path.includes('/login') || path.includes('/signup');

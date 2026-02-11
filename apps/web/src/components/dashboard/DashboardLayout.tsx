@@ -98,34 +98,6 @@ export function DashboardLayout({ children, user, fullBleed }: DashboardLayoutPr
                             <Contrast className={`w-5 h-5 transition-transform duration-500 ${mounted && theme === 'dark' ? 'rotate-180' : 'rotate-0'}`} />
                         </button>
 
-<<<<<<< HEAD
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button className="h-11 rounded-[14px] bg-white border border-slate-200 text-[#0f172a] hover:bg-slate-50 font-black px-7 shadow-sm transition-all duration-300 active:scale-95">
-                                    Create Product
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent
-                                align="start"
-                                className="w-[220px] p-1.5 rounded-xl bg-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border-slate-100 animate-in fade-in zoom-in-95 duration-200"
-                            >
-                                <DropdownMenuItem asChild>
-                                    <Link
-                                        href={`/${locale}/seller/wizard`}
-                                        className="px-4 py-3 text-[15px] font-bold text-slate-800 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors flex items-center w-full"
-                                    >
-                                        Single Product
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="px-4 py-3 text-[15px] font-bold text-slate-800 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
-                                    Multiple Product
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="px-4 py-3 text-[15px] font-bold text-slate-800 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
-                                    Bulk Orders
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-=======
                         {mounted && (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -154,7 +126,6 @@ export function DashboardLayout({ children, user, fullBleed }: DashboardLayoutPr
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         )}
->>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
 
                         <div className="w-px h-6 bg-slate-200 mx-1"></div>
 
@@ -164,66 +135,6 @@ export function DashboardLayout({ children, user, fullBleed }: DashboardLayoutPr
                         </button>
 
                         {/* Profile Icon with Dropdown */}
-<<<<<<< HEAD
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <button className="relative group p-[1px] rounded-[4px] bg-gradient-to-br from-blue-500/20 to-indigo-600/20 transition-all duration-300">
-                                    <div className="w-[42px] h-[42px] rounded-[3px] bg-white/40 backdrop-blur-md flex items-center justify-center border border-white/30 transition-colors shadow-sm">
-                                        <User className="w-5 h-5 text-slate-800" strokeWidth={2} />
-                                    </div>
-                                    <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-[4px] bg-[#0f172a] border border-white flex items-center justify-center shadow-lg transition-transform">
-                                        <Plus className="w-3 h-3 text-white" strokeWidth={3} />
-                                    </div>
-                                </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent
-                                align="end"
-                                className="w-[300px] p-2 rounded-[4px] border border-white/50 bg-white/40 backdrop-blur-3xl shadow-[0_20px_50px_-15px_rgba(0,0,0,0.1)] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300"
-                            >
-                                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 pointer-events-none" />
-
-                                <DropdownMenuLabel className="px-5 py-4 relative">
-                                    <div className="flex flex-col gap-1">
-                                        <span className="text-[14px] font-black text-slate-900 tracking-tight truncate">
-                                            {user.email}
-                                        </span>
-                                        <div className="flex items-center gap-2">
-                                            <span className="px-1.5 py-0.5 rounded-[2px] bg-[#0f172a] text-[9px] font-black text-white uppercase tracking-[0.15em]">
-                                                {user.role}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </DropdownMenuLabel>
-
-                                <DropdownMenuSeparator className="mx-3 bg-slate-900/10" />
-
-                                <div className="px-1.5 py-1.5 space-y-1">
-                                    <DropdownMenuItem className="flex items-center gap-3.5 px-4 py-3 rounded-[2px] cursor-pointer hover:bg-white/40 text-slate-700 hover:text-slate-900 transition-all group border border-transparent hover:border-white/40 hover:shadow-xs">
-                                        <div className="w-8 h-8 rounded-[4px] bg-white/50 flex items-center justify-center group-hover:bg-blue-500/10 transition-colors border border-white/40">
-                                            <User className="w-4 h-4 text-slate-600 group-hover:text-blue-600 transition-colors" strokeWidth={2} />
-                                        </div>
-                                        <span className="text-[14px] font-bold">Profile Settings</span>
-                                    </DropdownMenuItem>
-
-                                    <DropdownMenuItem className="flex items-center gap-3.5 px-4 py-3 rounded-[2px] cursor-pointer hover:bg-white/40 text-slate-700 hover:text-slate-900 transition-all group border border-transparent hover:border-white/40 hover:shadow-xs">
-                                        <div className="w-8 h-8 rounded-[4px] bg-white/50 flex items-center justify-center group-hover:bg-blue-500/10 transition-colors border border-white/40">
-                                            <Bell className="w-4 h-4 text-slate-600 group-hover:text-blue-600 transition-colors" strokeWidth={2} />
-                                        </div>
-                                        <span className="text-[14px] font-bold">Notification Center</span>
-                                    </DropdownMenuItem>
-                                </div>
-
-                                <DropdownMenuSeparator className="mx-3 bg-slate-900/10" />
-
-                                <DropdownMenuItem
-                                    onClick={handleLogout}
-                                    className="flex items-center justify-center py-4 px-4 rounded-[2px] cursor-pointer hover:bg-red-500/10 text-[#FF4D4D] transition-all mt-1 group border border-transparent hover:border-red-500/20"
-                                >
-                                    <span className="text-[12px] font-black tracking-[0.2em] group-hover:scale-105 transition-transform">LOGOUT</span>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-=======
                         {mounted && (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -284,7 +195,6 @@ export function DashboardLayout({ children, user, fullBleed }: DashboardLayoutPr
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         )}
->>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
                     </div>
                 </header>
 

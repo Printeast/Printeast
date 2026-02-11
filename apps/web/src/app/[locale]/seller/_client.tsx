@@ -34,11 +34,8 @@ export function SellerDashboardClient({
     connectHref,
 }: Props) {
     const [newOrders, setNewOrders] = React.useState(0);
-<<<<<<< HEAD
-=======
     const isCustomer = role === "CUSTOMER";
     const savedDesigns = 0; // Placeholder until wired to real data
->>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
 
     React.useEffect(() => {
         const count = data.orders.filter((order) => {
@@ -138,27 +135,6 @@ export function SellerDashboardClient({
                         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
                             <div className="max-w-2xl">
                                 <h1 className="text-2xl font-semibold">Welcome back!</h1>
-<<<<<<< HEAD
-                                <p className="mt-2 text-sm text-white/80">
-                                    Your store is growing! You&apos;ve had {newOrders} new orders in the last 24 hours. Keep up the creative momentum.
-                                </p>
-                                <div className="mt-5 flex flex-wrap gap-3">
-                                    <Link href="/seller/design" className="inline-flex items-center h-9 rounded-xl bg-white px-4 text-sm font-semibold text-[#2563eb] shadow-sm">
-                                        Launch New Campaign
-                                    </Link>
-                                    <Link href={secondaryCtaHref || "/seller/storefront"} className="inline-flex items-center h-9 rounded-xl border border-white/70 px-4 text-sm font-semibold text-white">
-                                        {secondaryCtaLabel || "View Storefront"}
-                                    </Link>
-                                </div>
-                            </div>
-                            <div className="w-full max-w-[220px] rounded-2xl border border-white/30 bg-white/20 backdrop-blur-md p-5 shadow-[0_8px_32px_0_rgba(31,38,135,0.1)]">
-                                <p className="text-[12px] font-extrabold text-white/90 uppercase tracking-wider">Today&apos;s Earnings</p>
-                                <p className="mt-2 text-4xl font-black text-white">$0.00</p>
-                                <p className="mt-1.5 text-xs font-bold text-emerald-300 flex items-center gap-1.5">
-                                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                    +0% vs yesterday
-                                </p>
-=======
                                 {isCustomer ? (
                                     <p className="mt-2 text-sm text-white/80">
                                         Ready to find your next favorite design? Explore our curated collection.
@@ -208,7 +184,6 @@ export function SellerDashboardClient({
                                         </p>
                                     </>
                                 )}
->>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
                             </div>
                         </div>
                     </section>

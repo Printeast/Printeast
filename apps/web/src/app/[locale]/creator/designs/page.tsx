@@ -1,14 +1,8 @@
 "use client";
 
-<<<<<<< HEAD
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { Search, Plus, Grid, List, MoreVertical, Upload, ChevronDown } from "lucide-react";
-import { useState } from "react";
-=======
 import React, { useState, useEffect, useRef } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Search, Plus, Grid, List, MoreVertical, Upload, ChevronDown } from "lucide-react";
->>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
 
 const placeholders = Array.from({ length: 6 }, (_, i) => i);
 const categoryOptions = ["All Categories", "Illustration", "Abstract", "Typography"];
@@ -17,8 +11,6 @@ export default function CreatorDesignsPage() {
     const [view, setView] = useState<"grid" | "list">("grid");
     const [selectedCategory, setSelectedCategory] = useState("All Categories");
     const [isCatOpen, setIsCatOpen] = useState(false);
-<<<<<<< HEAD
-=======
     const catRef = useRef<HTMLDivElement>(null);
 
     // Close dropdown on outside click
@@ -42,7 +34,6 @@ export default function CreatorDesignsPage() {
         setSelectedCategory(cat);
         setIsCatOpen(false);
     };
->>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
 
     return (
         <DashboardLayout user={{ email: "creator@placeholder", role: "CREATOR" }} fullBleed>
@@ -58,14 +49,10 @@ export default function CreatorDesignsPage() {
                             <h1 className="text-2xl font-bold text-slate-900">My Designs</h1>
                             <p className="text-base text-slate-600">Upload and manage your high-resolution artwork.</p>
                         </div>
-<<<<<<< HEAD
-                        <button className="inline-flex items-center gap-2 rounded-full bg-[#2563eb] px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-[#1d4ed8] transition-all">
-=======
                         <button 
                             type="button"
                             className="inline-flex items-center gap-2 rounded-full bg-[#2563eb] px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-[#1d4ed8] transition-all"
                         >
->>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
                             <Upload className="h-4 w-4" />
                             Upload New Design
                         </button>
@@ -81,23 +68,6 @@ export default function CreatorDesignsPage() {
                                 />
                             </div>
                             
-<<<<<<< HEAD
-                            <div className="relative">
-                                <button 
-                                    onClick={() => setIsCatOpen(!isCatOpen)}
-                                    className="h-10 px-4 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600 flex items-center gap-2 hover:bg-slate-50 transition-all"
-                                >
-                                    {selectedCategory}
-                                    <ChevronDown className="h-4 w-4 text-slate-400" />
-                                </button>
-                                {isCatOpen && (
-                                    <div className="absolute left-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg z-20 py-2">
-                                        {categoryOptions.map(opt => (
-                                            <button 
-                                                key={opt}
-                                                onClick={() => { setSelectedCategory(opt); setIsCatOpen(false); }}
-                                                className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 text-slate-700"
-=======
                             <div className="relative" ref={catRef}>
                                 <button 
                                     type="button"
@@ -115,7 +85,6 @@ export default function CreatorDesignsPage() {
                                                 type="button"
                                                 onClick={() => handleSelectCategory(opt)}
                                                 className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 text-slate-700 font-medium transition-colors"
->>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
                                             >
                                                 {opt}
                                             </button>
@@ -127,26 +96,16 @@ export default function CreatorDesignsPage() {
 
                         <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
                             <button 
-<<<<<<< HEAD
-                                onClick={() => setView("grid")}
-                                className={`p-2 rounded-md transition-all ${view === "grid" ? "bg-white text-[#2563eb] shadow-sm" : "text-slate-500"}`}
-=======
                                 type="button"
                                 onClick={() => handleSetView("grid")}
                                 className={`p-2 rounded-md transition-all ${view === "grid" ? "bg-white text-[#2563eb] shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
->>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
                             >
                                 <Grid className="h-4 w-4" />
                             </button>
                             <button 
-<<<<<<< HEAD
-                                onClick={() => setView("list")}
-                                className={`p-2 rounded-md transition-all ${view === "list" ? "bg-white text-[#2563eb] shadow-sm" : "text-slate-500"}`}
-=======
                                 type="button"
                                 onClick={() => handleSetView("list")}
                                 className={`p-2 rounded-md transition-all ${view === "list" ? "bg-white text-[#2563eb] shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
->>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
                             >
                                 <List className="h-4 w-4" />
                             </button>
@@ -180,11 +139,7 @@ export default function CreatorDesignsPage() {
                                             <div className="h-2 w-12 bg-slate-50 rounded" />
                                             <div className="h-4 w-16 bg-slate-100 rounded animate-pulse" />
                                         </div>
-<<<<<<< HEAD
-                                        <button className="h-8 w-8 rounded-full flex items-center justify-center text-slate-300">
-=======
                                         <button type="button" className="h-8 w-8 rounded-full flex items-center justify-center text-slate-300 hover:text-slate-500 transition-colors">
->>>>>>> 4b8b864 (Improve templates filters, inventory defaults, creator branding; resolve slow rendering)
                                             <MoreVertical className="h-4 w-4" />
                                         </button>
                                     </div>
