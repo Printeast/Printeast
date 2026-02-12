@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { SellerDashboardData } from "./_data";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight, Link2, ShoppingBag, Upload } from "lucide-react";
 import { Role } from "@repo/types";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
+import { SellerDashboardData } from "./_data";
 
 interface Props {
     userEmail: string;
@@ -22,8 +22,9 @@ interface Props {
     connectHref?: string;
 }
 
-export function SellerDashboardClient({
+function SellerDashboardClient({
     userEmail,
+    userName: _userName,
     data,
     role = "SELLER",
     secondaryCtaLabel,
@@ -34,12 +35,11 @@ export function SellerDashboardClient({
     connectCta,
     connectHref,
 }: Props) {
-export function SellerDashboardClient({ userEmail, userName, data }: Props) {
-    const [newOrders, setNewOrders] = React.useState(0);
+    const [newOrders, setNewOrders] = useState(0);
     const isCustomer = role === "CUSTOMER";
     const savedDesigns = 0; // Placeholder until wired to real data
 
-    React.useEffect(() => {
+    useEffect(() => {
         const count = data.orders.filter((order) => {
             const createdAt = order.created_at ? new Date(order.created_at) : null;
             if (!createdAt || Number.isNaN(createdAt.getTime())) return false;
@@ -146,10 +146,6 @@ export function SellerDashboardClient({ userEmail, userName, data }: Props) {
                                         Your store is growing! You&apos;ve had {newOrders} new orders in the last 24 hours. Keep up the creative momentum.
                                     </p>
                                 )}
-                                <h1 className="text-2xl font-semibold">Welcome back{userName ? `, ${userName}` : ""}!</h1>
-                                <p className="mt-2 text-sm text-white/80">
-                                    Your store is growing! You&apos;ve had {newOrders} new orders in the last 24 hours. Keep up the creative momentum.
-                                </p>
                                 <div className="mt-5 flex flex-wrap gap-3">
                                     {isCustomer ? (
                                         <>
@@ -190,12 +186,6 @@ export function SellerDashboardClient({ userEmail, userName, data }: Props) {
                                         </p>
                                     </>
                                 )}
-                                <p className="text-[12px] font-extrabold text-white/90 uppercase tracking-wider">Today&apos;s Earnings</p>
-                                <p className="mt-2 text-4xl font-black text-white">${data.paymentsTotals.paid.toLocaleString()}</p>
-                                <p className="mt-1.5 text-xs font-bold text-emerald-300 flex items-center gap-1.5">
-                                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                    +0% vs yesterday
-                                </p>
                             </div>
                         </div>
                     </section>
@@ -210,12 +200,8 @@ export function SellerDashboardClient({ userEmail, userName, data }: Props) {
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                             {steps.map((step) => {
                                 const Icon = step.icon;
-                                const iconStyles = step.active
-                                    ? "bg-[#2563eb]/10 text-[#2563eb]"
-                                    : "bg-slate-100 text-slate-400";
-                                const linkStyles = step.active
-                                    ? "text-[#2563eb]"
-                                    : "text-slate-400";
+                                const iconStyles = step.active ? "bg-[#2563eb]/10 text-[#2563eb]" : "bg-slate-100 text-slate-400";
+                                const linkStyles = step.active ? "text-[#2563eb]" : "text-slate-400";
                                 return (
                                     <div
                                         key={step.number}
@@ -325,3 +311,6 @@ export function SellerDashboardClient({ userEmail, userName, data }: Props) {
         </DashboardLayout>
     );
 }
+
+export { SellerDashboardClient };
+export default SellerDashboardClient;
