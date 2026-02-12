@@ -5,8 +5,8 @@ import { MoreHorizontal } from "lucide-react";
 
 interface TemplateProps {
     id: string;
-    status: string;
-    previewUrl: string | null;
+    status?: string | null;
+    previewUrl?: string | null;
     createdAt: string;
     prompt_text?: string;
     designData?: any;

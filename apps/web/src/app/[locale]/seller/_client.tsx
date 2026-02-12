@@ -1,22 +1,45 @@
 "use client";
 
-import React from "react";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { SellerDashboardData } from "./_data";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight, Link2, ShoppingBag, Upload } from "lucide-react";
+import { Role } from "@repo/types";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
+import { SellerDashboardData } from "./_data";
 
 interface Props {
     userEmail: string;
     userName?: string;
     data: SellerDashboardData;
+    role?: Role;
+    secondaryCtaLabel?: string;
+    secondaryCtaHref?: string;
+    clubTitle?: string;
+    connectTitle?: string;
+    connectDescription?: string;
+    connectCta?: string;
+    connectHref?: string;
 }
 
-export function SellerDashboardClient({ userEmail, userName, data }: Props) {
-    const [newOrders, setNewOrders] = React.useState(0);
+function SellerDashboardClient({
+    userEmail,
+    userName: _userName,
+    data,
+    role = "SELLER",
+    secondaryCtaLabel,
+    secondaryCtaHref,
+    clubTitle,
+    connectTitle,
+    connectDescription,
+    connectCta,
+    connectHref,
+}: Props) {
+    const [newOrders, setNewOrders] = useState(0);
+    const isCustomer = role === "CUSTOMER";
+    const savedDesigns = 0; // Placeholder until wired to real data
 
-    React.useEffect(() => {
+    useEffect(() => {
         const count = data.orders.filter((order) => {
             const createdAt = order.created_at ? new Date(order.created_at) : null;
             if (!createdAt || Number.isNaN(createdAt.getTime())) return false;
@@ -28,10 +51,10 @@ export function SellerDashboardClient({ userEmail, userName, data }: Props) {
     const steps = [
         {
             number: "01",
-            title: "Connect Store",
-            description: "Link your e-commerce store to sync products.",
-            cta: "Connect Now",
-            href: "/seller/storefront",
+            title: connectTitle || "Connect Store",
+            description: connectDescription || "Link your e-commerce store to sync products.",
+            cta: connectCta || "Connect Now",
+            href: connectHref || "/seller/storefront",
             icon: Link2,
             active: true,
         },
@@ -100,7 +123,7 @@ export function SellerDashboardClient({ userEmail, userName, data }: Props) {
     const bgSoft = "#F9F8F6";
 
     return (
-        <DashboardLayout user={{ email: userEmail || "seller", role: "SELLER" }} fullBleed>
+        <DashboardLayout user={{ email: userEmail || "seller", role }} fullBleed>
             <div
                 className="min-h-full w-full"
                 style={{
@@ -113,26 +136,56 @@ export function SellerDashboardClient({ userEmail, userName, data }: Props) {
                         <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
                         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
                             <div className="max-w-2xl">
-                                <h1 className="text-2xl font-semibold">Welcome back{userName ? `, ${userName}` : ""}!</h1>
-                                <p className="mt-2 text-sm text-white/80">
-                                    Your store is growing! You&apos;ve had {newOrders} new orders in the last 24 hours. Keep up the creative momentum.
-                                </p>
+                                <h1 className="text-2xl font-semibold">Welcome back!</h1>
+                                {isCustomer ? (
+                                    <p className="mt-2 text-sm text-white/80">
+                                        Ready to find your next favorite design? Explore our curated collection.
+                                    </p>
+                                ) : (
+                                    <p className="mt-2 text-sm text-white/80">
+                                        Your store is growing! You&apos;ve had {newOrders} new orders in the last 24 hours. Keep up the creative momentum.
+                                    </p>
+                                )}
                                 <div className="mt-5 flex flex-wrap gap-3">
-                                    <Link href="/seller/design" className="inline-flex items-center h-9 rounded-xl bg-white px-4 text-sm font-semibold text-[#2563eb] shadow-sm">
-                                        Launch New Campaign
-                                    </Link>
-                                    <Link href="/seller/storefront" className="inline-flex items-center h-9 rounded-xl border border-white/70 px-4 text-sm font-semibold text-white">
-                                        View Storefront
-                                    </Link>
+                                    {isCustomer ? (
+                                        <>
+                                            <Link href="/customer/products" className="inline-flex items-center h-9 rounded-xl bg-white px-4 text-sm font-semibold text-[#2563eb] shadow-sm">
+                                                Browse Marketplace
+                                            </Link>
+                                            <Link href="/customer/orders" className="inline-flex items-center h-9 rounded-xl border border-white/70 px-4 text-sm font-semibold text-white">
+                                                Track My Orders
+                                            </Link>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Link href="/seller/design" className="inline-flex items-center h-9 rounded-xl bg-white px-4 text-sm font-semibold text-[#2563eb] shadow-sm">
+                                                Launch New Campaign
+                                            </Link>
+                                            <Link href={secondaryCtaHref || "/seller/storefront"} className="inline-flex items-center h-9 rounded-xl border border-white/70 px-4 text-sm font-semibold text-white">
+                                                {secondaryCtaLabel || "View Storefront"}
+                                            </Link>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                             <div className="w-full max-w-[220px] rounded-2xl border border-white/30 bg-white/20 backdrop-blur-md p-5 shadow-[0_8px_32px_0_rgba(31,38,135,0.1)]">
-                                <p className="text-[12px] font-extrabold text-white/90 uppercase tracking-wider">Today&apos;s Earnings</p>
-                                <p className="mt-2 text-4xl font-black text-white">${data.paymentsTotals.paid.toLocaleString()}</p>
-                                <p className="mt-1.5 text-xs font-bold text-emerald-300 flex items-center gap-1.5">
-                                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                    +0% vs yesterday
-                                </p>
+                                {isCustomer ? (
+                                    <>
+                                        <p className="text-[12px] font-extrabold text-white/90 uppercase tracking-wider">Your Favorites</p>
+                                        <p className="mt-2 text-4xl font-black text-white">{savedDesigns}</p>
+                                        <p className="mt-2 text-sm font-semibold text-white/90">Saved Designs</p>
+                                        <p className="mt-1.5 text-[11px] font-semibold text-white/70">No items saved yet</p>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p className="text-[12px] font-extrabold text-white/90 uppercase tracking-wider">Today&apos;s Earnings</p>
+                                        <p className="mt-2 text-4xl font-black text-white">$0.00</p>
+                                        <p className="mt-1.5 text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                            +0% vs yesterday
+                                        </p>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </section>
@@ -147,12 +200,8 @@ export function SellerDashboardClient({ userEmail, userName, data }: Props) {
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                             {steps.map((step) => {
                                 const Icon = step.icon;
-                                const iconStyles = step.active
-                                    ? "bg-[#2563eb]/10 text-[#2563eb]"
-                                    : "bg-slate-100 text-slate-400";
-                                const linkStyles = step.active
-                                    ? "text-[#2563eb]"
-                                    : "text-slate-400";
+                                const iconStyles = step.active ? "bg-[#2563eb]/10 text-[#2563eb]" : "bg-slate-100 text-slate-400";
+                                const linkStyles = step.active ? "text-[#2563eb]" : "text-slate-400";
                                 return (
                                     <div
                                         key={step.number}
@@ -240,7 +289,7 @@ export function SellerDashboardClient({ userEmail, userName, data }: Props) {
                     <section className="rounded-2xl bg-[#0b1220] px-6 py-5 text-white">
                         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                             <div>
-                                <h2 className="text-base font-semibold">Join our Seller&apos;s Club</h2>
+                                <h2 className="text-base font-semibold">{clubTitle || "Seller's Club"}</h2>
                                 <p className="mt-1 text-xs text-white/70">
                                     Get exclusive access to premium mockups, weekly trend reports, and a community of creators.
                                 </p>
@@ -262,3 +311,6 @@ export function SellerDashboardClient({ userEmail, userName, data }: Props) {
         </DashboardLayout>
     );
 }
+
+export { SellerDashboardClient };
+export default SellerDashboardClient;

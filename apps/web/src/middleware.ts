@@ -14,10 +14,20 @@ export default async function middleware(request: NextRequest) {
         return intlResponse;
     }
 
+    const path = request.nextUrl.pathname;
+
+    if (process.env.FAST_DEV === "true") {
+        console.log("[FAST_DEV] middleware bypass");
+        return intlResponse;
+    }
+
+    // Local-only bypass for creator/seller routes (do not commit)
+    if (path.includes('/creator') || path.includes('/seller')) {
+        return intlResponse;
+    }
+
     // 2. Run Supabase session update
     const { supabaseResponse, user } = await updateSession(request);
-
-    const path = request.nextUrl.pathname;
 
     // Check if it's an auth or protected route
     // We check for inclusions since they might be prefixed with /[locale]
