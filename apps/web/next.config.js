@@ -36,7 +36,6 @@ const nextConfig = {
     experimental: {
         optimizePackageImports: [
             'framer-motion',
-            'lucide-react',
             '@supabase/supabase-js',
         ],
     },

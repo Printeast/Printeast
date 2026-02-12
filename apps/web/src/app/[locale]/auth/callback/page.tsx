@@ -69,11 +69,12 @@ function CallbackHandler() {
 
                     const path = rolePathMap[roleName] || "onboarding";
 
+
                     // If they are a basic customer, we show onboarding first
                     // unless they've "Skipped" it before (Phase 0 logic)
                     const finalPath = (roleName === "CUSTOMER") ? "onboarding" : path;
 
-                    setTimeout(() => router.push(`/${finalPath}`), 1000);
+                    router.push(`/${finalPath}`);
                 } else {
                     router.push("/onboarding");
                 }

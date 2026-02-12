@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/browser";
 import type { AuthError, User, Session } from "@supabase/supabase-js";
+import { getAuthCallbackUrl, getPasswordResetUrl } from "@/utils/env";
 
 export interface AuthResponse {
     success: boolean;
@@ -57,7 +58,7 @@ export class AuthService {
                     data: {
                         full_name: fullName || "",
                     },
-                    emailRedirectTo: `${window.location.origin}/api/auth/callback`,
+                    emailRedirectTo: getAuthCallbackUrl(),
                 },
             });
 
@@ -157,7 +158,7 @@ export class AuthService {
             const { error } = await this.supabase.auth.signInWithOAuth({
                 provider,
                 options: {
-                    redirectTo: `${window.location.origin}/api/auth/callback`,
+                    redirectTo: getAuthCallbackUrl(),
                 },
             });
 
@@ -264,7 +265,7 @@ export class AuthService {
             }
 
             const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: `${window.location.origin}/auth/reset-password`,
+                redirectTo: getPasswordResetUrl(),
             });
 
             if (error) {

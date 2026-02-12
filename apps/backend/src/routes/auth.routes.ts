@@ -8,6 +8,7 @@ const router: Router = Router();
 router.post("/magic-link", loginLimiter, authController.requestMagicLink);
 router.post("/verify", authController.verifyMagicLink);
 router.get("/me", protect, authController.getMe);
+router.get("/onboard-status", protect, authController.checkOnboardingStatus);
 router.post("/onboard", protect, authController.onboard);
 router.post("/logout", authController.logout);
 

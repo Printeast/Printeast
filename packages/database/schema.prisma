@@ -364,6 +364,7 @@ model Vendor {
   tenant           Tenant?  @relation(fields: [tenantId], references: [id])
   vendorProducts   VendorProduct[]
 
+  @@index([tenantId])
   @@map("vendors")
 }
 

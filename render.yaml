@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: printeast-backend
+    env: node
+    # If your Render "Root Directory" is set to "apps/backend", these paths are relative to THAT.
+    # PRO TIP: For Monorepos, keep Root Directory as "." (repo root) in Render settings, 
+    # and use the paths below to filter/build.
+    rootDir: . 
+    region: frankfurt
+    plan: free
+    buildCommand: pnpm install && pnpm filter backend... build
+    startCommand: node apps/backend/dist/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+    autoDeploy: true

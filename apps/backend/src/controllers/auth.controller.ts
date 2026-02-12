@@ -146,104 +146,31 @@ export const onboard: RequestHandler = catchAsync(
     const userId = (req as AuthRequest).user?.userId;
 
     if (!userId) return next(new AppError("User context required", 401));
-
     if (!role) return next(new AppError("Role required", 400));
 
-    // 1. Security Check: Is the user already onboarded?
-    const currentUser = await prisma.user.findUnique({
-      where: { id: userId },
-      include: { roles: { include: { role: true } } }
-    });
-
-    if (!currentUser) return next(new AppError("User not found", 404));
-
-    const currentRole = currentUser.roles[0]?.role?.name || "CUSTOMER";
-
-    // Allow re-onboarding if they are already the same role (idempotency)
-    // or if they are still a CUSTOMER/PENDING.
-    let skipRoleUpdate = false;
-    if (currentRole === role) {
-      skipRoleUpdate = true;
-    } else if (currentRole !== "CUSTOMER" && currentRole !== "PENDING") {
-      return next(new AppError("User already onboarded as " + currentRole, 403));
-    }
-
-    // 2. Validate Allowed Roles
+    // Validate Allowed Roles first (fast check)
     const ALLOWED_ONBOARD_ROLES = ["SELLER", "CREATOR", "CUSTOMER"];
     if (!ALLOWED_ONBOARD_ROLES.includes(role)) {
       return next(new AppError("Invalid role selection", 400));
     }
 
-    // 3. Role Assignment
-    if (!skipRoleUpdate) {
-      await prisma.$transaction(async (tx: any) => {
-        await tx.userRole.deleteMany({ where: { userId } });
+    // Use optimized onboarding service
+    const { performOnboarding } = await import("../services/onboarding.service");
 
-        await tx.user.update({
-          where: { id: userId },
-          data: {
-            roles: {
-              create: {
-                role: { connect: { name: role } }
-              }
-            },
-            onboardingData: onboardingData || null
-          },
-          select: { id: true }
-        });
-      });
-    } else {
-      // Just update onboarding data if role is already correct
-      await prisma.user.update({
-        where: { id: userId },
-        data: { onboardingData: onboardingData || null }
-      });
-    }
-
-    // 3. Handle Role-Specific Data
-    // We store the data if models exist. This ensures we capture the input.
-    if (role === "CREATOR") {
-      // Create an empty Creator profile if one doesn't exist
-      const existing = await prisma.creator.findUnique({ where: { userId } });
-      if (!existing) {
-        await prisma.creator.create({
-          data: { userId }
-        });
-      }
-    } else if (role === "SELLER") {
-      // For Phase 0, we ensure a Vendor (workspace) is created for sellers.
-      // A seller MUST have a workspace to operate.
-      const userWithTenant = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { tenantId: true, email: true }
-      });
-
-      if (userWithTenant?.tenantId) {
-        // Check if there's already a vendor for this tenant
-        const existingVendor = await prisma.vendor.findFirst({
-          where: { tenantId: userWithTenant.tenantId }
-        });
-
-        if (!existingVendor) {
-          const workspaceName = businessName || `${userWithTenant.email.split('@')[0]}'s Store`;
-          await prisma.vendor.create({
-            data: {
-              name: workspaceName,
-              tenantId: userWithTenant.tenantId
-            }
-          });
-          console.log(`[Auth] Created workspace: ${workspaceName} for tenant: ${userWithTenant.tenantId}`);
-        }
-      }
-    }
-    const updatedUser = await prisma.user.findUnique({
-      where: { id: userId },
-      include: {
-        roles: { include: { role: true } }
-      }
+    const result = await performOnboarding({
+      userId,
+      role,
+      businessName,
+      onboardingData
     });
 
-    res.status(200).json({ success: true, data: { user: updatedUser } });
+    res.status(200).json({
+      success: result.success,
+      data: { user: result.user },
+      redirectTo: result.redirectTo,
+      alreadyOnboarded: result.alreadyOnboarded,
+      cached: result.cached // For debugging
+    });
   }
 );
 
@@ -279,3 +206,35 @@ export const getMe: RequestHandler = catchAsync(async (req: Request, res: Respon
 
   res.status(200).json({ success: true, data: { user } });
 });
+
+/**
+ * FAST onboarding status check - uses Redis cache
+ * Returns in < 5ms if cached, ~50ms if DB lookup needed
+ */
+export const checkOnboardingStatus: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const userId = (req as AuthRequest).user?.userId;
+    if (!userId) throw new AppError("Unauthorized", 401);
+
+    const { checkOnboardingStatus: checkStatus, prewarmUserCache } = await import("../services/onboarding.service");
+
+    const result = await checkStatus(userId);
+
+    if (result) {
+      res.status(200).json({
+        success: true,
+        onboarded: true,
+        redirectTo: result.redirectTo,
+        cached: result.cached
+      });
+    } else {
+      // Pre-warm cache for next call
+      prewarmUserCache(userId).catch(() => { });
+
+      res.status(200).json({
+        success: true,
+        onboarded: false
+      });
+    }
+  }
+);

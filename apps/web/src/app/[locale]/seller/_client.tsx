@@ -10,6 +10,7 @@ import { Role } from "@repo/types";
 
 interface Props {
     userEmail: string;
+    userName?: string;
     data: SellerDashboardData;
     role?: Role;
     secondaryCtaLabel?: string;
@@ -33,6 +34,7 @@ export function SellerDashboardClient({
     connectCta,
     connectHref,
 }: Props) {
+export function SellerDashboardClient({ userEmail, userName, data }: Props) {
     const [newOrders, setNewOrders] = React.useState(0);
     const isCustomer = role === "CUSTOMER";
     const savedDesigns = 0; // Placeholder until wired to real data
@@ -144,6 +146,10 @@ export function SellerDashboardClient({
                                         Your store is growing! You&apos;ve had {newOrders} new orders in the last 24 hours. Keep up the creative momentum.
                                     </p>
                                 )}
+                                <h1 className="text-2xl font-semibold">Welcome back{userName ? `, ${userName}` : ""}!</h1>
+                                <p className="mt-2 text-sm text-white/80">
+                                    Your store is growing! You&apos;ve had {newOrders} new orders in the last 24 hours. Keep up the creative momentum.
+                                </p>
                                 <div className="mt-5 flex flex-wrap gap-3">
                                     {isCustomer ? (
                                         <>
@@ -184,6 +190,12 @@ export function SellerDashboardClient({
                                         </p>
                                     </>
                                 )}
+                                <p className="text-[12px] font-extrabold text-white/90 uppercase tracking-wider">Today&apos;s Earnings</p>
+                                <p className="mt-2 text-4xl font-black text-white">${data.paymentsTotals.paid.toLocaleString()}</p>
+                                <p className="mt-1.5 text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                    +0% vs yesterday
+                                </p>
                             </div>
                         </div>
                     </section>

@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 // import { useParams } from "next/navigation";
 
+import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import {
     Filter,
@@ -57,6 +58,7 @@ export function SellerInventoryClient({ userEmail, initialInventory, role = "SEL
     const [search, setSearch] = useState("");
     const [sort, setSort] = useState("newest");
     const isCustomer = role === "CUSTOMER";
+    const router = useRouter();
     // const params = useParams();
     // const locale = params?.locale || "en";
 
@@ -248,7 +250,10 @@ export function SellerInventoryClient({ userEmail, initialInventory, role = "SEL
                                                         <div className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-background/80 backdrop-blur-md border border-border text-[10px] font-black uppercase tracking-wider text-foreground">
                                                             {product.category}
                                                         </div>
-                                                        <button className="absolute top-3 right-3 h-8 w-8 rounded-full bg-background/80 backdrop-blur-md border border-border flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-blue-600 hover:text-white hover:border-blue-600">
+                                                        <button
+                                                            onClick={() => router.push(`/seller/products/${product.id}`)}
+                                                            className="absolute top-3 right-3 h-8 w-8 rounded-full bg-background/80 backdrop-blur-md border border-border flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-blue-600 hover:text-white hover:border-blue-600"
+                                                        >
                                                             <ExternalLink className="w-4 h-4" />
                                                         </button>
                                                     </div>
@@ -294,7 +299,12 @@ export function SellerInventoryClient({ userEmail, initialInventory, role = "SEL
                                                                 ? formatCurrency(item.price)
                                                                 : "—"}
                                                         </p>
-                                                        <button className="text-[11px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest mt-1">Details →</button>
+                                                        <button
+                                                            onClick={() => router.push(`/seller/products/${item.id}`)}
+                                                            className="text-[11px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest mt-1"
+                                                        >
+                                                            Details →
+                                                        </button>
                                                     </div>
                                                 </div>
                                             ))}

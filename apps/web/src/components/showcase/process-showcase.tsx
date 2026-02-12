@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState, useEffect, useRef, memo, useMemo } from "react"
 import { motion, AnimatePresence, useInView } from "framer-motion"
@@ -389,7 +389,7 @@ const DesignScene = memo(function DesignSceneComponent() {
                         >
                             <Image src={ASSETS.designed} alt="Designed T-Shirt" className="absolute inset-0 w-full h-full object-cover transform-gpu" fill sizes="380px" unoptimized />
                         </motion.div>
-                        <AnimatePresence>
+                        <AnimatePresence bit-15>
                             {progress > 5 && progress < 95 && (
                                 <>
                                     <motion.div
@@ -580,7 +580,7 @@ const EarnScene = memo(function EarnSceneComponent() {
                         </div>
                     </motion.div>
                 </div>
-            </div >
-        </div >
+            </div>
+        </div>
     )
 });
