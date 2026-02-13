@@ -1,9 +1,9 @@
 "use client";
 
-import { ReactLenis } from "lenis/react"
-import { ReactNode } from "react"
-import { LazyMotion, domMax } from "framer-motion"
-import { usePathname } from "next/navigation"
+import { ReactLenis } from "lenis/react";
+import { ReactNode } from "react";
+import { LazyMotion, domMax } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     const pathname = usePathname();
@@ -29,5 +29,5 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
                 {children}
             </ReactLenis>
         </LazyMotion >
-    )
+    );
 }
