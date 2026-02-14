@@ -1,7 +1,7 @@
 "use client";
 
 import { ShieldCheck, Sparkles } from "lucide-react"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 
 import { FeaturesGrid } from "./features-grid"
 import { useTranslations } from 'next-intl';

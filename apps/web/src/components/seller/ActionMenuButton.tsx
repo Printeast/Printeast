@@ -8,7 +8,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Plus } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { ReactNode } from "react";
 
 export interface ActionMenuOption {

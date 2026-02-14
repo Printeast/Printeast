@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 import { ArrowRight, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useTranslations } from "next-intl"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 
 export function ReadyToStart() {
     const t = useTranslations('ReadyToStart');

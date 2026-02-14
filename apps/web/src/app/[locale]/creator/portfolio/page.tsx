@@ -1,7 +1,6 @@
 "use client";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { motion } from "framer-motion";
-import { PenTool, Briefcase, ExternalLink } from "lucide-react";
+import { PenTool } from "lucide-react";
 
 export default function PortfolioPage() {
     return (

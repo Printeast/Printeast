@@ -3,7 +3,7 @@
 import { useState, useTransition, useMemo, useRef } from "react"
 import { Search, Globe, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import NextImage from "next/image"
 import { m, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion"
 import { useLocale } from 'next-intl';
