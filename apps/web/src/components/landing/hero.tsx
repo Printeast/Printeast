@@ -41,7 +41,7 @@ export function ImageCarouselHero({ }: ImageCarouselHeroProps) {
                             </Link>
 
                             <Link
-                                href="/custom-dashboard"
+                                href="/dashboard"
                                 className="px-8 py-3 rounded-md bg-white text-gray-900 border border-gray-300 font-bold text-base transition-all duration-300 hover:border-blue-600 hover:text-blue-600 hover:bg-white hover:scale-105 flex items-center justify-center"
                             >
                                 {t('buttons.startSelling')}
