@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { AlertTriangle, Megaphone, Search, Filter, MinusCircle, Clock, AlertOctagon } from "lucide-react";
+import { AlertTriangle, Megaphone, Search, Filter, MinusCircle, Clock, AlertOctagon, ChevronDown } from "lucide-react";
 
 type Incident = {
     id: string;
@@ -93,18 +93,19 @@ export default function SupplierIncidentsPage() {
                         </button>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 bg-white border border-slate-200 rounded-xl shadow-sm p-3">
-                        <FilterSelect label="Filter by:" value={severity} onChange={setSeverity} options={["All Severities", "Critical", "Major", "Minor", "Penalized"]} />
-                        <FilterSelect label="" value={status} onChange={setStatus} options={["All Statuses", "Investigating", "Resolved", "Penalized"]} />
-                        <FilterSelect label="" value={range} onChange={setRange} options={["Last 30 Days", "Last 7 Days", "Last 90 Days"]} />
-                        <div className="flex items-center">
+                    <div className="flex flex-wrap items-center gap-4 bg-white border border-slate-200 rounded-xl shadow-sm p-3">
+                        <span className="text-sm font-bold text-slate-500 whitespace-nowrap ml-1">Filter by:</span>
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3">
+                            <FilterSelect value={severity} onChange={setSeverity} options={["All Severities", "Critical", "Major", "Minor", "Penalized"]} />
+                            <FilterSelect value={status} onChange={setStatus} options={["All Statuses", "Investigating", "Resolved", "Penalized"]} />
+                            <FilterSelect value={range} onChange={setRange} options={["Last 30 Days", "Last 7 Days", "Last 90 Days"]} />
                             <div className="relative w-full">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                 <input
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     placeholder="Search suppliers..."
-                                    className="w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500/40 focus:ring-4 focus:ring-blue-500/10"
+                                    className="w-full h-10 rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-sm text-slate-700 focus:outline-none focus:border-blue-500/40 focus:ring-4 focus:ring-blue-500/10 transition-all"
                                 />
                             </div>
                         </div>
@@ -158,22 +159,20 @@ export default function SupplierIncidentsPage() {
     );
 }
 
-function FilterSelect({ label, value, onChange, options }: { label?: string; value: string; onChange: (v: string) => void; options: string[] }) {
+function FilterSelect({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: string[] }) {
     return (
-        <div className="flex flex-col gap-1">
-            {label && <span className="text-[11px] font-semibold text-slate-500">{label}</span>}
-            <div className="relative">
-                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <select
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    className="w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500/40 focus:ring-4 focus:ring-blue-500/10"
-                >
-                    {options.map((opt) => (
-                        <option key={opt}>{opt}</option>
-                    ))}
-                </select>
-            </div>
+        <div className="relative">
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <select
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                className="w-full h-10 rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-sm text-slate-700 focus:outline-none focus:border-blue-500/40 focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none cursor-pointer"
+            >
+                {options.map((opt) => (
+                    <option key={opt}>{opt}</option>
+                ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
         </div>
     );
 }
