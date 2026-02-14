@@ -156,14 +156,7 @@ export default function CapacitySlaPage() {
                                                 </span>
                                             </td>
                                             <td className="px-4 py-3">
-                                                <button
-                                                    className={`h-6 w-10 rounded-full border ${s.override ? "bg-[#1e4bff] border-[#1e4bff]" : "bg-slate-200 border-slate-300"} relative transition-colors`}
-                                                    aria-label="toggle override"
-                                                >
-                                                    <span
-                                                        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${s.override ? "translate-x-4" : "translate-x-0.5"}`}
-                                                    />
-                                                </button>
+                                                <ToggleSwitch checked={s.override} />
                                             </td>
                                         </tr>
                                     ))}
@@ -184,6 +177,20 @@ export default function CapacitySlaPage() {
                 </div>
             </div>
         </DashboardLayout>
+    );
+}
+
+function ToggleSwitch({ checked }: { checked: boolean }) {
+    return (
+        <div
+            className={`relative h-6 w-11 rounded-full border transition-colors duration-200 ${checked ? "bg-[#1e4bff] border-[#1e4bff]" : "bg-slate-200 border-slate-300"}`}
+            role="switch"
+            aria-checked={checked}
+        >
+            <span
+                className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${checked ? "translate-x-[22px]" : "translate-x-0.5"}`}
+            />
+        </div>
     );
 }
 

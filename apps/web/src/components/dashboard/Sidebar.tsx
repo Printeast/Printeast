@@ -130,7 +130,7 @@ export function Sidebar({ role }: SidebarProps) {
 
         return (
             <aside
-                className={`flex-shrink-0 border-r border-sidebar-border flex flex-col h-screen sticky top-0 font-inter transition-all duration-300 relative overflow-visible ${collapsed ? "w-[80px]" : "w-[260px]"}`}
+                className={`flex-shrink-0 border-r border-sidebar-border flex flex-col h-screen sticky top-0 font-inter transition-all duration-300 relative overflow-visible ${collapsed ? "w-[80px]" : "w-[260px]"} [&_ul]:list-none [&_ul]:pl-0 [&_li]:list-none`}
                 style={{ background: 'linear-gradient(180deg, var(--background) 0%, var(--sidebar) 40%, var(--card) 100%)' }}
             >
                 <div className={`flex items-center ${collapsed ? "justify-center" : "justify-between"} gap-3 px-4 py-4`}>
@@ -188,7 +188,7 @@ export function Sidebar({ role }: SidebarProps) {
     const normalizedPath = pathname.replace(/^\/[a-zA-Z]{2}/, "") || "/";
 
     return (
-        <aside className="w-[260px] flex-shrink-0 border-r border-sidebar-border flex flex-col h-screen sticky top-0 font-inter text-sidebar-foreground transition-all duration-300 relative" style={{
+        <aside className="w-[260px] flex-shrink-0 border-r border-sidebar-border flex flex-col h-screen sticky top-0 font-inter text-sidebar-foreground transition-all duration-300 relative [&_ul]:list-none [&_ul]:pl-0 [&_li]:list-none" style={{
             background: 'linear-gradient(180deg, var(--background) 0%, var(--sidebar) 40%, var(--card) 100%)'
         }}>
             <div className="p-6 pb-2">
