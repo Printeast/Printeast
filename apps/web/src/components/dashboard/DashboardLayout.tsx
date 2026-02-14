@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import { ActionMenuButton } from "@/components/seller/ActionMenuButton";
 import { Sidebar } from "./Sidebar";
 import { Role } from "@repo/types";
-import { ChevronLeft, Search, Bell, User, Plus, Contrast, Shirt, LayoutTemplate, Store } from "lucide-react";
+import { Search, Bell, User, Plus, Contrast, Shirt, LayoutTemplate, Store } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -77,15 +77,6 @@ export function DashboardLayout({ children, user, fullBleed, hideHeader }: Dashb
                         </div>
 
                         <div className="flex items-center gap-4 flex-1">
-                        <button
-                            className="p-2.5 -ml-2 text-slate-500 hover:bg-slate-900/5 hover:text-slate-900 rounded-xl transition-all duration-300"
-                            onClick={() => {
-                                const evt = new CustomEvent("toggle-sidebar");
-                                window.dispatchEvent(evt);
-                            }}
-                        >
-                            <ChevronLeft className="w-5 h-5 rotate-0 transition-transform" />
-                        </button>
                             <div className="relative max-w-md w-full group">
                                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                                 <input
