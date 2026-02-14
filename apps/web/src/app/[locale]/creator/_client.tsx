@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import { ArrowRight, Palette, Upload, ShoppingBag, Link2, TrendingUp, User, Plus } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
@@ -144,7 +144,7 @@ export function CreatorDashboardClient({ userEmail, userName, data }: { userEmai
 
                             {data.designs.length > 0 ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {data.designs.slice(0, 4).map((design) => (
+                                    {data.designs.slice(0, 4).map((design: any) => (
                                         <div key={design.id} className="group bg-white rounded-3xl p-3 border border-slate-200/50 shadow-sm hover:shadow-md transition-all flex items-center gap-4">
                                             <div className="relative h-20 w-20 rounded-2xl overflow-hidden bg-slate-100">
                                                 {design.image_url ? (

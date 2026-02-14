@@ -1,7 +1,7 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { createClient } from "@/utils/supabase/server";
 import { Paintbrush, Upload, Plus } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { Role } from "@repo/types";
 import { DesignCard } from "./_components/DesignCard";
 

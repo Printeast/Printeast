@@ -3,7 +3,7 @@
 import React from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { ArrowUpRight, BarChart3, CheckCircle2, Clock, CreditCard, RefreshCw, Sparkles, TrendingUp } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { Role } from "@repo/types";
 
 interface AnalyticsClientProps {

@@ -1,7 +1,7 @@
 "use client";
 
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { Role } from "@repo/types";
 
 interface ResourcesClientProps {

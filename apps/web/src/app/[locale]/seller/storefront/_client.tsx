@@ -3,7 +3,7 @@
 import React from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { Plus, ChevronLeft, ChevronRight, Headset, Info } from "lucide-react";
 
 interface Props {

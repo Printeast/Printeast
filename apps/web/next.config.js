@@ -5,7 +5,7 @@ const withNextIntl = require('next-intl/plugin')(
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     // === MONOREPO SUPPORT ===
-    transpilePackages: ["@repo/types", "@repo/database", "three", "@react-three/fiber", "@react-three/drei"],
+    transpilePackages: ["@repo/types", "@repo/database", "three", "@react-three/fiber", "@react-three/drei", "lucide-react", "framer-motion", "motion"],
 
     // === IMAGE OPTIMIZATION ===
     images: {

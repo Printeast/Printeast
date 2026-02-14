@@ -3,7 +3,7 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { RefreshCw } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { Role } from "@repo/types";
 
 interface BrandingClientProps {
