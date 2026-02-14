@@ -83,6 +83,9 @@ export function SidebarNav({ groups, collapsed }: SidebarNavProps) {
                         {groups.map((group) => {
                             const Icon = group.icon;
                             const isOpen = openPopoverGroup === group.title;
+                            const isGroupActive = openGroups[group.title];
+                            const showHighlight = isOpen || (isGroupActive && !openPopoverGroup);
+
                             return (
                                 <Popover
                                     key={group.title}
@@ -93,7 +96,7 @@ export function SidebarNav({ groups, collapsed }: SidebarNavProps) {
                                         <button
                                             type="button"
                                             aria-label={group.title}
-                                            className={`w-full flex items-center justify-center rounded-xl py-3.5 transition-colors outline-none border-2 focus:ring-0 focus-visible:ring-0 ${isOpen ? "bg-white shadow-sm border-[#1e4bff] text-[#1e4bff]" : "border-transparent text-slate-600 hover:text-blue-700 hover:bg-slate-50"}`}
+                                            className={`w-full flex items-center justify-center rounded-xl py-3.5 transition-colors outline-none border-2 focus:ring-0 focus-visible:ring-0 ${showHighlight ? "bg-white shadow-sm border-[#1e4bff] text-[#1e4bff]" : "border-transparent text-slate-600 hover:text-blue-700 hover:bg-slate-50"}`}
                                             onMouseEnter={() => scheduleOpen(group.title)}
                                             onMouseLeave={scheduleClose}
                                             onPointerEnter={() => scheduleOpen(group.title)}
