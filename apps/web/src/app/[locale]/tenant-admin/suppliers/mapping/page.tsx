@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { Search, CheckCircle2, AlertTriangle, MapPin, ShieldCheck, MoreHorizontal, Plus, RefreshCw } from "lucide-react";
+import { Search, CheckCircle2, AlertTriangle, MapPin, ShieldCheck, MoreHorizontal, Plus, RefreshCw, DollarSign } from "lucide-react";
 
 type SkuItem = {
     id: string;
@@ -28,6 +28,8 @@ type RegionConfig = {
     fallback?: ProviderCard;
     empty?: boolean;
 };
+
+type TabKey = "Regional Fulfillment" | "Service Details" | "Cost Optimization";
 
 const skuList: SkuItem[] = [
     { id: "SKU-PRT-00124", name: "Canvas Art Print - 24x36", category: "Wall Decor • Print-on-Demand", regions: 4, status: "Configured" },
@@ -62,6 +64,26 @@ const regions: RegionConfig[] = [
 export default function SkuSupplierMappingPage() {
     const [selectedSku, setSelectedSku] = useState<SkuItem>(skuList[0]!);
     const [search, setSearch] = useState("");
+    const [tab, setTab] = useState<TabKey>("Regional Fulfillment");
+
+    const serviceDetails = useMemo(
+        () => [
+            { label: "Print Methods", value: "DTG • Canvas Wrap • UV Ink" },
+            { label: "Color Profiles", value: "sRGB, CMYK" },
+            { label: "Materials", value: "Premium cotton tees, stretcher bars, ceramic mugs" },
+            { label: "Packaging", value: "Brandable mailers, fragile labels auto-applied for ceramics" },
+            { label: "QA & SLAs", value: "Scan-to-pack, photo QA, SLA 24-48 hrs" },
+        ],
+        []
+    );
+
+    const costRows = useMemo(
+        () => [
+            { lane: "US West", primary: "$14.50", fallback: "$16.20", avgShip: "$6.80", margin: "32%" },
+            { lane: "EU DACH/FR", primary: "$15.40", fallback: "$17.10", avgShip: "$7.40", margin: "29%" },
+        ],
+        []
+    );
 
     const filteredSkus = skuList.filter((sku) => sku.name.toLowerCase().includes(search.toLowerCase()) || sku.id.toLowerCase().includes(search.toLowerCase()));
 
@@ -132,60 +154,115 @@ export default function SkuSupplierMappingPage() {
                             </div>
 
                             <div className="flex flex-wrap gap-4 text-sm font-semibold text-slate-600">
-                                {[
-                                    "Regional Fulfillment",
-                                    "Service Details",
-                                    "Cost Optimization",
-                                ].map((tab, idx) => (
+                                {["Regional Fulfillment", "Service Details", "Cost Optimization"].map((label) => (
                                     <button
-                                        key={tab}
-                                        className={`pb-2 border-b-2 ${idx === 0 ? "border-[#1e4bff] text-[#1e4bff]" : "border-transparent hover:border-slate-200"}`}
+                                        key={label}
+                                        onClick={() => setTab(label as TabKey)}
+                                        className={`pb-2 border-b-2 transition-colors ${tab === label ? "border-[#1e4bff] text-[#1e4bff]" : "border-transparent hover:border-slate-200"}`}
                                     >
-                                        {tab}
+                                        {label}
                                     </button>
                                 ))}
-                                <div className="ml-auto flex items-center gap-2">
-                                    <button className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">Show: Active Regions</button>
-                                    <button className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-[#1e4bff] inline-flex items-center gap-1">
-                                        <Plus className="w-4 h-4" /> Add Region
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="space-y-3">
-                                {regions.map((r) => (
-                                    <div key={r.name} className="border border-slate-200 rounded-xl p-4 bg-slate-50">
-                                        <div className="flex items-center justify-between text-sm font-semibold text-slate-800 mb-3">
-                                            <div className="flex items-center gap-2">
-                                                <MapPin className="w-4 h-4 text-slate-500" />
-                                                <span>{r.name}</span>
-                                            </div>
-                                            <span className={`text-[11px] font-black uppercase tracking-[0.12em] px-2 py-1 rounded-full ${
-                                                r.status === "IN PRODUCTION" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-500 border border-slate-200"
-                                            }`}>
-                                                {r.status}
-                                            </span>
-                                        </div>
-
-                                        {r.empty ? (
-                                            <div className="rounded-lg border-2 border-dashed border-slate-200 bg-white p-5 text-center text-slate-500">
-                                                <div className="font-semibold">No Suppliers Assigned for EU</div>
-                                                <div className="text-sm text-slate-500">Add a primary provider to begin fulfillment in this region.</div>
-                                                <div className="mt-3">
-                                                    <button className="rounded-lg bg-white border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-slate-300">
-                                                        Configure Regional Providers
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                <ProviderPanel title="Primary Provider" provider={r.primary!} canChange />
-                                                <ProviderPanel title="Fallback Provider (Overflow)" provider={r.fallback!} canChange />
-                                            </div>
-                                        )}
+                                {tab === "Regional Fulfillment" && (
+                                    <div className="ml-auto flex items-center gap-2">
+                                        <button className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">Show: Active Regions</button>
+                                        <button className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-[#1e4bff] inline-flex items-center gap-1">
+                                            <Plus className="w-4 h-4" /> Add Region
+                                        </button>
                                     </div>
-                                ))}
+                                )}
                             </div>
+
+                            {tab === "Regional Fulfillment" && (
+                                <div className="space-y-3">
+                                    {regions.map((r) => (
+                                        <div key={r.name} className="border border-slate-200 rounded-xl p-4 bg-slate-50">
+                                            <div className="flex items-center justify-between text-sm font-semibold text-slate-800 mb-3">
+                                                <div className="flex items-center gap-2">
+                                                    <MapPin className="w-4 h-4 text-slate-500" />
+                                                    <span>{r.name}</span>
+                                                </div>
+                                                <span className={`text-[11px] font-black uppercase tracking-[0.12em] px-2 py-1 rounded-full ${
+                                                    r.status === "IN PRODUCTION" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-500 border border-slate-200"
+                                                }`}>
+                                                    {r.status}
+                                                </span>
+                                            </div>
+
+                                            {r.empty ? (
+                                                <div className="rounded-lg border-2 border-dashed border-slate-200 bg-white p-5 text-center text-slate-500">
+                                                    <div className="font-semibold">No Suppliers Assigned for EU</div>
+                                                    <div className="text-sm text-slate-500">Add a primary provider to begin fulfillment in this region.</div>
+                                                    <div className="mt-3">
+                                                        <button className="rounded-lg bg-white border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-slate-300">
+                                                            Configure Regional Providers
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                    <ProviderPanel title="Primary Provider" provider={r.primary!} canChange />
+                                                    <ProviderPanel title="Fallback Provider (Overflow)" provider={r.fallback!} canChange />
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {tab === "Service Details" && (
+                                <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {serviceDetails.map((row) => (
+                                        <div key={row.label} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                                            <div className="text-[11px] uppercase font-semibold text-slate-500">{row.label}</div>
+                                            <div className="text-sm font-semibold text-slate-800 mt-1 leading-relaxed">{row.value}</div>
+                                        </div>
+                                    ))}
+                                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                                        <div className="text-[11px] uppercase font-semibold text-slate-500">Support & Maintenance</div>
+                                        <div className="text-sm font-semibold text-slate-800 mt-1 leading-relaxed">24/7 NOC, incident-aware routing, auto fallback after 15% SLA breach</div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {tab === "Cost Optimization" && (
+                                <div className="space-y-3">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <ToggleCard
+                                            title="Auto-select lowest landed cost"
+                                            desc="Dynamically prefer the supplier with the best base cost + ship cost while meeting SLA."
+                                        />
+                                        <ToggleCard
+                                            title="Incident-aware rerouting"
+                                            desc="Bypass suppliers in incident mode or >15% SLA breach and shift to fallback automatically."
+                                        />
+                                    </div>
+                                    <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                                        <table className="w-full text-sm text-slate-800">
+                                            <thead className="text-[11px] uppercase tracking-[0.12em] text-slate-500 border-b border-slate-200 bg-slate-50">
+                                                <tr>
+                                                    <th className="px-3 py-2 text-left">Lane</th>
+                                                    <th className="px-3 py-2 text-left">Primary Cost</th>
+                                                    <th className="px-3 py-2 text-left">Fallback Cost</th>
+                                                    <th className="px-3 py-2 text-left">Avg Ship</th>
+                                                    <th className="px-3 py-2 text-left">Est. Margin</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {costRows.map((row) => (
+                                                    <tr key={row.lane} className="border-b border-slate-100">
+                                                        <td className="px-3 py-3 font-semibold text-slate-900">{row.lane}</td>
+                                                        <td className="px-3 py-3">{row.primary}</td>
+                                                        <td className="px-3 py-3">{row.fallback}</td>
+                                                        <td className="px-3 py-3">{row.avgShip}</td>
+                                                        <td className="px-3 py-3 font-bold text-emerald-600">{row.margin}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="flex items-center justify-between pt-2 border-t border-slate-200 text-xs text-slate-500">
                                 <div className="flex items-center gap-2">
@@ -202,6 +279,28 @@ export default function SkuSupplierMappingPage() {
                 </div>
             </div>
         </DashboardLayout>
+    );
+}
+
+function ToggleCard({ title, desc }: { title: string; desc: string }) {
+    return (
+        <div className="rounded-lg border border-slate-200 bg-white shadow-sm p-4 flex items-start gap-3">
+            <div className="h-10 w-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600">
+                <DollarSign className="w-4 h-4" />
+            </div>
+            <div className="flex-1 space-y-1">
+                <div className="flex items-center justify-between">
+                    <div className="font-bold text-slate-900">{title}</div>
+                    <div className="flex items-center gap-2 text-slate-500 text-sm">
+                        <span>On</span>
+                        <div className="h-6 w-10 rounded-full bg-[#1e4bff] border border-[#1e4bff] relative">
+                            <span className="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow" />
+                        </div>
+                    </div>
+                </div>
+                <div className="text-sm text-slate-600 leading-relaxed">{desc}</div>
+            </div>
+        </div>
     );
 }
 
