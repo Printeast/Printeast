@@ -6,7 +6,7 @@ import { PropertiesPanel } from "./PropertiesPanel";
 import { useDesignStudio } from "./useDesignStudio";
 import { Canvas } from "./Canvas";
 import {
-    Undo2, Redo2, Minus, Plus, Save, Loader2, Check
+    Undo2, Redo2, Minus, Plus, Save, Loader2
 } from "lucide-react";
 
 interface DesignStudioProps {
@@ -56,8 +56,6 @@ export function DesignStudio({
         currentDesign,
         isLoading,
         isSaving,
-
-        hasUnsavedChanges,
         saveDesign,
         addText,
         addImage,
@@ -73,7 +71,6 @@ export function DesignStudio({
     const [isMounted, setIsMounted] = useState(false);
     const [zoom, setZoom] = useState(100);
     const [activeView, setActiveView] = useState('front');
-    const [projectName, setProjectName] = useState(productName);
 
     useEffect(() => {
         setIsMounted(true);
@@ -113,16 +110,16 @@ export function DesignStudio({
             {headerConfig ? (
                 // Configured Header (Supports Light or Dark Mode)
                 <header className={`h-16 flex items-center justify-between px-6 shrink-0 z-30 shadow-sm transition-colors ${headerConfig.theme === 'dark'
-                        ? 'bg-[#0f0f14] border-b border-[#1a1a24] text-slate-100'
-                        : 'bg-white border-b border-slate-200 text-slate-800'
+                    ? 'bg-[#0f0f14] border-b border-[#1a1a24] text-slate-100'
+                    : 'bg-white border-b border-slate-200 text-slate-800'
                     }`}>
                     <div className="flex items-center gap-4">
                         {headerConfig.onBack && (
                             <button
                                 onClick={headerConfig.onBack}
                                 className={`flex items-center gap-2 text-sm font-bold transition-colors ${headerConfig.theme === 'dark'
-                                        ? 'text-slate-400 hover:text-white'
-                                        : 'text-slate-500 hover:text-slate-900'
+                                    ? 'text-slate-400 hover:text-white'
+                                    : 'text-slate-500 hover:text-slate-900'
                                     }`}
                             >
                                 <Undo2 className="w-4 h-4 rotate-180 transform scale-x-[-1]" />
@@ -147,8 +144,8 @@ export function DesignStudio({
                             <button
                                 onClick={headerConfig.onPreview}
                                 className={`w-9 h-9 sm:w-auto sm:px-3 sm:py-2.5 rounded-lg flex items-center justify-center gap-2 text-xs font-bold transition-all ${headerConfig.theme === 'dark'
-                                        ? 'text-slate-400 hover:text-white hover:bg-[#27272a]'
-                                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                                    ? 'text-slate-400 hover:text-white hover:bg-[#27272a]'
+                                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                                     }`}
                                 title="Preview"
                             >
@@ -160,8 +157,8 @@ export function DesignStudio({
                         <button
                             onClick={headerConfig.onSaveDesign || handleSave}
                             className={`w-9 h-9 sm:w-auto sm:px-3 sm:py-2.5 rounded-lg flex items-center justify-center gap-2 text-xs font-bold transition-all border ${headerConfig.theme === 'dark'
-                                    ? 'bg-[#1a1a24] border-[#27272a] text-white hover:border-slate-500'
-                                    : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
+                                ? 'bg-[#1a1a24] border-[#27272a] text-white hover:border-slate-500'
+                                : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
                                 }`}
                             title="Save design"
                         >
@@ -173,8 +170,8 @@ export function DesignStudio({
                             onClick={handleSave}
                             disabled={isSaving}
                             className={`hidden sm:flex px-4 py-2.5 border text-xs font-bold rounded-lg transition-all shadow-sm disabled:opacity-50 items-center gap-2 ${headerConfig.theme === 'dark'
-                                    ? 'bg-[#1a1a24] border-[#27272a] hover:bg-[#27272a] text-white hover:border-slate-600'
-                                    : 'bg-white border-slate-300 hover:bg-slate-50 text-slate-700'
+                                ? 'bg-[#1a1a24] border-[#27272a] hover:bg-[#27272a] text-white hover:border-slate-600'
+                                : 'bg-white border-slate-300 hover:bg-slate-50 text-slate-700'
                                 }`}
                         >
                             <Save className="w-3.5 h-3.5" />
@@ -185,8 +182,8 @@ export function DesignStudio({
                             <button
                                 onClick={headerConfig.onAddToOrder}
                                 className={`px-6 py-2.5 text-xs font-bold rounded-lg transition-all shadow-lg flex items-center gap-2 ${headerConfig.theme === 'dark'
-                                        ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-500/20'
-                                        : 'bg-[#1a1a24] hover:bg-[#27272a] text-white shadow-slate-200 hover:shadow-xl'
+                                    ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-500/20'
+                                    : 'bg-[#1a1a24] hover:bg-[#27272a] text-white shadow-slate-200 hover:shadow-xl'
                                     }`}
                             >
                                 <Plus className="w-4 h-4" />
@@ -195,60 +192,7 @@ export function DesignStudio({
                         )}
                     </div>
                 </header>
-            ) : (
-                // Default / Wizard Header Mode
-                <header className="h-14 bg-[#0f0f14] border-b border-[#1a1a24] flex items-center justify-between px-4 shrink-0 z-30">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
-                            <span className="text-white font-black text-xs">P</span>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 absolute left-1/2 -translate-x-1/2">
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-[#1a1a24] rounded-full border border-[#27272a] hover:border-slate-600 transition-colors group">
-                            <input
-                                type="text"
-                                value={projectName}
-                                onChange={(e) => setProjectName(e.target.value)}
-                                className="bg-transparent border-none text-xs font-medium text-center text-slate-300 focus:outline-none focus:text-white w-32 group-hover:w-48 transition-all"
-                            />
-                            <div className="w-px h-3 bg-[#27272a]" />
-                            {/* Save Status Indicator */}
-                            <div className="flex items-center gap-2 text-[10px]">
-                                {isSaving ? (
-                                    <span className="flex items-center gap-1 text-blue-400">
-                                        <Loader2 className="w-3 h-3 animate-spin" />
-                                    </span>
-                                ) : hasUnsavedChanges ? (
-                                    <span className="text-yellow-500" title="Unsaved changes">●</span>
-                                ) : (
-                                    <span className="flex items-center gap-1 text-green-500" title="All changes saved">
-                                        <Check className="w-3 h-3" />
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <button className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors">
-                            Export
-                        </button>
-                        <button
-                            onClick={handleSave}
-                            disabled={isSaving}
-                            className="px-4 py-2 bg-white text-black hover:bg-slate-200 disabled:opacity-50 text-xs font-bold rounded-full transition-colors flex items-center gap-2 shadow-lg shadow-white/5"
-                        >
-                            {isSaving ? (
-                                <Loader2 className="w-3 h-3 animate-spin" />
-                            ) : (
-                                <Save className="w-3 h-3" />
-                            )}
-                            Save Design
-                        </button>
-                    </div>
-                </header>
-            )}
+            ) : null}
 
             {/* Main Content Area */}
             <div className="flex flex-1 overflow-hidden relative">

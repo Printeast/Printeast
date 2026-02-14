@@ -338,6 +338,7 @@ export function WizardCatalogClient() {
                                                             <span className="text-lg font-black text-slate-900 tracking-tight">${product.price.toFixed(2)}</span>
                                                         </div>
                                                         <button
+                                                            onClick={() => router.push(`/seller/wizard/design?productId=${product.id}&provider=${product.provider}`)}
                                                             className="px-6 py-2.5 bg-[#0f172a] hover:bg-blue-600 text-white text-[11px] font-black uppercase tracking-[0.1em] rounded-xl transition-all shadow-md active:scale-95 translate-y-0 group-hover:-translate-y-1 duration-300"
                                                         >
                                                             Design

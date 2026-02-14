@@ -1,28 +1,14 @@
-import { SellerDashboardClient } from "../seller/_client";
-import type { SellerDashboardData } from "../seller/_data";
+import { createClient } from "@/utils/supabase/server";
+import { CreatorDashboardClient } from "./_client";
+import { getCreatorDashboardData } from "./_data";
 
-const emptyDashboardData: SellerDashboardData = {
-    orders: [],
-    inventory: [],
-    topProducts: [],
-    payments: [],
-    paymentsTotals: { paid: 0, pending: 0 },
-    lowStockCount: 0,
-};
+export default async function CreatorDashboardPage() {
+    const supabase = await createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
 
-export default function CreatorDashboard() {
-    return (
-        <SellerDashboardClient
-            userEmail="creator"
-            data={emptyDashboardData}
-            role="CREATOR"
-            secondaryCtaLabel="View Marketplace"
-            secondaryCtaHref="/creator/marketplace"
-            clubTitle="Artist's Club"
-            connectTitle="Connect Marketplace"
-            connectDescription="Link your marketplace to sync listings."
-            connectCta="Connect Now"
-            connectHref="/creator/marketplace"
-        />
-    );
+    const data = await getCreatorDashboardData(session?.access_token);
+    const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || "";
+
+    return <CreatorDashboardClient userEmail={user?.email || "creator"} userName={userName} data={data} />;
 }

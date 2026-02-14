@@ -1,7 +1,12 @@
-import CreatorOrdersPage from "../../creator/orders/page";
+import { OrdersClient } from "../../seller/orders/OrdersClient";
 
-// Note: In a real app, this would use a CustomerOrdersClient
-// For now, mirroring the requested UI consistency
 export default async function CustomerOrdersPage() {
-    return <CreatorOrdersPage />;
+    return (
+        <OrdersClient
+            role="CUSTOMER"
+            basePath="/customer"
+            pageTitle="My Orders"
+            pageDescription="Track and manage your personal orders."
+        />
+    );
 }

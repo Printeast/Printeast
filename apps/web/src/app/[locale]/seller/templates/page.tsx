@@ -1,7 +1,7 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { createClient } from "@/utils/supabase/server";
 import { Role } from "@repo/types";
-import { FilterableTemplateList } from "./_components/FilterableTemplateList";
+import { DesignsClient } from "./DesignsClient";
 
 export default async function SellerTemplatesPage({ role = "SELLER" }: { role?: Role }) {
     const supabase = await createClient();
@@ -41,7 +41,12 @@ export default async function SellerTemplatesPage({ role = "SELLER" }: { role?: 
 
     return (
         <DashboardLayout user={{ email: userEmail, role }} fullBleed>
-            <FilterableTemplateList templates={templates} />
+            <DesignsClient
+                templates={templates}
+                pageTitle="My Templates"
+                pageDescription="Create your first template to reuse across products."
+                createLabel="Create New Template"
+            />
         </DashboardLayout>
     );
 }

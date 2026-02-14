@@ -6,7 +6,9 @@ services:
     # PRO TIP: For Monorepos, keep Root Directory as "." (repo root) in Render settings, 
     # and use the paths below to filter/build.
     rootDir: . 
-    region: frankfurt
+```yaml
+    region: singapore
+```
     plan: free
     buildCommand: pnpm install && pnpm filter backend... build
     startCommand: node apps/backend/dist/index.js

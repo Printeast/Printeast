@@ -37,7 +37,7 @@ interface OnboardResponse {
 }
 
 export function ProcessingStep() {
-    const { answers, computedPath, reset } = useOnboardingStore();
+    const { answers, computedPath } = useOnboardingStore();
     const router = useRouter();
     const [status, setStatus] = useState<"loading" | "success">("loading");
     const [stage, setStage] = useState<"syncing" | "workspace" | "ready">("syncing");
@@ -49,9 +49,8 @@ export function ProcessingStep() {
         if (redirecting.current) return;
         redirecting.current = true;
 
-        reset();
         router.replace(path);
-    }, [reset, router]);
+    }, [router]);
 
     useEffect(() => {
         const submitProfile = async () => {

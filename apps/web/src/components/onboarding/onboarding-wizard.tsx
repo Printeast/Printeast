@@ -38,35 +38,38 @@ export function OnboardingWizard() {
             }
 
             // FAST PATH: Use cached onboard status check (< 5ms if cached)
-            try {
-                const res = await api.get<{ onboarded: boolean; redirectTo?: string; cached?: boolean }>("/auth/onboard-status");
+            const res = await api.get<{ onboarded: boolean; redirectTo?: string; cached?: boolean }>("/auth/onboard-status");
 
-                if (res.success && res.data?.onboarded && res.data?.redirectTo) {
-                    // Already onboarded - instant redirect
+            if (res.success) {
+                if (res.data?.onboarded && res.data?.redirectTo) {
+                    // Already onboarded - clear store and instant redirect
+                    state.reset();
                     router.replace(res.data.redirectTo);
                     return;
                 }
-            } catch (e) {
-                // Fallback to /me endpoint if new endpoint not deployed yet
-                try {
-                    const fallback = await api.get<{ user: { roles: Array<{ role: { name: string } }> } }>("/auth/me");
+            } else {
+                // Fallback to /me endpoint if new endpoint not deployed yet or call failed
+                const fallback = await api.get<{ user: { roles: Array<{ role: { name: string } }>; onboardingData?: Record<string, any> } }>("/auth/me");
 
-                    if (fallback.success && fallback.data?.user?.roles && fallback.data.user.roles.length > 0) {
-                        const role = fallback.data.user.roles[0]?.role?.name;
+                if (fallback.success && fallback.data?.user) {
+                    const role = fallback.data.user.roles?.[0]?.role?.name;
+                    const hasData = fallback.data.user.onboardingData && Object.keys(fallback.data.user.onboardingData).length > 0;
 
-                        if (role === "SELLER") {
-                            router.replace("/seller");
-                            return;
-                        } else if (role === "CREATOR") {
-                            router.replace("/creator");
-                            return;
-                        } else if (role && role !== "CUSTOMER" && role !== "PENDING") {
-                            router.replace("/dashboard");
-                            return;
-                        }
+                    if (role === "SELLER") {
+                        router.replace("/seller");
+                        return;
+                    } else if (role === "CREATOR") {
+                        router.replace("/creator");
+                        return;
+                    } else if (hasData) {
+                        // Onboarded (even as CUSTOMER)
+                        if (role === "CUSTOMER") router.replace("/customer");
+                        else router.replace("/dashboard");
+                        return;
+                    } else if (role && role !== "CUSTOMER" && role !== "PENDING") {
+                        router.replace("/dashboard");
+                        return;
                     }
-                } catch {
-                    // Continue with onboarding
                 }
             }
 

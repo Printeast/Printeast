@@ -200,7 +200,8 @@ export const getMe: RequestHandler = catchAsync(async (req: Request, res: Respon
       email: true,
       tenantId: true,
       status: true,
-      roles: { include: { role: true } }
+      roles: { include: { role: true } },
+      onboardingData: true
     },
   });
 

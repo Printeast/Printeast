@@ -3,7 +3,7 @@
 import { X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export function ActiveFilterBadges() {
+export function ActiveFilterBadges({ basePath = "/seller" }: { basePath?: string }) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -70,11 +70,11 @@ export function ActiveFilterBadges() {
         } else {
             params.delete(key);
         }
-        router.push(`/seller/orders?${params.toString()}`);
+        router.push(`${basePath}/orders?${params.toString()}`);
     };
 
     const clearAll = () => {
-        router.push("/seller/orders");
+        router.push(`${basePath}/orders`);
     };
 
     return (

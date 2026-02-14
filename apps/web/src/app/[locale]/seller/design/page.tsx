@@ -17,10 +17,13 @@ interface Design {
 export default async function SellerDesignPage({ role = "SELLER" }: { role?: Role }) {
     const supabase = await createClient();
     const { data: { session } } = await supabase.auth.getSession();
-    const userEmail = session?.user?.email || "seller";
+    const userEmail = session?.user?.email || "user";
     const token = session?.access_token;
 
-    // Fetch designs from Backend API to bypass RLS and ensure consistency
+    // Determine base path for links based on role
+    const basePath = role === "CREATOR" ? "/creator" : role === "CUSTOMER" ? "/customer" : "/seller";
+
+    // Fetch designs from Backend API
     let designs: Design[] = [];
     try {
         if (token) {
@@ -37,8 +40,6 @@ export default async function SellerDesignPage({ role = "SELLER" }: { role?: Rol
                 if (json.success && Array.isArray(json.data)) {
                     designs = json.data as Design[];
                 }
-            } else {
-                console.error("Failed to fetch designs:", res.status, await res.text());
             }
         }
     } catch (e) {
@@ -62,7 +63,7 @@ export default async function SellerDesignPage({ role = "SELLER" }: { role?: Rol
                     {/* Page Header */}
                     <div className="flex items-center justify-between mb-8">
                         <div>
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500 mb-1">Design</p>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500 mb-1">{role} Design</p>
                             <h1 className="text-[28px] font-bold text-slate-900 leading-tight">AI & Design Studio</h1>
                             <p className="text-sm text-slate-500 mt-1">Manage drafts and live designs stored in Supabase.</p>
                         </div>
@@ -81,14 +82,14 @@ export default async function SellerDesignPage({ role = "SELLER" }: { role?: Rol
                             </div>
                             <div className="px-6 py-5 space-y-3">
                                 <Link
-                                    href="/seller/wizard/design?fresh=true"
+                                    href={`${basePath}/wizard/design?fresh=true`}
                                     className="w-full h-11 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all shadow-sm"
                                 >
                                     <Paintbrush className="w-4 h-4" />
                                     Generate with AI
                                 </Link>
                                 <Link
-                                    href="/seller/wizard/design?action=upload&fresh=true"
+                                    href={`${basePath}/wizard/design?action=upload&fresh=true`}
                                     className="w-full h-11 bg-white border border-slate-200 text-slate-700 rounded-lg font-medium text-sm flex items-center justify-center gap-2 hover:bg-slate-50 transition-all"
                                 >
                                     <Upload className="w-4 h-4" />
@@ -101,7 +102,7 @@ export default async function SellerDesignPage({ role = "SELLER" }: { role?: Rol
                         <div className="lg:col-span-2 bg-white border border-slate-200/80 rounded-xl shadow-sm overflow-hidden">
                             <div className="px-6 py-4 border-b border-slate-100">
                                 <h2 className="text-base font-semibold text-slate-900">Recent designs</h2>
-                                <p className="text-xs text-slate-500 mt-0.5">Latest 30 rows from designs.</p>
+                                <p className="text-xs text-slate-500 mt-0.5">Latest 30 designs found.</p>
                             </div>
                             <div className="px-6 py-5">
                                 {designs.length === 0 ? (
@@ -115,13 +116,13 @@ export default async function SellerDesignPage({ role = "SELLER" }: { role?: Rol
                                 ) : (
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                         {designs.map((d) => (
-                                            <DesignCard key={d.id} design={d} />
+                                            <DesignCard key={d.id} design={d} basePath={basePath} />
                                         ))}
 
                                         {/* Quick "Add New" card in the grid if small number of designs */}
                                         {designs.length < 6 && (
                                             <Link
-                                                href="/seller/wizard/design?fresh=true"
+                                                href={`${basePath}/wizard/design?fresh=true`}
                                                 className="border-2 border-dashed border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 rounded-xl flex flex-col items-center justify-center min-h-[180px] transition-all group"
                                             >
                                                 <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-blue-100 flex items-center justify-center mb-3 transition-colors">

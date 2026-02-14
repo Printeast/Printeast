@@ -63,7 +63,7 @@ function SellerDashboardClient({
             title: "Upload Design",
             description: "Upload your artwork in high resolution for quality.",
             cta: "Start Upload",
-            href: "/seller/design",
+            href: "/seller/wizard",
             icon: Upload,
         },
         {
@@ -136,7 +136,7 @@ function SellerDashboardClient({
                         <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
                         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
                             <div className="max-w-2xl">
-                                <h1 className="text-2xl font-semibold">Welcome back!</h1>
+                                <h1 className="text-2xl font-semibold">Welcome back{_userName ? `, ${_userName}` : ""}!</h1>
                                 {isCustomer ? (
                                     <p className="mt-2 text-sm text-white/80">
                                         Ready to find your next favorite design? Explore our curated collection.
@@ -158,7 +158,7 @@ function SellerDashboardClient({
                                         </>
                                     ) : (
                                         <>
-                                            <Link href="/seller/design" className="inline-flex items-center h-9 rounded-xl bg-white px-4 text-sm font-semibold text-[#2563eb] shadow-sm">
+                                            <Link href="/seller/wizard" className="inline-flex items-center h-9 rounded-xl bg-white px-4 text-sm font-semibold text-[#2563eb] shadow-sm">
                                                 Launch New Campaign
                                             </Link>
                                             <Link href={secondaryCtaHref || "/seller/storefront"} className="inline-flex items-center h-9 rounded-xl border border-white/70 px-4 text-sm font-semibold text-white">

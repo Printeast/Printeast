@@ -22,7 +22,7 @@ interface Design {
     previewUrl?: string;
 }
 
-export function DesignCard({ design }: { design: Design }) {
+export function DesignCard({ design, basePath = "/seller" }: { design: Design; basePath?: string }) {
     const router = useRouter();
     const [isVisible, setIsVisible] = useState(true);
 
@@ -50,7 +50,7 @@ export function DesignCard({ design }: { design: Design }) {
 
     if (!isVisible) return null;
 
-    const editUrl = `/seller/wizard/design?designId=${design.id}`;
+    const editUrl = `${basePath}/wizard/design?designId=${design.id}`;
 
     return (
         <div className="group bg-white border border-slate-200 hover:border-blue-300 hover:shadow-md hover:shadow-blue-500/5 rounded-xl p-3 space-y-3 transition-all relative overflow-hidden">

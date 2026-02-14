@@ -61,6 +61,8 @@ async function main(): Promise<void> {
         { name: "08-redis", mod: () => import("./phases/08-redis") },
         { name: "09-performance", mod: () => import("./phases/09-performance") },
         { name: "10-brutal", mod: () => import("./phases/10-brutal") },
+        { name: "11-db-perf-sec", mod: () => import("./phases/11-db-perf-sec") },
+        { name: "12-journey", mod: () => import("./phases/12-journey") },
     ];
 
     for (const phase of phases) {

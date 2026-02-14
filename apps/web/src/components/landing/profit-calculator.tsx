@@ -271,8 +271,8 @@ export function ProfitCalculator() {
                                                     else setShowPriceCallout(false)
                                                 }}
                                                 formatLabel={(v) => `${currentRegion.symbol}${formatValue(v)}`}
-                                                minLabel={`${currentRegion.symbol}${formatValue(0)}`}
-                                                maxLabel={`${currentRegion.symbol}${formatValue(selectedProduct.suggestedPrice * 2)}`}
+                                                minLabel="MIN"
+                                                maxLabel="MAX"
                                             />
                                             <AnimatePresence>
                                                 {showPriceCallout && (
@@ -323,8 +323,8 @@ export function ProfitCalculator() {
                                                     else setShowSalesCallout(false)
                                                 }}
                                                 formatLabel={(v) => v.toString()}
-                                                minLabel="1 sale"
-                                                maxLabel="100 sales"
+                                                minLabel="MIN"
+                                                maxLabel="MAX"
                                             />
                                             <AnimatePresence>
                                                 {showSalesCallout && (

@@ -16,7 +16,7 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 
-export function OrderAdvancedFilters() {
+export function OrderAdvancedFilters({ basePath = "/seller" }: { basePath?: string }) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -44,7 +44,7 @@ export function OrderAdvancedFilters() {
         params.delete("store");
         selectedStores.forEach(s => params.append("store", s));
 
-        router.push(`/seller/orders?${params.toString()}`);
+        router.push(`${basePath}/orders?${params.toString()}`);
     };
 
     const resetFilters = () => {
@@ -54,7 +54,7 @@ export function OrderAdvancedFilters() {
         setFulfillment("all");
         setPaymentStatus("all");
         setSelectedStores([]);
-        router.push("/seller/orders");
+        router.push(`${basePath}/orders`);
     };
 
     return (

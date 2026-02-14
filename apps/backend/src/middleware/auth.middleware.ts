@@ -13,7 +13,12 @@ import { env } from "../config/env";
 const supabase = createClient(env.SUPABASE_URL || "", env.SUPABASE_ANON_KEY || "");
 
 export interface AuthRequest extends Request {
-  user?: { userId: string; role: string; tenantId?: string | null };
+  user?: {
+    userId: string;
+    role: string; // Current effective role
+    roles: string[]; // All assigned roles
+    tenantId?: string | null
+  };
 }
 
 export const protect: RequestHandler = async (
@@ -40,7 +45,7 @@ export const protect: RequestHandler = async (
     const isEmailVerified = !!sbUser.email_confirmed_at;
     const targetStatus = isEmailVerified ? "ACTIVE" : "PENDING_VERIFICATION";
 
-    // Check if user exists in our DB - Try ID first (Supabase ID), then email
+    // Check if user exists in our DB
     let user = await prisma.user.findFirst({
       where: {
         OR: [
@@ -52,13 +57,9 @@ export const protect: RequestHandler = async (
     }) as any;
 
     if (!user) {
-      // Create user in our DB synced with Supabase
-      // Robustness: Ensure user has a tenant
       let userTenantId: string | null = null;
-      if (!userTenantId) {
-        const defaultTenant = await prisma.tenant.findFirst({ where: { slug: "printeast" } });
-        userTenantId = defaultTenant?.id || null;
-      }
+      const defaultTenant = await prisma.tenant.findFirst({ where: { slug: "printeast" } });
+      userTenantId = defaultTenant?.id || null;
 
       user = await prisma.user.create({
         data: {
@@ -75,7 +76,6 @@ export const protect: RequestHandler = async (
         include: { roles: { include: { role: true } } }
       });
     } else {
-      // Ensure DB status allows access if Supabase is verified
       if (isEmailVerified && user.status === "PENDING_VERIFICATION") {
         user = await prisma.user.update({
           where: { id: user.id },
@@ -85,7 +85,6 @@ export const protect: RequestHandler = async (
       }
     }
 
-    // OPTIONAL VERIFICATION CHECK (Less strict in DEV)
     const isDev = process.env.NODE_ENV !== "production";
     if (!isDev && (!isEmailVerified || user.status !== "ACTIVE")) {
       return res.status(403).json({
@@ -94,17 +93,22 @@ export const protect: RequestHandler = async (
       });
     }
 
-    const primaryRole = user?.roles?.[0]?.role?.name || "CUSTOMER";
+    // Determine Roles
+    const roleNames = user.roles.map((ur: any) => ur.role.name);
+    // Prioritize initialRole from onboardingData for the 'primary' role
+    const onboardingData = user.onboardingData as any;
+    const effectiveRole = onboardingData?.initialRole || roleNames[0] || "CUSTOMER";
 
     (req as AuthRequest).user = {
       userId: user!.id,
-      role: primaryRole,
+      role: effectiveRole,
+      roles: roleNames,
       tenantId: user!.tenantId
     };
     return next();
   }
 
-  // 2. Fallback to local TokenService (for internal tokens/migration)
+  // 2. Fallback to local TokenService
   const decoded = await TokenService.verifyAccessToken(token);
   if (!decoded) {
     const message = sbError ? `Supabase: ${sbError.message}` : "Invalid or expired token";
@@ -117,11 +121,14 @@ export const protect: RequestHandler = async (
   });
   if (!user) return res.status(401).json({ message: "User not found" });
 
-  const primaryRole = user.roles[0]?.role.name || "CUSTOMER";
+  const roleNames = user.roles.map((ur: any) => ur.role.name);
+  const onboardingData = user.onboardingData as any;
+  const effectiveRole = onboardingData?.initialRole || roleNames[0] || "CUSTOMER";
 
   (req as AuthRequest).user = {
     userId: user.id,
-    role: primaryRole,
+    role: effectiveRole,
+    roles: roleNames,
     tenantId: user.tenantId
   };
   return next();
@@ -129,10 +136,10 @@ export const protect: RequestHandler = async (
 
 
 export const authorize =
-  (...roles: string[]): RequestHandler =>
+  (...allowedRoles: string[]): RequestHandler =>
     (req: Request, res: Response, next: NextFunction) => {
       const user = (req as AuthRequest).user;
-      if (!user || !roles.includes(user.role))
+      if (!user || !user.roles.some(r => allowedRoles.includes(r)))
         return res.status(403).json({ message: "Forbidden" });
       return next();
     };

@@ -22,8 +22,9 @@ export async function run(): Promise<void> {
     const webPath = resolve(__dirname, "../../../web");
 
     // 1. BACKEND TESTS
+    console.log("  > Running Backend Jest Suite (this may take a minute)...");
     try {
-        const { stdout, stderr } = await execAsync("npm run test:unified", {
+        const { stdout, stderr } = await execAsync("pnpm test:unified", {
             cwd: backendPath,
             env: { ...process.env, CI: "true" }
         });
@@ -32,10 +33,9 @@ export async function run(): Promise<void> {
             name: "Backend Logic (Jest)",
             passed: true,
             detail: "All backend logic tests passed.",
-            recommendation: undefined,
         });
     } catch (err: any) {
-        let output = err.stdout + "\n" + err.stderr;
+        let output = (err.stdout || "") + "\n" + (err.stderr || "");
         output = output.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, "");
         const failedSuites = output.match(/FAIL.*src\/.*ts/g) || [];
         const details = failedSuites.map((s: string) => s.trim()).join(", ") || "Tests failed";
@@ -44,13 +44,14 @@ export async function run(): Promise<void> {
             name: "Backend Logic (Jest)",
             passed: false,
             detail: `FAILED. ${failedSuites.length} suites failed.`,
-            recommendation: `Fix backend logic:\n      ${details}\n      Run 'cd apps/backend && npm run test:unified' to debug.`,
+            recommendation: `Fix backend logic:\n      ${details}\n      Run 'cd apps/backend && pnpm test:unified' to debug.`,
         });
     }
 
     // 2. FRONTEND TESTS
+    console.log("  > Running Frontend Jest Suite...");
     try {
-        await execAsync("npm test", {
+        await execAsync("pnpm test", {
             cwd: webPath,
             env: { ...process.env, CI: "true" }
         });
@@ -59,10 +60,9 @@ export async function run(): Promise<void> {
             name: "Frontend Logic (Jest)",
             passed: true,
             detail: "All frontend component tests passed.",
-            recommendation: undefined,
         });
     } catch (err: any) {
-        let output = err.stdout + "\n" + err.stderr;
+        let output = (err.stdout || "") + "\n" + (err.stderr || "");
         output = output.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, "");
         const failedSuites = output.match(/FAIL.*src\/.*ts[x]?/g) || [];
         const details = failedSuites.map((s: string) => s.trim()).join(", ") || "Tests failed";
@@ -71,7 +71,7 @@ export async function run(): Promise<void> {
             name: "Frontend Logic (Jest)",
             passed: false,
             detail: `FAILED. ${failedSuites.length} suites failed.`,
-            recommendation: `Fix frontend logic:\n      ${details}\n      Run 'cd apps/web && npm test' to debug.`,
+            recommendation: `Fix frontend logic:\n      ${details}\n      Run 'cd apps/web && pnpm test' to debug.`,
         });
     }
 }

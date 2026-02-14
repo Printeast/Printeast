@@ -17,7 +17,8 @@ const ROLE_PATH_MAP: Record<string, string> = {
     "SELLER": "/seller",
     "CREATOR": "/creator",
     "CUSTOMER": "/customer",
-    "ADMIN": "/admin"
+    "ADMIN": "/tenant-admin",
+    "TENANT_ADMIN": "/tenant-admin"
 };
 
 interface OnboardResult {
@@ -44,18 +45,28 @@ export async function checkOnboardingStatus(userId: string): Promise<OnboardResu
         select: {
             id: true,
             tenantId: true,
-            roles: { select: { role: { select: { name: true } } } }
+            roles: { select: { role: { select: { name: true } } } },
+            onboardingData: true
         }
     });
 
     if (!user) return null;
-    const role = user.roles[0]?.role?.name;
 
-    if (role && role !== "CUSTOMER" && role !== "PENDING") {
+    const roleNames = user.roles.map(ur => ur.role.name);
+    const hasOnboardingData = user.onboardingData && typeof user.onboardingData === 'object' && Object.keys(user.onboardingData).length > 0;
+    const isSystemAdmin = roleNames.some(name => ["SUPER_ADMIN", "TENANT_ADMIN", "ADMIN"].includes(name));
+
+    // Force onboarding if no data, unless they are a system admin
+    if (hasOnboardingData || isSystemAdmin) {
+        // If they have onboarding data, we use the 'initialRole' we saved during onboarding,
+        // or fall back to their first actual role.
+        const onboardingData = user.onboardingData as any;
+        const targetRole = onboardingData?.initialRole || (isSystemAdmin ? "ADMIN" : roleNames[0]) || "CUSTOMER";
+
         const result: OnboardResult = {
             success: true,
             user: { id: user.id, tenantId: user.tenantId },
-            redirectTo: ROLE_PATH_MAP[role] || "/dashboard",
+            redirectTo: ROLE_PATH_MAP[targetRole] || "/dashboard",
             alreadyOnboarded: true,
             cached: false
         };
@@ -94,22 +105,31 @@ export async function performOnboarding(payload: {
 
         if (!user) throw new Error("User not found");
 
-        const currentRole = user.roles[0]?.role?.name;
+        const currentRoles = user.roles.map(ur => ur.role.name);
+        const isSystemAdmin = currentRoles.some(name => ["SUPER_ADMIN", "TENANT_ADMIN", "ADMIN"].includes(name));
 
         // Safety: Already onboarded?
-        if (currentRole && currentRole !== "CUSTOMER" && currentRole !== "PENDING") {
-            return { user, role: currentRole, alreadyOnboarded: true };
+        const hasData = user.onboardingData && typeof user.onboardingData === 'object' && Object.keys(user.onboardingData).length > 0;
+        if (hasData || isSystemAdmin) {
+            return { user, role: (user.onboardingData as any)?.initialRole || currentRoles[0] || "CUSTOMER", alreadyOnboarded: true };
         }
 
-        // 2. ATOMIC UPDATES
+        // 2. ATOMIC UPDATES - Assign ALL 3 roles so they have privilege to switch later
+        const rolesToAssign = ["SELLER", "CREATOR", "CUSTOMER"];
+
         const updatedUser = await tx.user.update({
             where: { id: userId },
             data: {
                 roles: {
                     deleteMany: {},
-                    create: { role: { connect: { name: role } } }
+                    create: rolesToAssign.map(r => ({
+                        role: { connect: { name: r } }
+                    }))
                 },
-                onboardingData: onboardingData || {},
+                onboardingData: {
+                    ...(onboardingData || {}),
+                    initialRole: role // The specific chosen dashboard
+                },
             },
             include: { roles: { select: { role: { select: { name: true } } } } }
         });

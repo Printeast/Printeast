@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useTheme } from "next-themes";
 import { ActionMenuButton } from "@/components/seller/ActionMenuButton";
 import { Sidebar } from "./Sidebar";
@@ -15,7 +15,10 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { AuthService } from "@/services/auth.service";
+import { api } from "@/services/api.service";
+import { useUserStore } from "@/lib/stores/user-store";
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -30,22 +33,66 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children, user, fullBleed, hideHeader }: DashboardLayoutProps) {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
+    const { profile, setProfile } = useUserStore();
     const router = useRouter();
     const pathname = usePathname();
 
-    // extract locale from pathname (e.g., /en/seller/dashboard -> en)
-    const locale = pathname.split('/')[1] || 'en';
+    // extract locale from pathname (e.g., /en/seller/dashboard -> en) - Memoized
+    const locale = useMemo(() => pathname.split('/')[1] || 'en', [pathname]);
 
-    // avoids hydration mismatch
+    // Memoize role calculations to prevent recalculation on every render
+    const dbRoles = useMemo(() => profile?.roles?.map((r: any) => r.role?.name) || [], [profile?.roles]);
+
+    // primaryIdentityRole = The user's main account type (Identity)
+    const primaryIdentityRole = useMemo(() => {
+        return (profile?.onboardingData?.initialRole ||
+            (dbRoles.includes('SELLER') ? 'SELLER' :
+                dbRoles.includes('CREATOR') ? 'CREATOR' :
+                    dbRoles.includes('CUSTOMER') ? 'CUSTOMER' :
+                        profile ? 'CUSTOMER' : user.role)) as Role;
+    }, [profile?.onboardingData?.initialRole, dbRoles, profile, user.role]);
+
+    // currentContextRole = The actual dashboard the user is looking at right now
+    const [currentContextRole, setCurrentContextRole] = useState<Role>(user.role || 'CUSTOMER');
+
+    useEffect(() => {
+        if (!pathname) return;
+
+        const lowerPath = pathname.toLowerCase();
+        let detectedRole: Role = 'CUSTOMER';
+
+        if (lowerPath.includes('/seller')) detectedRole = 'SELLER';
+        else if (lowerPath.includes('/creator')) detectedRole = 'CREATOR';
+        else detectedRole = user.role || 'CUSTOMER';
+
+        setCurrentContextRole(detectedRole);
+
+    }, [pathname, user.role]);
+
+    // avoids hydration mismatch - Optimized to only run once
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    const toggleTheme = () => {
-        setTheme(theme === "dark" ? "light" : "dark");
-    };
+    // Separate effect for profile fetching to avoid dependencies on mounted
+    useEffect(() => {
+        if (!profile && mounted) {
+            const fetchProfile = async () => {
+                const res = await api.get<{ user: any }>("/auth/me");
+                if (res.success && res.data) {
+                    setProfile(res.data.user);
+                }
+            };
+            fetchProfile();
+        }
+    }, [profile, setProfile, mounted]);
 
-    const handleLogout = async () => {
+    // Memoize callbacks to prevent recreating on every render
+    const toggleTheme = useCallback(() => {
+        setTheme(theme === "dark" ? "light" : "dark");
+    }, [theme, setTheme]);
+
+    const handleLogout = useCallback(async () => {
         try {
             const { success } = await AuthService.signOut();
             if (success) {
@@ -55,11 +102,11 @@ export function DashboardLayout({ children, user, fullBleed, hideHeader }: Dashb
         } catch (error) {
             console.error("Logout failed:", error);
         }
-    };
+    }, [locale, router]);
 
     return (
         <div className="flex h-screen bg-background font-sans overflow-hidden text-foreground">
-            <Sidebar role={user.role} />
+            <Sidebar role={currentContextRole} primaryRole={primaryIdentityRole} />
 
             <div className="flex flex-1 flex-col min-h-0">
                 {!hideHeader && (
@@ -80,12 +127,17 @@ export function DashboardLayout({ children, user, fullBleed, hideHeader }: Dashb
                             <button className="p-2.5 -ml-2 text-slate-500 hover:bg-slate-900/5 hover:text-slate-900 rounded-xl transition-all duration-300">
                                 <Menu className="w-5 h-5" strokeWidth={2} />
                             </button>
-                            <div className="relative max-w-md w-full group">
+
+                            <div className="w-px h-6 bg-slate-200 mx-1"></div>
+
+
+
+                            <div className="relative max-w-sm w-full group hidden md:block">
                                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                                 <input
                                     type="text"
-                                    placeholder="Search workspace..."
-                                    className="h-10 w-full pl-11 pr-4 bg-slate-900/5 border border-transparent rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5 transition-all duration-300"
+                                    placeholder="Search..."
+                                    className="h-10 w-full pl-11 pr-4 bg-slate-50/50 hover:bg-white border border-transparent hover:border-slate-200 rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5 transition-all duration-300"
                                 />
                             </div>
                         </div>
@@ -154,7 +206,10 @@ export function DashboardLayout({ children, user, fullBleed, hideHeader }: Dashb
                                                 </span>
                                                 <div className="flex items-center gap-2">
                                                     <span className="px-1.5 py-0.5 rounded-[2px] bg-[#0f172a] text-[9px] font-black text-white uppercase tracking-[0.15em]">
-                                                        {user.role}
+                                                        {(!mounted || !profile) ? '...' :
+                                                            primaryIdentityRole === 'SELLER' ? 'SELLER DASHBOARD' :
+                                                                primaryIdentityRole === 'CREATOR' ? 'CREATOR STUDIO' :
+                                                                    'INDIVIDUAL DASHBOARD'}
                                                     </span>
                                                 </div>
                                             </div>
@@ -193,7 +248,7 @@ export function DashboardLayout({ children, user, fullBleed, hideHeader }: Dashb
                     </header>
                 )}
 
-                <main className={`flex-1 overflow-y-auto overflow-x-hidden min-h-0 relative ${fullBleed ? 'p-0' : 'p-8'}`}>
+                <main className={`flex-1 overflow-y-auto overflow-x-hidden min-h-0 relative z-0 ${fullBleed ? 'p-0' : 'p-8'}`}>
                     {children}
                 </main>
             </div>

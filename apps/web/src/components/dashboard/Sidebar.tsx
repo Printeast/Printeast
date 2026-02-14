@@ -4,9 +4,11 @@ import Link from "next/link";
 import NextImage from "next/image";
 import { usePathname } from "next/navigation";
 import { Role } from "@repo/types";
+import { memo, useMemo } from "react";
 
 interface SidebarProps {
     role: Role;
+    primaryRole?: Role;
 }
 
 import {
@@ -24,6 +26,7 @@ import {
     Home,
     PenTool,
     LifeBuoy,
+    DollarSign,
 } from "lucide-react";
 
 type SideLink = { label: string; href: string; icon: React.ElementType };
@@ -44,7 +47,7 @@ const SELLER_LINKS: SidebarSection[] = [
             { label: "Products", href: "/seller/inventory", icon: Box },
             { label: "Store", href: "/seller/storefront", icon: Store },
             { label: "My Templates", href: "/seller/templates", icon: LayoutTemplate },
-            { label: "AI & Design Studio", href: "/seller/design", icon: Sparkles },
+            { label: "AI & Design Studio", href: "/seller/wizard", icon: Sparkles },
         ]
     },
     {
@@ -69,6 +72,7 @@ const CREATOR_LINKS: SidebarSection[] = [
             { label: "AI & Design Studio", href: "/creator/ai-studio", icon: Sparkles },
             { label: "Analytics & Insights", href: "/creator/analytics", icon: BarChart3 },
             { label: "Branding", href: "/creator/branding", icon: Palette },
+            { label: "Earnings", href: "/creator/earnings", icon: DollarSign },
             { label: "Resources", href: "/creator/resources", icon: BookOpen },
             { label: "Community & Help", href: "/creator/community", icon: LifeBuoy },
         ],
@@ -88,28 +92,42 @@ const CUSTOMER_LINKS: SidebarSection[] = [
     },
 ];
 
-export function Sidebar({ role }: SidebarProps) {
+import { RoleSwitcher } from "@/components/dashboard/RoleSwitcher";
+
+export const Sidebar = memo(function Sidebar({ role }: SidebarProps) {
     const pathname = usePathname();
 
-    let sections: SidebarSection[] = [];
-    if (role === "SELLER") {
-        sections = SELLER_LINKS;
-    } else if (role === "CREATOR") {
-        sections = CREATOR_LINKS;
-    } else if (role === "CUSTOMER") {
-        sections = CUSTOMER_LINKS;
-    } else {
-        sections = [{ items: [] }];
-    }
+    // Memoize locale extraction
+    const locale = useMemo(() => pathname.split('/')[1] || 'en', [pathname]);
 
-    const normalizedPath = pathname.replace(/^\/[a-zA-Z]{2}/, "") || "/";
+    // Memoize sections based on role
+    const sections = useMemo(() => {
+        if (role === "SELLER") return SELLER_LINKS;
+        if (role === "CREATOR") return CREATOR_LINKS;
+        if (role === "CUSTOMER") return CUSTOMER_LINKS;
+        return [{ items: [] }];
+    }, [role]);
+
+    // Memoize normalized path
+    const normalizedPath = useMemo(() =>
+        pathname.replace(/^\/[a-zA-Z]{2}/, "") || "/",
+        [pathname]
+    );
+
+    // Memoize dashboard title
+    const dashboardTitle = useMemo(() => {
+        if (role === 'SELLER') return 'SELLER DASHBOARD';
+        if (role === 'CREATOR') return 'CREATOR STUDIO';
+        if (role === 'CUSTOMER') return 'INDIVIDUAL SPACE';
+        return 'DASHBOARD';
+    }, [role]);
 
     return (
-        <aside className="w-[260px] flex-shrink-0 border-r border-sidebar-border flex flex-col h-screen sticky top-0 font-inter text-sidebar-foreground transition-all duration-300 relative" style={{
+        <aside className="w-[260px] flex-shrink-0 border-r border-sidebar-border flex flex-col h-screen sticky top-0 font-inter text-sidebar-foreground transition-all duration-300 relative z-50 hover:z-50" style={{
             background: 'linear-gradient(180deg, var(--background) 0%, var(--sidebar) 40%, var(--card) 100%)'
         }}>
-            <div className="p-6 pb-2">
-                <Link href="/" className="flex items-center gap-3 mb-1">
+            <div className="p-4 pb-2 flex items-center justify-start gap-1">
+                <Link href="/" className="flex items-center gap-3">
                     <div className="w-9 h-9 bg-sidebar-accent rounded-xl flex items-center justify-center border border-sidebar-border shadow-sm p-1.5 flex-shrink-0 leading-none">
                         <NextImage
                             src="/assets/printeast_logo.png"
@@ -122,9 +140,14 @@ export function Sidebar({ role }: SidebarProps) {
                     </div>
                     <div>
                         <h1 className="font-bold text-lg leading-tight text-sidebar-foreground tracking-tight">Printeast</h1>
-                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block leading-none">DASHBOARD</span>
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block leading-none">{dashboardTitle}</span>
                     </div>
                 </Link>
+
+                {/* Switcher Button - Compact Access */}
+                <div className="relative">
+                    <RoleSwitcher userRole={role} locale={locale} compact={true} />
+                </div>
             </div>
 
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-8">
@@ -163,4 +186,4 @@ export function Sidebar({ role }: SidebarProps) {
             </div>
         </aside>
     );
-}
+});

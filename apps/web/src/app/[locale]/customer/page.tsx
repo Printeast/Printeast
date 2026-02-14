@@ -1,28 +1,14 @@
-import { SellerDashboardClient } from "../seller/_client";
-import type { SellerDashboardData } from "../seller/_data";
+import { createClient } from "@/utils/supabase/server";
+import { CustomerDashboardClient } from "./_client";
+import { getCustomerDashboardData } from "./_data";
 
-const emptyDashboardData: SellerDashboardData = {
-    orders: [],
-    inventory: [],
-    topProducts: [],
-    payments: [],
-    paymentsTotals: { paid: 0, pending: 0 },
-    lowStockCount: 0,
-};
+export default async function CustomerDashboardPage() {
+    const supabase = await createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
 
-export default function IndividualDashboard() {
-    return (
-        <SellerDashboardClient
-            userEmail="individual"
-            data={emptyDashboardData}
-            role="CUSTOMER"
-            secondaryCtaLabel="Explore Store"
-            secondaryCtaHref="/"
-            clubTitle="Customer Club"
-            connectTitle="Shop Favorites"
-            connectDescription="Start browsing your favorite products."
-            connectCta="Browse Now"
-            connectHref="/"
-        />
-    );
+    const data = await getCustomerDashboardData(session?.access_token);
+    const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || "";
+
+    return <CustomerDashboardClient userEmail={user?.email || "customer"} userName={userName} data={data} />;
 }

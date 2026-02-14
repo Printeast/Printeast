@@ -33,14 +33,21 @@ export default function DashboardPage() {
             const roleMatch = document.cookie.match(/(^| )user_role=([^;]+)/);
             if (roleMatch) {
                 const role = roleMatch[2];
-                const target = role === 'SELLER' ? 'seller' :
-                    role === 'CREATOR' ? 'creator' :
-                        role === 'ADMIN' ? 'tenant-admin' :
-                            'onboarding';
+                if (role) {
+                    const rolePathMap: Record<string, string> = {
+                        "ADMIN": "tenant-admin",
+                        "TENANT_ADMIN": "tenant-admin",
+                        "SELLER": "seller",
+                        "CREATOR": "creator",
+                        "CUSTOMER": "customer"
+                    };
 
-                setStatusText("Initializing your creative space");
-                router.replace(`/${target}`);
-                return;
+                    const target = rolePathMap[role] || "onboarding";
+
+                    setStatusText("Initializing your creative space");
+                    router.replace(`/${target}`);
+                    return;
+                }
             }
 
             try {
@@ -56,7 +63,8 @@ export default function DashboardPage() {
 
                 if (res.success && res.data) {
                     const user = (res.data as any).user || res.data;
-                    const roleName = user?.roles?.[0]?.role?.name || "CUSTOMER";
+                    const onboardingData = user?.onboardingData as any;
+                    const roleName = onboardingData?.initialRole || user?.roles?.[0]?.role?.name || "CUSTOMER";
 
                     const rolePathMap: Record<string, string> = {
                         "ADMIN": "tenant-admin",
@@ -68,8 +76,8 @@ export default function DashboardPage() {
 
                     const target = rolePathMap[roleName] || "onboarding";
 
-                    // Simple rule: Basic customers go to onboarding first.
-                    const finalPath = (roleName === "CUSTOMER") ? "onboarding" : target;
+                    // Force onboarding if no data or if they are just a basic CUSTOMER with no preferences
+                    const finalPath = (roleName === "CUSTOMER" && !onboardingData?.initialRole) ? "onboarding" : target;
 
                     // Set cookie for next time (Fast Path)
                     document.cookie = `user_role=${roleName}; path=/; max-age=86400; SameSite=Lax`;

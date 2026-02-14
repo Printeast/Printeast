@@ -7,7 +7,9 @@ import { usePathname } from "next/navigation"
 
 export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     const pathname = usePathname();
-    const isDashboard = pathname?.includes("/seller");
+    const isDashboard = pathname?.includes("/seller") ||
+        pathname?.includes("/creator") ||
+        pathname?.includes("/customer");
 
     if (isDashboard) {
         return <LazyMotion features={domMax}>{children}</LazyMotion>;

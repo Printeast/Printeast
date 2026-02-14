@@ -7,7 +7,7 @@ datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
   directUrl  = env("DIRECT_URL")
-  extensions = [vector]
+  extensions = [vector(schema: "extensions")]
 }
 
 enum OrderStatus {
@@ -97,6 +97,7 @@ model UserRole {
   role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   @@id([userId, roleId])
+  @@index([roleId])
   @@map("user_roles")
 }
 
@@ -112,6 +113,8 @@ model AuditLog {
   tenant Tenant @relation(fields: [tenantId], references: [id])
   user   User   @relation(fields: [userId], references: [id])
 
+  @@index([tenantId])
+  @@index([userId])
   @@map("audit_logs")
 }
 
@@ -125,6 +128,7 @@ model Session {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("sessions")
 }
 
@@ -138,9 +142,18 @@ model Product {
   sku               String
   metadata          Json?
   
+  description       String?
+  categoryId        String?  @db.Uuid @map("category_id")
+  tags              String[] @default([])
+  provider          String?
+  currency          String   @default("USD")
+  images            String[] @default([])
+  
   // RFC additions/implied
   printArea         Json?    @map("print_area")
   mockupTemplateUrl String?  @map("mockup_template_url")
+
+  category          Category? @relation(fields: [categoryId], references: [id])
 
   tenant     Tenant            @relation(fields: [tenantId], references: [id])
   variants   ProductVariant[]
@@ -148,6 +161,7 @@ model Product {
   vendorProducts VendorProduct[]
 
   @@index([tenantId])
+  @@index([categoryId])
   @@unique([tenantId, sku])
   @@map("products")
 }
@@ -218,6 +232,7 @@ model Category {
   
   parent    Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
   children  Category[] @relation("CategoryToCategory")
+  products  Product[]
 
   @@index([tenantId])
   @@index([parentId])
@@ -379,6 +394,8 @@ model VendorProduct {
   product           Product @relation(fields: [productId], references: [id])
   vendor            Vendor  @relation(fields: [vendorId], references: [id])
 
+  @@index([vendorId])
+  @@index([productId])
   @@map("vendor_products")
 }
 
@@ -406,7 +423,8 @@ model WalletTransaction {
     // I will stick to the models defined above and comment this one out effectively or merge.
     // I already defined `model Transaction` above.
     
-   @@map("wallet_transactions_legacy")
+   @@index([userId])
+  @@map("wallet_transactions_legacy")
 }
 
 model Payment {

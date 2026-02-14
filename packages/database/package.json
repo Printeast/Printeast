@@ -12,9 +12,10 @@
         "@prisma/client": "^5.22.0"
     },
     "devDependencies": {
-        "prisma": "^5.22.0",
-        "@repo/typescript-config": "workspace:*",
         "@repo/eslint-config": "workspace:*",
-        "@types/node": "^20.11.16"
+        "@repo/typescript-config": "workspace:*",
+        "@types/node": "^20.11.16",
+        "prisma": "^5.22.0",
+        "xlsx": "^0.18.5"
     }
 }
