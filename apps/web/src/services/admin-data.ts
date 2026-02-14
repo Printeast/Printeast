@@ -78,7 +78,8 @@ export async function getAlertsData(): Promise<{
 export type OrderRow = {
     id: string;
     seller: string;
-    artist: string;
+    role: "artist" | "individual";
+    contact: string;
     status: string;
     value: string;
     fee: string;
@@ -92,7 +93,8 @@ export async function getOrders(): Promise<OrderRow[]> {
         {
             id: "ORD-93011",
             seller: "Vertex Merch Store",
-            artist: "Jordan Rivera",
+            role: "artist",
+            contact: "Jordan Rivera",
             status: "In Production",
             value: "$124.50",
             fee: "$18.67",
@@ -103,7 +105,8 @@ export async function getOrders(): Promise<OrderRow[]> {
         {
             id: "ORD-92877",
             seller: "Creative Hub",
-            artist: "Alex Chen",
+            role: "individual",
+            contact: "Alex Chen",
             status: "Shipped",
             value: "$45.00",
             fee: "$6.75",
@@ -114,7 +117,8 @@ export async function getOrders(): Promise<OrderRow[]> {
         {
             id: "ORD-92533",
             seller: "Studio Noir",
-            artist: "Morgan Blake",
+            role: "artist",
+            contact: "Morgan Blake",
             status: "Pending",
             value: "$210.20",
             fee: "$31.53",
@@ -125,7 +129,8 @@ export async function getOrders(): Promise<OrderRow[]> {
         {
             id: "ORD-91984",
             seller: "Elite Apparel",
-            artist: "Taylor Swift",
+            role: "artist",
+            contact: "Taylor Swift",
             status: "Delivered",
             value: "$78.99",
             fee: "$11.85",
@@ -136,7 +141,8 @@ export async function getOrders(): Promise<OrderRow[]> {
         {
             id: "ORD-91872",
             seller: "Urban Print Co.",
-            artist: "Sam Wilson",
+            role: "individual",
+            contact: "Sam Wilson",
             status: "Cancelled",
             value: "$32.00",
             fee: "$4.80",
@@ -147,7 +153,8 @@ export async function getOrders(): Promise<OrderRow[]> {
         {
             id: "ORD-93110",
             seller: "Galaxy Tees",
-            artist: "Nina Patel",
+            role: "individual",
+            contact: "Nina Patel",
             status: "In Production",
             value: "$189.40",
             fee: "$22.10",
@@ -158,7 +165,8 @@ export async function getOrders(): Promise<OrderRow[]> {
         {
             id: "ORD-92601",
             seller: "Canvas Collective",
-            artist: "Leo Martinez",
+            role: "artist",
+            contact: "Leo Martinez",
             status: "Shipped",
             value: "$256.10",
             fee: "$34.22",

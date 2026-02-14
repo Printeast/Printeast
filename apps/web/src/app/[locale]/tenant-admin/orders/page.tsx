@@ -18,10 +18,11 @@ type Filters = {
     provider: string;
     dateFrom: string;
     dateTo: string;
+    role: string;
 };
 
 export default function OrdersPage() {
-    const [filters, setFilters] = useState<Filters>({ source: "All", provider: "All", dateFrom: "", dateTo: "" });
+    const [filters, setFilters] = useState<Filters>({ source: "All", provider: "All", dateFrom: "", dateTo: "", role: "All" });
     const [data, setData] = useState<OrderRow[]>([]);
     const [loading, setLoading] = useState(false);
 
@@ -39,6 +40,7 @@ export default function OrdersPage() {
         return data.filter((o) => {
             const matchSource = filters.source === "All" || o.source === filters.source;
             const matchProvider = filters.provider === "All" || o.provider === filters.provider;
+            const matchRole = filters.role === "All" || o.role === filters.role.toLowerCase();
 
             let matchDate = true;
             if (filters.dateFrom || filters.dateTo) {
@@ -48,7 +50,7 @@ export default function OrdersPage() {
                 matchDate = placed >= from && placed <= to;
             }
 
-            return matchSource && matchProvider && matchDate;
+            return matchSource && matchProvider && matchRole && matchDate;
         });
     }, [data, filters]);
 
@@ -58,7 +60,7 @@ export default function OrdersPage() {
     };
 
     const onReset = () => {
-        setFilters({ source: "All", provider: "All", dateFrom: "", dateTo: "" });
+        setFilters({ source: "All", provider: "All", dateFrom: "", dateTo: "", role: "All" });
     };
 
     const updateFilter = (key: keyof Filters, value: string) => setFilters((f) => ({ ...f, [key]: value }));
@@ -77,7 +79,7 @@ export default function OrdersPage() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                         <div className="space-y-1">
                             <div className="text-xs font-semibold text-slate-500">Store Source</div>
                             <select
@@ -102,6 +104,18 @@ export default function OrdersPage() {
                                 <option>PrintX</option>
                                 <option>EuroPrint</option>
                                 <option>Textile</option>
+                            </select>
+                        </div>
+                        <div className="space-y-1">
+                            <div className="text-xs font-semibold text-slate-500">Role</div>
+                            <select
+                                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+                                value={filters.role}
+                                onChange={(e) => updateFilter("role", e.target.value)}
+                            >
+                                <option>All</option>
+                                <option>artist</option>
+                                <option>individual</option>
                             </select>
                         </div>
                         <div className="space-y-1">
@@ -145,7 +159,7 @@ export default function OrdersPage() {
                                 <tr>
                                     <th className="px-4 py-3 text-left">Order ID</th>
                                     <th className="px-4 py-3 text-left">Seller Name</th>
-                                    <th className="px-4 py-3 text-left">Artist</th>
+                                    <th className="px-4 py-3 text-left">Role</th>
                                     <th className="px-4 py-3 text-left">Fulfillment Status</th>
                                     <th className="px-4 py-3 text-left">Total Value</th>
                                     <th className="px-4 py-3 text-left">Platform Fee</th>
@@ -157,10 +171,13 @@ export default function OrdersPage() {
                                     <tr key={o.id} className={`border-b border-slate-100 ${idx % 2 === 0 ? "bg-slate-50/50" : "bg-white"}`}>
                                         <td className="px-4 py-3">
                                             <div className="text-[#1e4bff] font-bold">#{o.id}</div>
-                                <div className="text-[11px] text-slate-500">{new Date(o.placedAt).toLocaleString()}</div>
+                                            <div className="text-[11px] text-slate-500">{new Date(o.placedAt).toLocaleString()}</div>
                                         </td>
                                         <td className="px-4 py-3 font-semibold">{o.seller}</td>
-                                        <td className="px-4 py-3 text-slate-700">{o.artist}</td>
+                                        <td className="px-4 py-3 text-slate-700">
+                                            <div className="font-semibold text-slate-800">{o.contact}</div>
+                                            <div className="text-[12px] font-semibold text-slate-500 capitalize">{o.role}</div>
+                                        </td>
                                         <td className="px-4 py-3">
                                             <span className={`inline-flex items-center px-3 py-1 rounded-full text-[12px] font-semibold ${pillColor(o.status)}`}>{o.status}</span>
                                         </td>
