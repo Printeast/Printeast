@@ -90,11 +90,11 @@ export function SidebarNav({ groups, collapsed }: SidebarNavProps) {
                                     onOpenChange={(open) => (open ? openPopover(group.title) : scheduleClose())}
                                 >
                                     <PopoverTrigger asChild>
-                                    <button
-                                        type="button"
-                                        aria-label={group.title}
-                                        className={`w-full flex items-center justify-center rounded-xl py-3.5 text-slate-600 hover:text-blue-700 hover:bg-white transition-colors outline-none ${isOpen ? "bg-white shadow-sm ring-2 ring-[#1e4bff]" : "hover:bg-slate-50"}`}
-                                        onMouseEnter={() => scheduleOpen(group.title)}
+                                        <button
+                                            type="button"
+                                            aria-label={group.title}
+                                            className={`w-full flex items-center justify-center rounded-xl py-3.5 transition-colors outline-none border-2 focus:ring-0 focus-visible:ring-0 ${isOpen ? "bg-white shadow-sm border-[#1e4bff] text-[#1e4bff]" : "border-transparent text-slate-600 hover:text-blue-700 hover:bg-slate-50"}`}
+                                            onMouseEnter={() => scheduleOpen(group.title)}
                                             onMouseLeave={scheduleClose}
                                             onPointerEnter={() => scheduleOpen(group.title)}
                                             onPointerLeave={scheduleClose}
