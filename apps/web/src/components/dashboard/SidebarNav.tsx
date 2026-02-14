@@ -24,8 +24,8 @@ export function SidebarNav({ groups, collapsed }: SidebarNavProps) {
     const [openPopoverGroup, setOpenPopoverGroup] = useState<string | null>(null);
     const openTimer = useRef<NodeJS.Timeout | null>(null);
     const closeTimer = useRef<NodeJS.Timeout | null>(null);
-    const OPEN_DELAY = 75;
-    const CLOSE_DELAY = 120;
+    const OPEN_DELAY = 50;
+    const CLOSE_DELAY = 100;
 
     useEffect(() => {
         const initial: Record<string, boolean> = {};
@@ -90,11 +90,11 @@ export function SidebarNav({ groups, collapsed }: SidebarNavProps) {
                                     onOpenChange={(open) => (open ? openPopover(group.title) : scheduleClose())}
                                 >
                                     <PopoverTrigger asChild>
-                                        <button
-                                            type="button"
-                                            aria-label={group.title}
-                                            className={`w-full flex items-center justify-center rounded-xl py-3.5 text-slate-600 hover:text-blue-700 hover:bg-white transition-colors outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${isOpen ? "bg-white shadow-sm" : ""}`}
-                                            onMouseEnter={() => scheduleOpen(group.title)}
+                                    <button
+                                        type="button"
+                                        aria-label={group.title}
+                                        className={`w-full flex items-center justify-center rounded-xl py-3.5 text-slate-600 hover:text-blue-700 hover:bg-white transition-colors outline-none ${isOpen ? "bg-white shadow-sm ring-2 ring-[#1e4bff]" : "hover:bg-slate-50"}`}
+                                        onMouseEnter={() => scheduleOpen(group.title)}
                                             onMouseLeave={scheduleClose}
                                             onPointerEnter={() => scheduleOpen(group.title)}
                                             onPointerLeave={scheduleClose}
@@ -125,11 +125,11 @@ export function SidebarNav({ groups, collapsed }: SidebarNavProps) {
                                                     exit={{ opacity: 0, y: 8, scale: 0.98 }}
                                                     className="p-3"
                                                 >
-                                                    <div className="flex items-center gap-2 mb-2 text-sm font-black uppercase tracking-[0.12em] text-slate-700">
-                                                        <Icon className="w-4 h-4" aria-hidden />
-                                                        <span>{group.title}</span>
-                                                    </div>
-                                                    <ul className="space-y-1">
+                                <div className="flex items-center gap-2 mb-2 text-sm font-black uppercase tracking-[0.12em] text-slate-700">
+                                    {Icon && <Icon className="w-4 h-4" aria-hidden />}
+                                    <span>{group.title}</span>
+                                </div>
+                                                    <ul className="space-y-1 list-none p-0 m-0">
                                                         {group.items.map((item) => {
                                                             const active = isActive(item.href, normalizedPath);
                                                             return (
@@ -138,12 +138,13 @@ export function SidebarNav({ groups, collapsed }: SidebarNavProps) {
                                                                     key={item.href}
                                                                     transition={{ duration: 0.12, ease: "easeOut" }}
                                                                 >
-                                                                    <Link
-                                                                        href={localePrefix ? `/${localePrefix}${item.href}` : item.href}
-                                                                        className={`flex items-center gap-2 rounded-lg px-3 py-2 text-[14px] font-semibold transition-colors ${active ? "bg-blue-50 text-blue-700" : "text-slate-700 hover:text-blue-700 hover:bg-blue-50/70"}`}
-                                                                    >
-                                                                        <span>{item.label}</span>
-                                                                    </Link>
+                                            <Link
+                                                href={localePrefix ? `/${localePrefix}${item.href}` : item.href}
+                                                className={`relative flex items-center gap-2 px-4 py-2 text-[13px] font-semibold transition-colors rounded-lg ${active ? "text-blue-700 bg-blue-50" : "text-slate-700 hover:text-blue-700 hover:bg-slate-100"}`}
+                                            >
+                                                {active && <span className="absolute left-0 h-6 w-1 rounded-full bg-blue-600" aria-hidden />}
+                                                <span>{item.label}</span>
+                                            </Link>
                                                                 </motion.li>
                                                             );
                                                         })}
@@ -177,18 +178,17 @@ export function SidebarNav({ groups, collapsed }: SidebarNavProps) {
                                 <div className={`${open ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0 pointer-events-none"} overflow-hidden transition-all duration-300 px-1`}
                                     aria-hidden={!open}
                                 >
-                                    <ul className="py-1">
+                                    <ul className="py-1 list-none p-0 m-0">
                                         {group.items.map((item) => {
                                             const active = isActive(item.href, normalizedPath);
                                             return (
                                                 <li key={item.href}>
-                                                    <Link
-                                                        href={localePrefix ? `/${localePrefix}${item.href}` : item.href}
-                                                        className={`relative flex items-center gap-2 px-4 py-2 text-[13px] font-semibold transition-colors rounded-lg ${active ? "text-blue-700 bg-blue-50" : "text-slate-700 hover:text-blue-700 hover:bg-slate-100"}`}
-                                                    >
-                                                        {active && <span className="absolute left-0 h-6 w-1 rounded-full bg-blue-600" aria-hidden />}
-                                                        <span>{item.label}</span>
-                                                    </Link>
+                                                                <Link
+                                                                    href={localePrefix ? `/${localePrefix}${item.href}` : item.href}
+                                                                    className={`flex items-center gap-2 rounded-lg px-3 py-2 text-[14px] font-semibold transition-colors ${active ? "bg-blue-50 text-blue-700" : "text-slate-700 hover:text-blue-700 hover:bg-blue-50/70"}`}
+                                                                >
+                                                                    <span>{item.label}</span>
+                                                                </Link>
                                                 </li>
                                             );
                                         })}
