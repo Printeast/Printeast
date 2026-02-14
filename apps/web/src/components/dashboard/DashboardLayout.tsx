@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import { ActionMenuButton } from "@/components/seller/ActionMenuButton";
 import { Sidebar } from "./Sidebar";
 import { Role } from "@repo/types";
-import { Menu, Search, Bell, User, Plus, Contrast, Shirt, LayoutTemplate, Store } from "lucide-react";
+import { Search, Bell, User, Plus, Contrast, Shirt, LayoutTemplate, Store } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -77,9 +77,6 @@ export function DashboardLayout({ children, user, fullBleed, hideHeader }: Dashb
                         </div>
 
                         <div className="flex items-center gap-4 flex-1">
-                            <button className="p-2.5 -ml-2 text-slate-500 hover:bg-slate-900/5 hover:text-slate-900 rounded-xl transition-all duration-300">
-                                <Menu className="w-5 h-5" strokeWidth={2} />
-                            </button>
                             <div className="relative max-w-md w-full group">
                                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                                 <input
@@ -98,29 +95,31 @@ export function DashboardLayout({ children, user, fullBleed, hideHeader }: Dashb
                                 <Contrast className={`w-5 h-5 transition-transform duration-500 ${mounted && theme === 'dark' ? 'rotate-180' : 'rotate-0'}`} />
                             </button>
 
-                            <ActionMenuButton
-                                label="Create Product"
-                                options={[
-                                    {
-                                        icon: <Shirt className="w-5 h-5" />,
-                                        title: "Single Product",
-                                        description: "Select a product from catalog",
-                                        href: `/${locale}/seller/wizard`,
-                                    },
-                                    {
-                                        icon: <LayoutTemplate className="w-5 h-5" />,
-                                        title: "Use a template",
-                                        description: "Select a template to create products",
-                                        href: `/${locale}/seller/templates`,
-                                    },
-                                    {
-                                        icon: <Store className="w-5 h-5" />,
-                                        title: "Select from store",
-                                        description: "Copy products from another store",
-                                        href: `/${locale}/seller/inventory`,
-                                    },
-                                ]}
-                            />
+                            {user.role !== "TENANT_ADMIN" && (
+                                <ActionMenuButton
+                                    label="Create Product"
+                                    options={[
+                                        {
+                                            icon: <Shirt className="w-5 h-5" />,
+                                            title: "Single Product",
+                                            description: "Select a product from catalog",
+                                            href: `/${locale}/seller/wizard`,
+                                        },
+                                        {
+                                            icon: <LayoutTemplate className="w-5 h-5" />,
+                                            title: "Use a template",
+                                            description: "Select a template to create products",
+                                            href: `/${locale}/seller/templates`,
+                                        },
+                                        {
+                                            icon: <Store className="w-5 h-5" />,
+                                            title: "Select from store",
+                                            description: "Copy products from another store",
+                                            href: `/${locale}/seller/inventory`,
+                                        },
+                                    ]}
+                                />
+                            )}
 
                             <div className="w-px h-6 bg-slate-200 mx-1"></div>
 
