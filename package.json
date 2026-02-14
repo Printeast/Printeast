@@ -11,7 +11,8 @@
     "db:generate": "turbo run db:generate",
     "test": "turbo run test",
     "test:integration": "pnpm --filter backend test src/__tests__/integration",
-    "test:e2e": "pnpm --filter web exec playwright test"
+    "test:e2e": "pnpm --filter web exec playwright test",
+    "postinstall": "turbo run db:generate"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
