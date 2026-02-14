@@ -118,9 +118,9 @@ export function SidebarNav({ groups, collapsed }: SidebarNavProps) {
                                                     <Icon className="w-4 h-4" aria-hidden />
                                                     <span>{group.title}</span>
                                                 </div>
-                                                <ul className="space-y-1">
-                                                    {group.items.map((item) => {
-                                                        const active = isActive(item.href, normalizedPath);
+                                <ul className="space-y-1 list-none pl-0">
+                                    {group.items.map((item) => {
+                                        const active = isActive(item.href, normalizedPath);
                                                         return (
                                                             <motion.li
                                                                 layout
@@ -170,7 +170,7 @@ export function SidebarNav({ groups, collapsed }: SidebarNavProps) {
                         <div className={`${open ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0 pointer-events-none"} overflow-hidden transition-all duration-300 px-1`}
                             aria-hidden={!open}
                         >
-                            <ul className="py-1">
+                            <ul className="py-1 list-none pl-0">
                                 {group.items.map((item) => {
                                     const active = isActive(item.href, normalizedPath);
                                     return (

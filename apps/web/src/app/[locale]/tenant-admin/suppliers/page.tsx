@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { Search, Plus, MapPin, ShieldCheck, Factory, Package, Shirt, PanelsTopLeft } from "lucide-react";
+import { Search, Plus, MapPin, ShieldCheck, Factory, Package, Shirt, PanelsTopLeft, Rows, LayoutGrid } from "lucide-react";
 
 type Supplier = {
     id: string;
@@ -123,6 +123,7 @@ export default function SupplierDirectoryPage() {
     const [tab, setTab] = useState<string>("All");
     const [search, setSearch] = useState("");
     const [sort, setSort] = useState("recent");
+    const [view, setView] = useState<"list" | "grid">("list");
 
     const filtered = useMemo(() => {
         let rows = suppliers.filter((s) => {
@@ -188,54 +189,45 @@ export default function SupplierDirectoryPage() {
                                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                                 ))}
                             </select>
+                            <div className="flex items-center gap-1 ml-2">
+                                <button
+                                    onClick={() => setView("list")}
+                                    className={`inline-flex items-center justify-center h-9 w-9 rounded-lg border text-slate-600 ${view === "list" ? "bg-slate-900 text-white border-slate-900" : "bg-white border-slate-200"}`}
+                                    aria-label="List view"
+                                >
+                                    <Rows className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={() => setView("grid")}
+                                    className={`inline-flex items-center justify-center h-9 w-9 rounded-lg border text-slate-600 ${view === "grid" ? "bg-slate-900 text-white border-slate-900" : "bg-white border-slate-200"}`}
+                                    aria-label="Grid view"
+                                >
+                                    <LayoutGrid className="w-4 h-4" />
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                        {filtered.map((s) => (
-                            <div key={s.id} className="rounded-xl border border-slate-200 bg-white shadow-sm p-4 flex flex-col gap-3">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600">
-                                            {iconFor(s.icon)}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-bold text-slate-900 leading-tight">{s.name}</h3>
-                                            <div className="flex items-center gap-1 text-sm text-slate-500">
-                                                <MapPin className="w-4 h-4" />
-                                                <span>{s.city}, {s.country}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <span className={`text-[11px] font-black uppercase tracking-[0.12em] px-2 py-1 rounded-full ${statusTone[s.status]}`}>
-                                        {s.status}
-                                    </span>
+                    {view === "grid" ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                            {filtered.map((s) => (
+                                <SupplierCard key={s.id} supplier={s} view="grid" />
+                            ))}
+                            <div className="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 text-center flex flex-col items-center justify-center p-6 text-slate-500">
+                                <div className="h-12 w-12 rounded-full bg-white border border-slate-200 flex items-center justify-center mb-3">
+                                    <Plus className="w-5 h-5" />
                                 </div>
-
-                                <div className="flex flex-wrap gap-2">
-                                    {s.categories.map((c) => (
-                                        <span key={c} className="text-[11px] font-semibold text-slate-600 rounded-full bg-slate-100 px-2 py-1 border border-slate-200">{c}</span>
-                                    ))}
-                                </div>
-
-                                <div className="flex items-center justify-between text-sm text-slate-600">
-                                    <div className="flex items-center gap-1 text-slate-600">
-                                        <ShieldCheck className="w-4 h-4" />
-                                        <span>{s.successRate ? `${s.successRate}% Success Rate` : "Awaiting data"}</span>
-                                    </div>
-                                    <button className="text-sm font-bold text-[#1e4bff] hover:underline">View Profile</button>
-                                </div>
+                                <div className="font-semibold">Add New Partner</div>
+                                <div className="text-sm text-slate-500">Onboard a new supplier node</div>
                             </div>
-                        ))}
-
-                        <div className="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 text-center flex flex-col items-center justify-center p-6 text-slate-500">
-                            <div className="h-12 w-12 rounded-full bg-white border border-slate-200 flex items-center justify-center mb-3">
-                                <Plus className="w-5 h-5" />
-                            </div>
-                            <div className="font-semibold">Add New Partner</div>
-                            <div className="text-sm text-slate-500">Onboard a new supplier node</div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {filtered.map((s) => (
+                                <SupplierCard key={s.id} supplier={s} view="list" />
+                            ))}
+                        </div>
+                    )}
 
                     <div className="flex items-center justify-between text-xs text-slate-500 border-t border-slate-200 pt-3">
                         <span>Showing {Math.min(filtered.length, 6)} of {suppliers.length} suppliers</span>
@@ -250,5 +242,64 @@ export default function SupplierDirectoryPage() {
                 </div>
             </div>
         </DashboardLayout>
+    );
+}
+
+function SupplierCard({ supplier: s, view }: { supplier: Supplier; view: "list" | "grid" }) {
+    const content = (
+        <>
+            <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600">
+                        {iconFor(s.icon)}
+                    </div>
+                    <div>
+                        <h3 className="font-bold text-slate-900 leading-tight">{s.name}</h3>
+                        <div className="flex items-center gap-1 text-sm text-slate-500">
+                            <MapPin className="w-4 h-4" />
+                            <span>{s.city}, {s.country}</span>
+                        </div>
+                        {view === "list" && (
+                            <div className="flex flex-wrap gap-2 mt-2">
+                                {s.categories.map((c) => (
+                                    <span key={c} className="text-[11px] font-semibold text-slate-600 rounded-full bg-slate-100 px-2 py-1 border border-slate-200">{c}</span>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+                <span className={`text-[11px] font-black uppercase tracking-[0.12em] px-2 py-1 rounded-full ${statusTone[s.status]}`}>
+                    {s.status}
+                </span>
+            </div>
+            {view === "grid" && (
+                <div className="flex flex-wrap gap-2">
+                    {s.categories.map((c) => (
+                        <span key={c} className="text-[11px] font-semibold text-slate-600 rounded-full bg-slate-100 px-2 py-1 border border-slate-200">{c}</span>
+                    ))}
+                </div>
+            )}
+            <div className="flex items-center justify-between text-sm text-slate-600">
+                <div className="flex items-center gap-1 text-slate-600">
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>{s.successRate ? `${s.successRate}% Success Rate` : "Awaiting data"}</span>
+                </div>
+                <button className="text-sm font-bold text-[#1e4bff] hover:underline">View Profile</button>
+            </div>
+        </>
+    );
+
+    if (view === "list") {
+        return (
+            <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-4 flex flex-col gap-3">
+                {content}
+            </div>
+        );
+    }
+
+    return (
+        <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-4 flex flex-col gap-3">
+            {content}
+        </div>
     );
 }
